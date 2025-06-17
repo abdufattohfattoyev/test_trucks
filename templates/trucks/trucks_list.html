@@ -1,0 +1,670 @@
+{% extends 'base.html' %}
+{% load format_filters %}
+
+{% block title %}Truck List{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* General container styling */
+    .trucks-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Header section for search and stats */
+    .header-section {
+        margin-bottom: 30px;
+    }
+
+    /* Search form styling */
+    .search-form {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .search-form .input-group {
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .search-form .form-control {
+        border-radius: 5px 0 0 5px;
+        border: 1px solid #ced4da;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .search-form .btn {
+        border-radius: 0 5px 5px 0;
+        background-color: var(--primary-color, #007bff);
+        color: var(--text-color, #fff);
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    .search-form .btn:hover {
+        background-color: var(--accent-color, #0056b3);
+    }
+
+    /* Stats row styling */
+    .stats-row {
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: var(--primary-color, #007bff);
+        color: var(--text-color, #fff);
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card.bg-warning {
+        background-color: #f39c12;
+    }
+
+    .stat-card.bg-success {
+        background-color: #27ae60;
+    }
+
+    .stat-icon {
+        font-size: 1.5rem;
+        background-color: rgba(255, 255, 255, 0.2);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+
+    .stat-content {
+        flex-grow: 1;
+    }
+
+    .stat-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        opacity: 0.9;
+        margin-bottom: 5px;
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* Trucks grid */
+    .trucks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .truck-card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .truck-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .truck-image {
+        width: 100%;
+        height: 160px;
+        overflow: hidden;
+        position: relative;
+        background-color: #f0f0f0;
+    }
+
+    .truck-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+
+    .truck-card:hover .truck-image img {
+        transform: scale(1.05);
+    }
+
+    .truck-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .truck-status.sold {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .truck-status.unsold {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .truck-body {
+        padding: 15px;
+    }
+
+    .truck-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color, #007bff);
+        margin-bottom: 5px;
+    }
+
+    .truck-po-id {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    .truck-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .detail-label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .detail-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .detail-value.text-primary {
+        color: var(--accent-color, #0056b3);
+    }
+
+    .detail-value.text-warning {
+        color: #f1c40f;
+    }
+
+    .detail-value.text-success {
+        color: #27ae60;
+    }
+
+    .truck-details-toggle {
+        cursor: pointer;
+        color: var(--accent-color, #0056b3);
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: center;
+        padding: 8px;
+        background-color: rgba(0, 0, 0, 0.03);
+        border-radius: 5px;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+        display: block;
+        width: 100%;
+        text-decoration: none;
+    }
+
+    .truck-details-toggle:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Modal Styling */
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        background-color: #f8f9fa;
+        padding: 15px;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color, #007bff);
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 15px;
+    }
+
+    /* Pagination Styling */
+    .pagination {
+        margin-top: 30px;
+    }
+
+    .page-link {
+        border-radius: 5px;
+        margin: 0 3px;
+        color: var(--primary-color, #007bff);
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--primary-color, #007bff);
+        border-color: var(--primary-color, #007bff);
+        color: #fff;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .trucks-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+
+        .stat-card {
+            padding: 12px;
+        }
+
+        .stat-icon {
+            font-size: 1.3rem;
+            width: 35px;
+            height: 35px;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .trucks-container {
+            padding: 15px;
+        }
+
+        .trucks-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .truck-image {
+            height: 140px;
+        }
+
+        .truck-title {
+            font-size: 1rem;
+        }
+
+        .truck-po-id {
+            font-size: 0.85rem;
+        }
+
+        .search-form .input-group {
+            max-width: 100%;
+        }
+
+        .modal-body {
+            padding: 15px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-row .row {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-card {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .stat-icon {
+            font-size: 1.2rem;
+            width: 30px;
+            height: 30px;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+        }
+
+        .truck-body {
+            padding: 12px;
+        }
+
+        .truck-status {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+        }
+
+        .truck-title {
+            font-size: 0.95rem;
+        }
+
+        .truck-po-id {
+            font-size: 0.8rem;
+        }
+
+        .detail-label, .detail-value {
+            font-size: 0.8rem;
+        }
+
+        .truck-details-toggle {
+            font-size: 0.85rem;
+            padding: 6px;
+        }
+
+        .modal-title {
+            font-size: 1rem;
+        }
+
+        .modal-body {
+            padding: 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="trucks-container">
+    <div class="card p-3">
+        <!-- Header Section: Search and Stats -->
+        <div class="header-section">
+            <!-- Search Form -->
+            <form class="search-form" method="GET" action="{% url 'trucks_list' %}">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="q" placeholder="Search by PO-ID or Model" value="{{ request.GET.q|default_if_none:'' }}">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    {% if request.GET.q %}
+                    <a href="{% url 'trucks_list' %}" class="btn btn-secondary">Clear</a>
+                    {% endif %}
+                </div>
+            </form>
+
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="row g-3">
+                    <div class="col-md-4 col-12">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="bi bi-truck"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h5 class="stat-title">Total Truck Price</h5>
+                                <h3 class="stat-value">${{ total_price|format_number }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="stat-card bg-warning">
+                            <div class="stat-icon">
+                                <i class="bi bi-wallet2"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h5 class="stat-title">Total Expenses</h5>
+                                <h3 class="stat-value">${{ total_xarajat|format_number }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="stat-card bg-success">
+                            <div class="stat-icon">
+                                <i class="bi bi-cash-stack"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h5 class="stat-title">Total Cost</h5>
+                                <h3 class="stat-value">${{ total_umumiy|format_number }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trucks Grid -->
+        <div class="trucks-grid">
+            {% for data in trucks_data %}
+            <div class="truck-card" data-truck-id="{{ data.truck.id }}">
+                <div class="truck-image">
+                    {% if data.truck.image %}
+                        <img src="{{ data.truck.image.url }}" alt="{{ data.truck.make }} {{ data.truck.model }}" class="img-fluid">
+                    {% else %}
+                        <img src="https://placehold.co/280x160?text=No+Image" alt="No Image" class="img-fluid">
+                    {% endif %}
+                    <span class="truck-status {% if data.truck.sotilgan %}sold{% else %}unsold{% endif %}">
+                        {% if data.truck.sotilgan %}Sold{% else %}Available{% endif %}
+                    </span>
+                </div>
+                <div class="truck-body">
+                    <h5 class="truck-title">{{ data.truck.make }} {{ data.truck.model }} ({{ data.truck.year }})</h5>
+                    <p class="truck-po-id">PO-ID: {{ data.truck.po_id }}</p>
+                    <div class="truck-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value text-primary">${{ data.truck.price|format_number }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Expenses:</span>
+                            <span class="detail-value text-warning">${{ data.xarajat_sum|format_number }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Total Price:</span>
+                            <span class="detail-value text-success">${{ data.umumiy_narx|format_number }}</span>
+                        </div>
+                    </div>
+                    <button class="truck-details-toggle btn btn-link p-0 mt-2" data-bs-toggle="modal" data-bs-target="#truck-details-modal-{{ data.truck.id }}">
+                        View Details
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal for Truck Details -->
+            <div class="modal fade" id="truck-details-modal-{{ data.truck.id }}" tabindex="-1" aria-labelledby="truck-details-modal-label-{{ data.truck.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="truck-details-modal-label-{{ data.truck.id }}">
+                                {{ data.truck.make }} {{ data.truck.model }} ({{ data.truck.year }})
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% include 'trucks/truck_details.html' with truck=data.truck xarajatlar=data.truck.expenses.all xarajat_sum=data.xarajat_sum umumiy_narx=data.umumiy_narx hujjatlar=data.truck.hujjatlar.all %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-info-circle fs-2 text-muted d-block mb-2"></i>
+                <h4 class="text-muted">No trucks found.</h4>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if trucks.has_other_pages %}
+        <nav aria-label="Page navigation" class="pagination">
+            <ul class="pagination justify-content-center">
+                {% if trucks.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ trucks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">«</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% for num in trucks.paginator.page_range %}
+                <li class="page-item {% if trucks.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                </li>
+                {% endfor %}
+                {% if trucks.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ trucks.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">»</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Hover effects are handled via CSS
+
+    // Utility function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Show Delete Confirmation Modal
+    window.showDeleteConfirmation = function(truckId) {
+        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal-{{ data.truck.id }}'));
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn-{{ data.truck.id }}');
+        document.getElementById('deleteConfirmationModal-{{ data.truck.id }}').dataset.truckId = truckId;
+        confirmDeleteBtn.onclick = () => deleteTruck(truckId);
+        modal.show();
+    };
+
+    // Delete Truck
+    async function deleteTruck(truckId) {
+        try {
+            const response = await fetch(`/truck/delete/${truckId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: new FormData()
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                window.showAlert('success', data.message);
+                const truckCard = document.querySelector(`.truck-card[data-truck-id="${truckId}"]`);
+                if (truckCard) {
+                    truckCard.remove();
+                }
+                // Update stats if needed (e.g., total truck count)
+                const truckCountElement = document.querySelector('.stat-value');
+                if (truckCountElement) {
+                    const currentCount = parseInt(truckCountElement.textContent.replace('$', '').replace(',', ''));
+                    truckCountElement.textContent = `$${currentCount - data.truck.price|format_number}`;
+                }
+            } else {
+                window.showAlert('error', data.message || "Mashinani o'chirishda xatolik yuz berdi");
+            }
+        } catch (error) {
+            console.error('Error deleting truck:', error);
+            window.showAlert('error', "Mashinani o'chirishda xatolik yuz berdi");
+        } finally {
+            bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal-{{ data.truck.id }}')).hide();
+        }
+    }
+
+    // Open Edit Truck Form
+    window.openEditTruckForm = function(truckId) {
+        // Close any open detail modal to prevent overlap
+        const detailModal = bootstrap.Modal.getInstance(document.getElementById(`truck-details-modal-${truckId}`));
+        if (detailModal) {
+            detailModal.hide();
+        }
+        const editUrl = `/truck/edit/${truckId}/`;
+        window.openFormSidebar(editUrl, "Mashina Tahrirlash");
+    };
+
+    // Delete Hujjat
+    window.deleteHujjat = async function(hujjatId, truckId) {
+        if (!confirm('Bu hujjatni o‘chirishni xohlaysizmi?')) return;
+        try {
+            const response = await fetch(`/truck/hujjat/delete/${hujjatId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: new FormData()
+            });
+            const data = await response.json();
+            if (data.success) {
+                window.showAlert('success', data.message);
+
+                // Update the hujjat list in the modal
+                const hujjatSection = document.querySelector(`#truck-details-modal-${truckId} .hujjat-list`);
+                if (hujjatSection) {
+                    hujjatSection.innerHTML = data.hujjatlar.length ? data.hujjatlar.map(h => `
+                        <div class="hujjat-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <a href="${h.hujjat_url}" target="_blank" class="doc-link text-truncate pe-2">
+                                <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                                ${h.original_file_name}
+                            </a>
+                            <button onclick="deleteHujjat(${h.id}, ${truckId})" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    `).join('') : '<p class="text-muted text-center py-2">Hujjatlar mavjud emas.</p>';
+                }
+
+                // Update the hujjat count on the truck card (if visible)
+                const truckCard = document.querySelector(`.truck-card[data-truck-id="${truckId}"]`);
+                if (truckCard) {
+                    const countCell = truckCard.querySelector('.hujjat-count');
+                    if (countCell) countCell.textContent = `${data.hujjatlar.length} hujjat`;
+                }
+            } else {
+                window.showAlert('error', data.message || 'Hujjatni o‘chirishda xato yuz berdi');
+            }
+        } catch (error) {
+            console.error('Error deleting hujjat:', error);
+            window.showAlert('error', 'Hujjatni o‘chirishda xato yuz berdi');
+        }
+    };
+});
+
+</script>
+{% endblock %}

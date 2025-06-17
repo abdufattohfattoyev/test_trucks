@@ -1,0 +1,49 @@
+<div class="notification-card status-{{ bildirishnoma.status }}">
+    <div class="notification-header">
+        <div class="customer-info">
+            <h3>{{ bildirishnoma.chiqim.xaridor.ism_familiya }}</h3>
+            <p class="truck-info">
+                <i class="fas fa-truck"></i>
+                {{ bildirishnoma.chiqim.truck.make }} {{ bildirishnoma.chiqim.truck.model }}
+            </p>
+        </div>
+        <div class="status-badge status-{{ bildirishnoma.status }}">
+            {{ bildirishnoma.get_status_display }}
+        </div>
+    </div>
+
+    <div class="notification-body">
+        <div class="info-item">
+            <span class="info-label">Payment Date:</span>
+            <span class="info-value">{{ bildirishnoma.tolov_sana|date:"Y-m-d" }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Payment Amount:</span>
+            <span class="info-value">{{ bildirishnoma.chiqim.oyiga_tolov|floatformat:2 }} $</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Remaining Days:</span>
+            <span class="info-value">{{ bildirishnoma.days_left }} days</span>
+        </div>
+    </div>
+
+    <div class="payment-progress">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ bildirishnoma.progress_percentage }}%"></div>
+        </div>
+        <div class="progress-text">
+            <span>{{ bildirishnoma.progress_percentage|floatformat:1 }}% paid</span>
+        </div>
+    </div>
+
+    <div class="notification-actions">
+        <a href="{% url 'chiqim_detail' bildirishnoma.chiqim.id %}" class="btn btn-primary">
+            <i class="fas fa-eye"></i> Details
+        </a>
+        {% if bildirishnoma.status != 'paid' and not bildirishnoma.eslatma %}
+        <button class="btn btn-success mark-btn" data-id="{{ bildirishnoma.id }}">
+            <i class="fas fa-check"></i> Mark
+        </button>
+        {% endif %}
+    </div>
+</div>

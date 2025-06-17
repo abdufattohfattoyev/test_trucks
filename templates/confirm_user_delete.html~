@@ -1,0 +1,53 @@
+<div class="delete-user-form">
+    <!-- Form Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+        <h4 class="mb-0 text-danger">
+            <i class="bi bi-trash me-2"></i>Foydalanuvchi O'chirish
+        </h4>
+        <button type="button" class="btn-close" onclick="closeFormSidebar()" aria-label="Close"></button>
+    </div>
+
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body">
+            <p><strong>{{ user.username }}</strong> foydalanuvchisini o'chirishni tasdiqlaysizmi?</p>
+            <p class="text-muted small">Eslatma: Ushbu amalni qaytarib bo'lmaydi.</p>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="d-flex gap-2 mt-3">
+            <button type="button" class="btn btn-outline-secondary flex-grow-1" onclick="closeFormSidebar()">
+                <i class="bi bi-x-circle me-1"></i> Bekor qilish
+            </button>
+            <button type="submit" class="btn btn-danger flex-grow-1">
+                <i class="bi bi-trash me-1"></i> O'chirish
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .delete-user-form {
+        padding: 1rem;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .btn {
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-weight: 500;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn-outline-secondary {
+        border-color: #dee2e6;
+    }
+</style>

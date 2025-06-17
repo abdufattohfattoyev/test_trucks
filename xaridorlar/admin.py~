@@ -1,0 +1,8 @@
+from django.contrib import admin
+from .models import Xaridor
+
+@admin.register(Xaridor)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'previous_debt', 'balance', 'date')
+    search_fields = ('first_name', 'last_name')
+    list_filter = ('date',)

@@ -1,0 +1,54 @@
+<div style="padding: 20px; background-color: #FFFFFF;">
+    <form method="post" enctype="multipart/form-data" id="xaridorAddForm" action="{% url 'xaridor_add' %}">
+        {% csrf_token %}
+        <div id="formErrors" style="color: #2C3E50; display: none; margin-bottom: 10px;"></div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: #2C3E50;">Ism</label>
+            <input type="text" name="ism" id="id_ism" required style="width: 100%; padding: 8px; border: 1px solid #2C3E50; border-radius: 5px;">
+            <div class="invalid-feedback" id="ism-error" style="color: #2C3E50; font-size: 12px; display: none;"></div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: #2C3E50;">Familiya</label>
+            <input type="text" name="familiya" id="id_familiya" required style="width: 100%; padding: 8px; border: 1px solid #2C3E50; border-radius: 5px;">
+            <div class="invalid-feedback" id="familiya-error" style="color: #2C3E50; font-size: 12px; display: none;"></div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: #2C3E50;">Sana</label>
+            <input type="date" name="sana" id="id_sana" required style="width: 100%; padding: 8px; border: 1px solid #2C3E50; border-radius: 5px;">
+            <div class="invalid-feedback" id="sana-error" style="color: #2C3E50; font-size: 12px; display: none;"></div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: #2C3E50;">Pasport</label>
+            <label for="id_pasport" style="display: block; color: #2C3E50; padding: 8px; border: 1px solid #2C3E50; border-radius: 5px;">Pasport yuklash</label>
+            <input type="file" name="pasport" id="id_pasport" accept="image/*,application/pdf" required style="display: none;">
+            <div class="invalid-feedback" id="pasport-error" style="color: #2C3E50; font-size: 12px; display: none;"></div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: #2C3E50;">Oldingi qarzdorlik ($)</label>
+            <input type="number" name="oldingi_qarzdorlik" id="id_oldingi_qarzdorlik" step="0.01" value="0" style="width: 100%; padding: 8px; border: 1px solid #2C3E50; border-radius: 5px;">
+            <div class="invalid-feedback" id="oldingi_qarzdorlik-error" style="color: #2C3E50; font-size: 12px; display: none;"></div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: #2C3E50;">Balans ($)</label>
+            <input type="number" name="balans" id="id_balans" step="0.01" value="0" style="width: 100%; padding: 8px; border: 1px solid #2C3E50; border-radius: 5px;">
+            <div class="invalid-feedback" id="balans-error" style="color: #2C3E50; font-size: 12px; display: none;"></div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; color: #2C3E50;">Izoh</label>
+            <textarea name="izoh" id="id_izoh" required style="width: 100%; padding: 8px; border: 1px solid #2C3E50; border-radius: 5px; height: 80px;"></textarea>
+            <div class="invalid-feedback" id="izoh-error" style="color: #2C3E50; font-size: 12px; display: none;"></div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="button" onclick="closeFormSidebar()" style="background-color: #2C3E50; color: #FFFFFF; padding: 8px 15px; border: none; border-radius: 5px; flex: 1;">Bekor qilish</button>
+            <button type="submit" id="submitBtn" style="background-color: #1ABC9C; color: #FFFFFF; padding: 8px 15px; border: none; border-radius: 5px; flex: 1;">Saqlash</button>
+        </div>
+    </form>
+</div>

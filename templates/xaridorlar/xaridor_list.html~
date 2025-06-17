@@ -1,0 +1,60 @@
+<div class="p-4">
+    <form method="post" enctype="multipart/form-data" id="xaridorAddForm" action="{% url 'xaridorlar:xaridor_add' %}">
+        {% csrf_token %}
+        <div id="formErrors" class="alert alert-danger d-none"></div>
+
+        <div class="mb-3">
+            <label for="id_ism" class="form-label">Ism</label>
+            <input type="text" name="ism" id="id_ism" class="form-control" required>
+            <div class="invalid-feedback" id="ism-error"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_familiya" class="form-label">Familiya</label>
+            <input type="text" name="familiya" id="id_familiya" class="form-control" required>
+            <div class="invalid-feedback" id="familiya-error"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_sana" class="form-label">Sana</label>
+            <input type="date" name="sana" id="id_sana" class="form-control" required>
+            <div class="invalid-feedback" id="sana-error"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Pasport</label>
+            <label for="id_pasport" class="btn btn-outline-secondary w-100">
+                <i class="bi bi-upload me-1"></i> Fayl yuklash
+            </label>
+            <input type="file" name="pasport" id="id_pasport" class="d-none" accept="image/*,.pdf" required>
+            <div class="invalid-feedback" id="pasport-error"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_oldingi_qarzdorlik" class="form-label">Oldingi qarzdorlik ($)</label>
+            <input type="number" name="oldingi_qarzdorlik" id="id_oldingi_qarzdorlik" class="form-control" step="0.01" value="0">
+            <div class="invalid-feedback" id="oldingi_qarzdorlik-error"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_balans" class="form-label">Balans ($)</label>
+            <input type="number" name="balans" id="id_balans" class="form-control" step="0.01" value="0">
+            <div class="invalid-feedback" id="balans-error"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="id_izoh" class="form-label">Izoh</label>
+            <textarea name="izoh" id="id_izoh" class="form-control" rows="3"></textarea>
+            <div class="invalid-feedback" id="izoh-error"></div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="button" class="btn btn-secondary me-md-2" onclick="closeFormSidebar()">
+                <i class="bi bi-x-circle me-1"></i> Bekor qilish
+            </button>
+            <button type="submit" id="submitBtn" class="btn btn-success">
+                <i class="bi bi-save me-1"></i> Saqlash
+            </button>
+        </div>
+    </form>
+</div>

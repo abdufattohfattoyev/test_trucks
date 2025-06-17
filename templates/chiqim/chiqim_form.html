@@ -1,0 +1,166 @@
+{% load widget_tweaks %}
+
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h2 class="card-title mb-4 text-center">
+                {% if chiqim %}Edit Expense{% else %}Add New Expense{% endif %}
+            </h2>
+            <form id="chiqimForm" method="post" enctype="multipart/form-data" class="p-3">
+                {% csrf_token %}
+                <input type="hidden" name="id" id="chiqimId" value="{% if chiqim %}{{ chiqim.id }}{% endif %}">
+
+                <!-- Error Container -->
+                <div id="errorContainer" class="alert alert-danger d-none" role="alert"></div>
+
+                <div class="row g-4">
+                    <!-- Vehicle Field -->
+                    <div class="col-12 col-md-6">
+                        <label for="id_truck" class="form-label fw-bold">Vehicle <span class="text-danger">*</span></label>
+                        {{ form.truck|add_class:"form-select rounded-3"|attr:"required" }}
+                        <div id="truckError" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Customer Field -->
+                    <div class="col-12 col-md-6">
+                        <label for="id_xaridor" class="form-label fw-bold">Buyer <span class="text-danger">*</span></label>
+                        {{ form.xaridor|add_class:"form-select rounded-3"|attr:"required" }}
+                        <div id="xaridorError" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Price Field -->
+                    <div class="col-12 col-md-6">
+                        <label for="id_narx" class="form-label fw-bold">Price ($) <span class="text-danger">*</span></label>
+                        {{ form.narx|add_class:"form-control rounded-3"|attr:"placeholder:Enter price"|attr:"required" }}
+                        <div id="narxError" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Initial Payment Field -->
+                    <div class="col-12 col-md-6">
+                        <label for="id_boshlangich_summa" class="form-label fw-bold">Initial Payment ($)</label>
+                        {{ form.boshlangich_summa|add_class:"form-control rounded-3"|attr:"placeholder:Enter initial payment" }}
+                        <div id="boshlangichSummaError" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- First Payment Date Field -->
+                    <div class="col-12 col-md-6">
+                        <label for="id_tolov_sana" class="form-label fw-bold">First Payment Date <span class="text-danger">*</span></label>
+                        {{ form.tolov_sana|add_class:"form-control rounded-3"|attr:"required" }}
+                        <div id="tolovSanaError" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Installment Term Field -->
+                    <div class="col-12 col-md-6">
+                        <label for="id_bo_lib_tolov_muddat" class="form-label fw-bold">Installment Term (months) <span class="text-danger">*</span></label>
+                        {{ form.bo_lib_tolov_muddat|add_class:"form-control rounded-3"|attr:"placeholder:Enter number of months"|attr:"required" }}
+                        <div id="boLibTolovMuddatError" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Documents Field -->
+                    <div class="col-12">
+                        <label for="id_hujjatlar" class="form-label fw-bold">Documents</label>
+                        {{ form.hujjatlar|add_class:"form-control rounded-3" }}
+                        <small class="form-text text-muted">Please upload required documents (PDF, JPG, PNG).</small>
+                        <div id="hujjatlarError" class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Notes Field -->
+                    <div class="col-12">
+                        <label for="id_izoh" class="form-label fw-bold">Notes</label>
+                        {{ form.izoh|add_class:"form-control rounded-3"|attr:"rows:4"|attr:"placeholder:Enter notes or additional details" }}
+                        <div id="izohError" class="invalid-feedback"></div>
+                    </div>
+                </div>
+
+                <!-- Form Buttons -->
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="{% url 'chiqim_list' %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary" data-original-text="Save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for AJAX Form Submission -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#chiqimForm').on('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: window.location.pathname,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            beforeSend: function() {
+                $('#errorContainer').addClass('d-none').empty();
+                $('.invalid-feedback').empty();
+                $('.form-control, .form-select').removeClass('is-invalid');
+                var submitBtn = $('button[type="submit"]');
+                submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+            },
+            success: function(response) {
+                console.log('Server response:', response); // Javobni konsolda ko'rish
+                if (response.success) {
+                    alert('Expense successfully saved!'); // Muvaffaqiyat xabari
+                    window.location.href = response.redirect || "{% url 'chiqim_list' %}"; // Redirect
+                } else {
+                    $('#errorContainer').removeClass('d-none').html(response.errors.__all__ ? response.errors.__all__.join('<br>') : 'An error occurred. Please correct the following.');
+                    $.each(response.errors || {}, function(field, errors) {
+                        var inputId = 'id_' + field;
+                        var errorDivId = field + 'Error';
+                        $('#' + errorDivId).html(errors.join('<br>'));
+                        $('#' + inputId).addClass('is-invalid');
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#errorContainer').removeClass('d-none').text('Server error. Please try again later.');
+                console.log('AJAX Error:', error, 'Status:', status, 'Response:', xhr.responseText);
+            },
+            complete: function() {
+                var submitBtn = $('button[type="submit"]');
+                submitBtn.prop('disabled', false).text(submitBtn.data('original-text') || 'Save');
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.card {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.form-control, .form-select {
+    border-radius: 0.5rem;
+    transition: border-color 0.3s ease;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+.btn-secondary {
+    padding: 0.75rem 1.5rem;
+}
+.alert-danger {
+    border-radius: 0.5rem;
+}
+.invalid-feedback {
+    display: block;
+}
+</style>

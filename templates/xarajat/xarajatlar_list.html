@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+
+{% block title %}Expenses - Truck Trade{% endblock %}
+
+{% block content %}
+<div class="xarajatlar-container">
+    <div class="xarajatlar-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="xarajatlar-title">
+                <i class="bi bi-wallet2 me-2"></i>Expenses
+            </h1>
+            <button onclick="openFormSidebar('{% url 'xarajat_add' %}', 'Add New Expense')"
+                    class="btn btn-success btn-add-xarajat">
+                <i class="bi bi-plus-lg me-1"></i>Add Expense
+            </button>
+        </div>
+
+        <div class="stats-filter-row mb-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <i class="bi bi-wallet2 stat-icon"></i>
+                            <div>
+                                <h6 class="stat-title">Total Expenses</h6>
+                                <h3 class="stat-value">{{ xarajatlar.count }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <i class="bi bi-cash-stack stat-icon"></i>
+                            <div>
+                                <h6 class="stat-title">Total Amount</h6>
+                                <h3 class="stat-value">${{ total_xarajat|floatformat:"2" }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <form method="GET" action="{% url 'xarajatlar_list' %}" class="search-form">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control search-input"
+                                   placeholder="PO-ID, Brand, Model or Expense Type..."
+                                   value="{{ search_query|default:'' }}">
+                            <button class="btn btn-primary search-btn" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-3">
+                    <form method="GET" action="{% url 'xarajatlar_list' %}" class="date-filter-form">
+                        <div class="input-group">
+                            <input type="date" name="start_date" class="form-control date-input"
+                                   placeholder="Start Date" value="{{ start_date|default:'' }}">
+                            <input type="date" name="end_date" class="form-control date-input"
+                                   placeholder="End Date" value="{{ end_date|default:'' }}">
+                            <button class="btn btn-primary date-filter-btn" type="submit">
+                                <i class="bi bi-calendar-check"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="xarajatlar-table">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light sticky-header">
+                            <tr>
+                                <th>#</th>
+                                <th>Truck</th>
+                                <th>PO-ID</th>
+                                <th>Expense Type</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Document</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for xarajat in xarajatlar %}
+                            <tr class="xarajat-row">
+                                <td>{{ xarajat.serial_number }}</td>
+                                <td>{{ xarajat.truck.make }} {{ xarajat.truck.model }}</td>
+                                <td>{{ xarajat.truck.po_id }}</td>
+                                <td>{{ xarajat.get_expense_type_display }}</td>
+                                <td>${{ xarajat.amount|floatformat:"2" }}</td>
+                                <td>{{ xarajat.date|date:"Y-m-d" }}</td>
+                                <td>{{ xarajat.description|default:"-"|truncatechars:20 }}</td>
+                                <td>
+                                    {% if xarajat.document %}
+                                    <a href="{{ xarajat.document.url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                        <i class="bi bi-file-earmark-text"></i>
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button onclick="openFormSidebar('{% url 'xarajat_edit' xarajat.id %}', 'Edit Expense')"
+                                                class="btn btn-outline-primary btn-sm action-btn">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button onclick="openDetailSidebar('{% url 'xarajat_delete' xarajat.id %}', 'Delete Expense')"
+                                                class="btn btn-outline-danger btn-sm action-btn">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="9" class="text-center py-4 text-muted">
+                                    <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
+                                    {% if search_query %}
+                                    No results found for "{{ search_query }}"
+                                    {% elif start_date or end_date %}
+                                    No expenses found for the selected date range
+                                    {% else %}
+                                    No expenses available yet
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .xarajatlar-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    .xarajatlar-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1.75rem;
+    }
+    .btn-add-xarajat {
+        padding: 0.5rem 1.25rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        transition: all var(--transition-speed) ease;
+    }
+    .btn-add-xarajat:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+    .stats-filter-row {
+        background-color: var(--bg-color);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+    }
+    .stat-card {
+        background-color: var(--secondary-bg);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        box-shadow: var(--shadow);
+        height: 100%;
+    }
+    .stat-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .stat-icon {
+        font-size: 1.5rem;
+        color: var(--accent-color);
+        background-color: rgba(26, 188, 156, 0.1);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .stat-title {
+        font-size: 0.9rem;
+        color: var(--text-color);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+    .stat-value {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0;
+        font-size: 1.25rem;
+    }
+    .search-form, .date-filter-form {
+        height: 100%;
+    }
+    .search-input, .date-input {
+        border-radius: var(--border-radius) 0 0 var(--border-radius) !important;
+        border-right: none;
+        height: 50px;
+    }
+    .search-btn, .date-filter-btn {
+        border-radius: 0 var(--border-radius) var(--border-radius) 0 !important;
+        height: 50px;
+        width: 50px;
+    }
+    .table {
+        margin-bottom: 0;
+    }
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: var(--bg-color);
+    }
+    .table th {
+        font-weight: 600;
+        color: var(--primary-color);
+        white-space: nowrap;
+        padding: 1rem;
+    }
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        background-color: var(--secondary-bg);
+    }
+    .xarajat-row:hover {
+        background-color: rgba(26, 188, 156, 0.05);
+    }
+    .action-btn {
+        padding: 0.35rem 0.75rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        transition: all var(--transition-speed) ease;
+        white-space: nowrap;
+    }
+    .action-btn i {
+        margin-right: 0;
+    }
+    .action-btn:hover {
+        transform: translateY(-1px);
+    }
+    .btn-disabled {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+    @media (max-width: 992px) {
+        .stats-filter-row .row {
+            flex-direction: column;
+        }
+        .stat-card, .search-form, .date-filter-form {
+            margin-bottom: 1rem;
+        }
+    }
+    @media (max-width: 768px) {
+        .xarajatlar-container {
+            padding: 1rem;
+        }
+        .xarajatlar-title {
+            font-size: 1.5rem;
+        }
+        .stat-value {
+            font-size: 1.1rem;
+        }
+        .table th, .table td {
+            padding: 0.75rem;
+        }
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Function to get CSRF token from the form
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const actionButtons = document.querySelectorAll('.action-btn');
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+
+    const rows = document.querySelectorAll('.xarajat-row');
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', () => {
+            row.style.transform = 'translateX(2px)';
+        });
+        row.addEventListener('mouseleave', () => {
+            row.style.transform = '';
+        });
+    });
+
+    // Disable add button after click to prevent multiple openings
+    const addXarajatButton = document.querySelector('.btn-add-xarajat');
+    if (addXarajatButton) {
+        addXarajatButton.addEventListener('click', function() {
+            this.classList.add('btn-disabled');
+            setTimeout(() => {
+                this.classList.remove('btn-disabled');
+            }, 2000); // Re-enable after 2 seconds
+        });
+    }
+
+    // Handle form submission for ajax-form
+    document.addEventListener('submit', function(e) {
+        if (e.target.matches('.ajax-form')) {
+            e.preventDefault();
+            const form = e.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.classList.add('btn-disabled');
+            }
+
+            // Clear previous error messages
+            form.querySelectorAll('.invalid-feedback').forEach(error => {
+                error.classList.add('d-none');
+                error.textContent = '';
+            });
+
+            const formData = new FormData(form);
+            const csrftoken = getCookie('csrftoken');
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.closeSidebar && data.reload) {
+                        if (typeof closeFormSidebar === 'function') {
+                            closeFormSidebar();
+                        }
+                        window.location.reload();
+                    }
+                } else {
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(field => {
+                            const errorDiv = document.getElementId(`${field}_error`);
+                            if (errorDiv) {
+                                errorDiv.textContent = data.errors[field][0].message;
+                                errorDiv.classList.remove('d-none');
+                            }
+                        });
+                    } else if (data.message) {
+                        alert(data.message);
+                    }
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.classList.remove('btn-disabled');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred!');
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('btn-disabled');
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

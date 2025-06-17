@@ -1,0 +1,279 @@
+<div class="hujjatlar-container" data-xaridor-id="{{ xaridor.id }}">
+    <h5 class="mb-3">{{ xaridor.ism_familiya }} - Hujjatlar</h5>
+
+    {% if xaridor.hujjatlar.exists %}
+    <div class="row" id="hujjatlar-list">
+        {% for hujjat in xaridor.hujjatlar.all %}
+        <div class="col-12 mb-4 hujjat-item" data-hujjat-id="{{ hujjat.id }}">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h6 class="card-title mb-0">{{ hujjat.original_filename }}</h6>
+                        <small class="text-muted">{{ hujjat.uploaded_at|date:"d.m.Y H:i" }}</small>
+                    </div>
+
+                    {% with ext=hujjat.original_filename|lower|slice:"-4:" %}
+                        {% if ext in '.jpg,.jpeg,.png' %}
+                        <div class="text-center mb-3">
+                            <img src="{{ hujjat.hujjat.url }}" alt="{{ hujjat.original_filename }}"
+                                 class="img-fluid rounded" style="max-height: 200px; max-width: 100%;">
+                        </div>
+                        {% else %}
+                        <div class="text-center mb-3">
+                            <i class="bi bi-file-earmark-{{ ext|slice:"1:" }} display-4 text-muted"></i>
+                            <p class="mt-2">{{ ext|upper }} fayli</p>
+                        </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ hujjat.hujjat.url }}" download="{{ hujjat.original_filename }}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-download me-1"></i> Yuklab olish
+                        </a>
+                        <button class="btn btn-sm btn-outline-danger delete-hujjat-btn"
+                                data-hujjat-id="{{ hujjat.id }}"
+                                data-url="{% url 'delete_hujjat' hujjat.id %}">
+                            <i class="bi bi-trash me-1"></i> O'chirish
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" id="hujjatlar-list">
+        <i class="bi bi-info-circle me-2"></i>Hujjatlar topilmadi
+    </div>
+    {% endif %}
+
+    <div class="text-end mt-3">
+        <button type="button" class="btn btn-secondary" onclick="window.closeDetailSidebar()">
+            <i class="bi bi-x-lg me-2"></i>Yopish
+        </button>
+    </div>
+</div>
+
+<style>
+.hujjatlar-container {
+    padding: 20px;
+}
+.card {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    border-radius: 8px;
+}
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+.text-muted {
+    font-size: 0.875rem;
+}
+.btn-sm {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+}
+.alert-info {
+    font-size: 0.875rem;
+    padding: 0.75rem;
+}
+@media (max-width: 576px) {
+    .hujjatlar-container {
+        padding: 15px;
+    }
+    .card-title {
+        max-width: 150px;
+        font-size: 0.875rem;
+    }
+    .text-muted {
+        font-size: 0.75rem;
+    }
+    img.img-fluid {
+        max-height: 150px;
+    }
+}
+</style>
+
+<script>
+// CSRF token olish funksiyasi
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                console.log(`CSRF token found: ${cookieValue}`);
+                break;
+            }
+        }
+    }
+    if (!cookieValue) {
+        console.error('CSRF token not found!');
+    }
+    return cookieValue;
+}
+
+// Alert funksiyasi
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show custom-alert`;
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.style.maxWidth = '400px';
+    alertDiv.style.width = 'calc(100% - 40px)';
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    setTimeout(() => {
+        alertDiv.classList.remove('show');
+        setTimeout(() => alertDiv.remove(), 150);
+    }, 5000);
+}
+
+// Hujjat o'chirish funksiyasi
+function setupDeleteButtons() {
+    const deleteButtons = document.querySelectorAll('.delete-hujjat-btn');
+    console.log(`Found ${deleteButtons.length} delete buttons`);
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Delete button clicked!');
+
+            const hujjatId = this.getAttribute('data-hujjat-id');
+            const url = this.getAttribute('data-url');
+            const xaridorId = document.querySelector('.hujjatlar-container').getAttribute('data-xaridor-id');
+
+            console.log(`Deleting document ID: ${hujjatId}`);
+            console.log(`Request URL: ${url}`);
+            console.log(`Xaridor ID: ${xaridorId}`);
+
+            // Disable the button and show loading state
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> O\'chirilmoqda...';
+
+            // Make the AJAX request to delete the document
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ hujjat_id: hujjatId })
+            })
+            .then(response => {
+                console.log('Response received:', response);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    showAlert('success', data.message);
+
+                    // Remove the document from the UI
+                    const hujjatItem = document.querySelector(`.hujjat-item[data-hujjat-id="${hujjatId}"]`);
+                    if (hujjatItem) {
+                        hujjatItem.remove();
+                        console.log(`Document ${hujjatId} removed from UI`);
+                    }
+
+                    // Check if there are any documents left
+                    const remainingItems = document.querySelectorAll('.hujjat-item');
+                    if (remainingItems.length === 0) {
+                        const hujjatlarList = document.getElementById('hujjatlar-list');
+                        hujjatlarList.innerHTML = `
+                            <div class="alert alert-info" id="hujjatlar-list">
+                                <i class="bi bi-info-circle me-2"></i>Hujjatlar topilmadi
+                            </div>
+                        `;
+                        console.log('No documents left, showing "Hujjatlar topilmadi" message');
+                    }
+
+                    // Update the main list view in xaridorlar_list.html
+                    updateMainList(xaridorId, remainingItems.length > 0);
+                } else {
+                    showAlert('error', data.message || 'Hujjatni o\'chirishda xatolik yuz berdi!');
+                    console.error('Delete failed:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                showAlert('error', 'Server bilan aloqa xatolik yuz berdi: ' + error.message);
+            })
+            .finally(() => {
+                this.disabled = false;
+                this.innerHTML = '<i class="bi bi-trash me-1"></i> O\'chirish';
+                console.log('Button state reset');
+            });
+        });
+    });
+}
+
+// Asosiy ro'yxatdagi hujjatlar holatini yangilash
+function updateMainList(xaridorId, hasHujjats) {
+    console.log(`Updating main list for Xaridor ID: ${xaridorId}, Has documents: ${hasHujjats}`);
+    const cell = document.querySelector(`td[data-xaridor-id="${xaridorId}"]`);
+    if (cell) {
+        cell.innerHTML = `
+            <div class="d-flex flex-column">
+                ${hasHujjats ? `
+                    <button class="btn btn-sm btn-info detail-open-btn mb-1" data-url="/xaridorlar/passport/${xaridorId}/" data-title="Hujjatlar">
+                        <i class="bi bi-eye"></i> Ko'rish
+                    </button>
+                ` : `
+                    <span class="text-muted mb-1">Hujjat yo'q</span>
+                `}
+                <button class="btn btn-sm btn-primary toggle-hujjat-btn" data-xaridor-id="${xaridorId}">
+                    <i class="bi bi-file-earmark-plus"></i> Qo'shish
+                </button>
+            </div>
+        `;
+        console.log('Main list updated successfully');
+
+        // Rebind toggle button event
+        const toggleBtn = cell.querySelector('.toggle-hujjat-btn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function() {
+                const section = document.getElementById(`hujjatlar-section-${xaridorId}`);
+                if (section) {
+                    section.classList.toggle('active');
+                    if (section.classList.contains('active')) {
+                        setTimeout(() => {
+                            section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 100);
+                    }
+                }
+            });
+            console.log('Toggle button event rebound');
+        }
+    } else {
+        console.warn(`Cell for Xaridor ID ${xaridorId} not found in main list`);
+    }
+}
+
+// Dastlabki hodisalarni bog'lash
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded, setting up delete buttons');
+    setupDeleteButtons();
+});
+</script>

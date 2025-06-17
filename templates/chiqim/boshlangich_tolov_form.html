@@ -1,0 +1,226 @@
+<form id="boshlangichTolovForm" method="post" class="p-3 ajax-form">
+    {% csrf_token %}
+    <div id="errorContainer" class="alert alert-danger d-none" role="alert"></div>
+    <div class="mb-3">
+        <label for="tolov_turi" class="form-label">Payment Type</label>
+        <select name="tolov_turi" id="tolov_turi" class="form-select" required>
+            <option value="" disabled selected>Select payment type</option>
+            {% for value, label in form.tolov_turi.field.choices %}
+                <option value="{{ value }}" {% if form.tolov_turi.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <div id="tolovTuriError" class="invalid-feedback">
+            {% for error in form.tolov_turi.errors %}
+                {{ error }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="summa" class="form-label">Amount (Initial Balance: ${{ chiqim.get_boshlangich_qoldiq|floatformat:2 }})</label>
+        <input type="number" step="0.01" name="summa" id="summa" class="form-control" required min="0.01" value="{{ form.summa.value|default_if_none:'' }}">
+        <div id="summaError" class="invalid-feedback">
+            {% for error in form.summa.errors %}
+                {{ error }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="sana" class="form-label">Payment Date</label>
+        <input type="date" name="sana" id="sana" class="form-control" required value="{% if form.sana.value %}{{ form.sana.value|date:'Y-m-d' }}{% else %}{{ today|date:'Y-m-d' }}{% endif %}">
+        <div id="sanaError" class="invalid-feedback">
+            {% for error in form.sana.errors %}
+                {{ error }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="firma_nomi" class="form-label">Company Name</label>
+        <input type="text" name="firma_nomi" id="firma_nomi" class="form-control" value="{{ form.firma_nomi.value|default_if_none:'' }}">
+        <div id="firmaNomiError" class="invalid-feedback">
+            {% for error in form.firma_nomi.errors %}
+                {{ error }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="bank" class="form-label">Bank</label>
+        <input type="text" name="bank" id="bank" class="form-control" value="{{ form.bank.value|default_if_none:'' }}">
+        <div id="bankError" class="invalid-feedback">
+            {% for error in form.bank.errors %}
+                {{ error }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="izoh" class="form-label">Notes</label>
+        <textarea name="izoh" id="izoh" class="form-control">{{ form.izoh.value|default_if_none:'' }}</textarea>
+        <div id="izohError" class="invalid-feedback">
+            {% for error in form.izoh.errors %}
+                {{ error }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    <input type="hidden" name="chiqim" value="{{ chiqim.id }}" />
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" onclick="closeFormSidebar()">Cancel</button>
+    </div>
+</form>
+
+<style>
+    :root {
+        --primary: #007bff;
+        --danger: #dc3545;
+        --secondary: #6c757d;
+        --white: #ffffff;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --radius-sm: 0.25rem;
+        --radius-md: 0.5rem;
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --transition: all 0.3s ease;
+    }
+    .form-label {
+        font-weight: 500;
+        color: var(--gray);
+    }
+    .form-control, .form-select {
+        border-radius: var(--radius-sm);
+        transition: border-color 0.3s ease;
+        border: 1px solid #ced4da;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    }
+    .is-invalid {
+        border-color: var(--danger) !important;
+    }
+    .invalid-feedback {
+        display: none;
+        color: var(--danger);
+        font-size: 0.875rem;
+    }
+    .is-invalid + .invalid-feedback {
+        display: block;
+    }
+    .alert-danger {
+        font-weight: bold;
+        border-radius: var(--radius-sm);
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    .btn-primary {
+        background-color: var(--primary);
+        color: var(--white);
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .btn-secondary {
+        background-color: var(--secondary);
+        color: var(--white);
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1rem;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const summaInput = document.getElementById('summa');
+    const summaError = document.getElementById('summaError');
+    const sanaInput = document.getElementById('sana');
+    const sanaError = document.getElementById('sanaError');
+    const errorContainer = document.getElementById('errorContainer');
+    const boshlangichQoldiq = {{ chiqim.get_boshlangich_qoldiq|floatformat:2|safe }};
+
+    // Real-time amount validation
+    summaInput.addEventListener('input', function(e) {
+        const value = parseFloat(e.target.value) || 0;
+        if (value > boshlangichQoldiq) {
+            e.target.setCustomValidity("The payment amount cannot exceed the remaining initial balance!");
+            summaError.innerHTML = `The payment amount cannot exceed the remaining initial balance ($${boshlangichQoldiq})!`;
+            summaInput.classList.add('is-invalid');
+        } else if (value <= 0) {
+            e.target.setCustomValidity("The amount must be greater than 0!");
+            summaError.innerHTML = "The amount must be greater than 0!";
+            summaInput.classList.add('is-invalid');
+        } else {
+            e.target.setCustomValidity('');
+            summaError.innerHTML = '';
+            summaInput.classList.remove('is-invalid');
+        }
+    });
+
+    // Real-time date validation
+    sanaInput.addEventListener('input', function(e) {
+        const value = e.target.value;
+        if (!value) {
+            e.target.setCustomValidity("Payment date is required!");
+            sanaError.innerHTML = "Payment date is required!";
+            sanaInput.classList.add('is-invalid');
+        } else {
+            e.target.setCustomValidity('');
+            sanaError.innerHTML = '';
+            sanaInput.classList.remove('is-invalid');
+        }
+    });
+
+    // Form submission handling
+    const form = document.getElementById('boshlangichTolovForm');
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const errorContainer = document.getElementById('errorContainer');
+        errorContainer.classList.add('d-none');
+        errorContainer.innerHTML = '';
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                showAlert('success', data.message || 'Initial payment successfully added!');
+                closeFormSidebar();
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                errorContainer.classList.remove('d-none');
+                errorContainer.innerHTML = data.errors.__all__ ? data.errors.__all__.join('<br>') : 'An error occurred';
+                for (const [field, errors] of Object.entries(data.errors)) {
+                    const fieldError = document.getElementById(`${field}Error`);
+                    const input = document.getElementById(field);
+                    if (fieldError && input) {
+                        input.classList.add('is-invalid');
+                        fieldError.innerHTML = errors.join('<br>');
+                    }
+                }
+            }
+        } catch (error) {
+            errorContainer.classList.remove('d-none');
+            errorContainer.innerHTML = 'Error connecting to the server';
+            console.error('Form submission error:', error);
+        }
+    });
+});
+</script>

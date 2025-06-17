@@ -1,0 +1,828 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Truck Trade{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    .dashboard-title {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.75rem;
+    }
+    .btn-add-truck {
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .btn-add-truck:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .stats-filter-row {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+    .stat-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        height: 100%;
+        transition: transform 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+    .stat-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .stat-icon {
+        font-size: 1.5rem;
+        color: #4e73df;
+        background-color: #e9f0fd;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .bi-cash-stack {
+        color: #1cc88a;
+        background-color: #e6f7f0;
+    }
+    .stat-title {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+    .stat-value {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0;
+        font-size: 1.25rem;
+    }
+    .filter-form {
+        height: 100%;
+    }
+    .filter-input {
+        border-radius: 8px 0 0 8px !important;
+        border-right: none;
+        height: 50px;
+    }
+    .filter-btn {
+        border-radius: 0 8px 8px 0 !important;
+        height: 50px;
+        width: 50px;
+    }
+
+    /* Card Layout for Trucks */
+    .trucks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    .truck-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .truck-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    .truck-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .truck-image-placeholder {
+        width: 100%;
+        height: 200px;
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .truck-image-placeholder i {
+        font-size: 3rem;
+        color: #adb5bd;
+    }
+    .truck-info {
+        padding: 1rem;
+    }
+    .truck-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    .truck-price {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #007bff;
+        margin-bottom: 0.5rem;
+    }
+    .truck-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .truck-detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .truck-detail-item i {
+        color: #4e73df;
+    }
+    .truck-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0 1rem 1rem 1rem;
+    }
+    .action-btn {
+        flex: 1;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+    .action-btn i {
+        margin-right: 0.3rem;
+    }
+    .action-btn:hover {
+        transform: translateY(-1px);
+    }
+    .btn-outline-primary {
+        border-color: #0d6efd;
+        color: #0d6efd;
+    }
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+    .btn-outline-info {
+        border-color: #17a2b8;
+        color: #17a2b8;
+    }
+    .btn-outline-info:hover {
+        background-color: #17a2b8;
+        color: white;
+    }
+    .btn-outline-danger {
+        border-color: #dc3545;
+        color: #dc3545;
+    }
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    /* Document Modal Styles */
+    .hujjat-list, .xarajat-list {
+        margin-top: 1rem;
+        max-height: 250px;
+        overflow-y: auto;
+    }
+    .hujjat-item, .xarajat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .hujjat-item a {
+        color: #0d6efd;
+        text-decoration: none;
+        max-width: 70%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .hujjat-item a:hover {
+        text-decoration: underline;
+    }
+    .delete-hujjat-btn {
+        background: none;
+        border: none;
+        color: #dc3545;
+        font-size: 1rem;
+    }
+    .hujjat-upload-group {
+        margin-bottom: 1rem;
+        position: relative;
+    }
+    .hujjat-upload-group label {
+        font-size: 0.95rem;
+        color: #2c3e50;
+    }
+    .modal-content {
+        border-radius: 8px;
+    }
+    .modal-header {
+        background: #f8f9fa;
+    }
+    .modal-body {
+        padding: 1.5rem;
+    }
+    .modal-footer {
+        gap: 0.5rem;
+    }
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 0.75rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+        .stats-filter-row .row {
+            flex-direction: column;
+        }
+        .stat-card {
+            margin-bottom: 1rem;
+        }
+        .filter-form {
+            margin-top: 1rem;
+        }
+        .dashboard-container {
+            padding: 1rem;
+        }
+    }
+    @media (max-width: 768px) {
+        .dashboard-title {
+            font-size: 1.5rem;
+        }
+        .stat-value {
+            font-size: 1.1rem;
+        }
+        .truck-card {
+            margin-bottom: 1rem;
+        }
+        .truck-image, .truck-image-placeholder {
+            height: 150px;
+        }
+        .truck-title {
+            font-size: 1.1rem;
+        }
+        .truck-price {
+            font-size: 1rem;
+        }
+        .truck-detail-item {
+            font-size: 0.85rem;
+        }
+        .action-btn {
+            padding: 0.4rem;
+            font-size: 0.8rem;
+        }
+        .action-btn i {
+            margin-right: 0;
+        }
+        .action-btn span {
+            display: none;
+        }
+    }
+    @media (max-width: 576px) {
+        .truck-actions {
+            flex-direction: column;
+        }
+        .action-btn {
+            width: 100%;
+        }
+        .hujjat-item a, .xarajat-item span {
+            max-width: 60%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="dashboard-title">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+            </h1>
+            <button onclick="openAddTruckForm()" class="btn btn-success btn-add-truck">
+                <i class="bi bi-plus-lg me-1"></i>Add Truck
+            </button>
+        </div>
+
+        <!-- Stats and Search -->
+        <div class="stats-filter-row">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <i class="bi bi-truck stat-icon"></i>
+                            <div>
+                                <h6 class="stat-title">Total Trucks</h6>
+                                <h3 class="stat-value">{{ trucks|length }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <i class="bi bi-cash-stack stat-icon"></i>
+                            <div>
+                                <h6 class="stat-title">Total Value</h6>
+                                <h3 class="stat-value">${{ total_price|floatformat:"2" }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <form method="GET" action="{% url 'dashboard' %}" class="filter-form">
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control filter-input" placeholder="Search (PO Number, Make, Model...)" value="{{ request.GET.q }}">
+                            <button class="btn btn-primary filter-btn" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trucks Grid -->
+    <div class="trucks-grid">
+        {% for truck in trucks %}
+        <div class="truck-card" data-truck-id="{{ truck.id }}">
+            <!-- Truck Image -->
+            {% if truck.image %}
+            <img src="{{ truck.image.url }}" alt="{{ truck.make }} {{ truck.model }}" class="truck-image">
+            {% else %}
+            <div class="truck-image-placeholder">
+                <i class="bi bi-image"></i>
+            </div>
+            {% endif %}
+
+            <!-- Truck Info -->
+            <div class="truck-info">
+                <h5 class="truck-title">{{ truck.make }} {{ truck.model }} ({{ truck.year }})</h5>
+                <div class="truck-price">${{ truck.price|floatformat:"2" }}</div>
+                <div class="truck-details">
+                    <div class="truck-detail-item">
+                        <i class="bi bi-tag"></i>
+                        <span>{{ truck.po_id }}</span>
+                    </div>
+                    <div class="truck-detail-item">
+                        <i class="bi bi-fuel-pump"></i>
+                        <span>{{ truck.horsepower }} HP</span>
+                    </div>
+                    <div class="truck-detail-item">
+                        <i class="bi bi-files"></i>
+                        <span class="hujjat-count">{{ truck.hujjatlar.count }} documents</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Truck Actions -->
+            <div class="truck-actions">
+                <button onclick="showTruckDetail({{ truck.id }}, '{{ truck.po_id|escapejs }}')"
+                        class="btn btn-outline-info btn-sm action-btn">
+                    <i class="bi bi-eye"></i> <span>View</span>
+                </button>
+                <button onclick="openEditTruckForm({{ truck.id }})"
+                        class="btn btn-outline-primary btn-sm action-btn">
+                    <i class="bi bi-pencil"></i> <span>Edit</span>
+                </button>
+                <button onclick="showHujjatModal({{ truck.id }}, '{{ truck.po_id|escapejs }}')"
+                        class="btn btn-outline-primary btn-sm action-btn hujjat-btn">
+                    <i class="bi bi-file-earmark-arrow-up"></i> <span>Documents</span>
+                </button>
+                <button onclick="showDeleteConfirmation({{ truck.id }})"
+                        class="btn btn-outline-danger btn-sm action-btn">
+                    <i class="bi bi-trash"></i> <span>Delete</span>
+                </button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-4 text-muted">
+            <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
+            {% if request.GET.q %}"{{ request.GET.q }}" search yielded no results{% else %}No trucks available{% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if trucks.paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if trucks.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ trucks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in trucks.paginator.page_range %}
+            <li class="page-item {% if trucks.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if trucks.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ trucks.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Document Modal -->
+<div class="modal fade" id="hujjatModal" tabindex="-1" aria-labelledby="hujjatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="hujjatModalLabel">Documents</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="errorMessage" class="error-message"></div>
+                <form id="hujjatForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="truck_id" id="truckId">
+                    <div id="hujjatUploadContainer">
+                        <div class="hujjat-upload-group mb-3">
+                            <label for="hujjat-input-0" class="form-label">Select Document (JPG, PNG, PDF, DOC, DOCX, max 10MB):</label>
+                            <input type="file" name="hujjat" id="hujjat-input-0" class="form-control hujjat-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+                <div id="hujjatList" class="hujjat-list mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Truck Detail Modal -->
+<div class="modal fade" id="truckDetailModal" tabindex="-1" aria-labelledby="truckDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="truckDetailModalLabel">Truck Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="truckDetailContent">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Delete Truck</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this truck? This action cannot be undone!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let hujjatFileIndex = 1;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Document form submission
+    const hujjatForm = document.getElementById('hujjatForm');
+    hujjatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const truckId = document.getElementById('truckId').value;
+        const errorMessage = document.getElementById('errorMessage');
+
+        errorMessage.style.display = 'none';
+        errorMessage.textContent = '';
+
+        try {
+            const response = await fetch('/truck/upload-hujjat/', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                window.showAlert('success', data.message);
+                const hujjatList = document.getElementById('hujjatList');
+                hujjatList.innerHTML = data.hujjatlar.length ? data.hujjatlar.map(h => `
+                    <div class="hujjat-item">
+                        <a href="${h.hujjat_url}" target="_blank">${h.original_file_name}</a>
+                        <button onclick="deleteHujjat(${h.id}, ${truckId})" class="delete-hujjat-btn">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                `).join('') : '<p class="text-muted">No documents available.</p>';
+
+                const truckCard = document.querySelector(`.truck-card[data-truck-id="${truckId}"]`);
+                if (truckCard) {
+                    const countCell = truckCard.querySelector('.hujjat-count');
+                    countCell.textContent = `${data.hujjatlar.length} documents`;
+                }
+
+                hujjatForm.reset();
+                document.getElementById('hujjatUploadContainer').innerHTML = `
+                    <div class="hujjat-upload-group mb-3">
+                        <label for="hujjat-input-0" class="form-label">Select Document (JPG, PNG, PDF, DOC, DOCX, max 10MB):</label>
+                        <input type="file" name="hujjat" id="hujjat-input-0" class="form-control hujjat-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                    </div>
+                `;
+                hujjatFileIndex = 1;
+                setupHujjatInputListeners();
+            } else {
+                errorMessage.textContent = data.message || 'Error uploading document.';
+                errorMessage.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            errorMessage.textContent = 'An error occurred while communicating with the server.';
+            errorMessage.style.display = 'block';
+        }
+    });
+
+    // Document modal cleanup and initial setup
+    const hujjatModal = document.getElementById('hujjatModal');
+    hujjatModal.addEventListener('hidden.bs.modal', () => {
+        const form = document.getElementById('hujjatForm');
+        const hujjatList = document.getElementById('hujjatList');
+        const errorMessage = document.getElementById('errorMessage');
+        const container = document.getElementById('hujjatUploadContainer');
+        form.reset();
+        hujjatList.innerHTML = '';
+        errorMessage.style.display = 'none';
+        container.innerHTML = `
+            <div class="hujjat-upload-group mb-3">
+                <label for="hujjat-input-0" class="form-label">Select Document (JPG, PNG, PDF, DOC, DOCX, max 10MB):</label>
+                <input type="file" name="hujjat" id="hujjat-input-0" class="form-control hujjat-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+            </div>
+        `;
+        hujjatFileIndex = 1;
+        setupHujjatInputListeners();
+    });
+
+    // Initial setup for document input listeners
+    setupHujjatInputListeners();
+});
+
+function setupHujjatInputListeners() {
+    const inputs = document.querySelectorAll('.hujjat-input');
+    inputs.forEach(input => {
+        input.removeEventListener('change', handleHujjatInputChange);
+        input.addEventListener('change', handleHujjatInputChange);
+    });
+}
+
+function handleHujjatInputChange(event) {
+    const input = event.target;
+    if (input.files.length > 0) {
+        addHujjatUploadField();
+    }
+}
+
+function addHujjatUploadField() {
+    const container = document.getElementById('hujjatUploadContainer');
+    const newField = document.createElement('div');
+    newField.className = 'hujjat-upload-group mb-3';
+    newField.innerHTML = `
+        <label for="hujjat-input-${hujjatFileIndex}" class="form-label">Select Document (JPG, PNG, PDF, DOC, DOCX, max 10MB):</label>
+        <input type="file" name="hujjat" id="hujjat-input-${hujjatFileIndex}" class="form-control hujjat-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+    `;
+    container.appendChild(newField);
+    hujjatFileIndex++;
+    setupHujjatInputListeners();
+}
+
+window.openAddTruckForm = function() {
+    window.openFormSidebar("{% url 'add_truck' %}", "Add New Truck");
+};
+
+window.openEditTruckForm = function(truckId) {
+    // Close any open detail modal to prevent overlap
+    const detailModal = bootstrap.Modal.getInstance(document.getElementById('truckDetailModal'));
+    if (detailModal) {
+        detailModal.hide();
+    }
+    const editUrl = "{% url 'edit_truck' 0 %}".replace('0', truckId);
+    window.openFormSidebar(editUrl, "Edit Truck");
+};
+
+function showDeleteConfirmation(truckId) {
+    const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    document.getElementById('deleteConfirmationModal').dataset.truckId = truckId;
+    confirmDeleteBtn.onclick = () => deleteTruck(truckId);
+    modal.show();
+}
+
+async function deleteTruck(truckId) {
+    try {
+        const response = await fetch(`/truck/delete/${truckId}/`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: new FormData()
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            window.showAlert('success', data.message);
+            const truckCard = document.querySelector(`.truck-card[data-truck-id="${truckId}"]`);
+            if (truckCard) {
+                truckCard.remove();
+            }
+            // Update truck count
+            const truckCountElement = document.querySelector('.stat-value');
+            const currentCount = parseInt(truckCountElement.textContent);
+            truckCountElement.textContent = currentCount - 1;
+        } else {
+            window.showAlert('error', data.message || "Error deleting truck");
+        }
+    } catch (error) {
+        console.error('Error deleting truck:', error);
+        window.showAlert('error', "Error deleting truck");
+    } finally {
+        bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal')).hide();
+    }
+}
+
+async function showHujjatModal(truckId, poId) {
+    const modal = new bootstrap.Modal(document.getElementById('hujjatModal'));
+    const title = document.getElementById('hujjatModalLabel');
+    const truckIdInput = document.getElementById('truckId');
+    const hujjatList = document.getElementById('hujjatList');
+    const errorMessage = document.getElementById('errorMessage');
+
+    title.textContent = `Documents: ${poId}`;
+    truckIdInput.value = truckId;
+    hujjatList.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+    errorMessage.style.display = 'none';
+
+    try {
+        const response = await fetch(`/truck/detail/${truckId}/`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+        if (data.success) {
+            hujjatList.innerHTML = data.hujjatlar.length ? data.hujjatlar.map(h => `
+                <div class="hujjat-item">
+                    <a href="${h.hujjat_url}" target="_blank">${h.original_file_name}</a>
+                    <button onclick="deleteHujjat(${h.id}, ${truckId})" class="delete-hujjat-btn">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            `).join('') : '<p class="text-muted">No documents available.</p>';
+        } else {
+            hujjatList.innerHTML = '<p class="text-danger">Error loading documents.</p>';
+        }
+    } catch (error) {
+        console.error('Error loading documents:', error);
+        hujjatList.innerHTML = '<p class="text-danger">Error loading documents.</p>';
+    }
+
+    modal.show();
+}
+
+async function showTruckDetail(truckId, poId) {
+    const modal = new bootstrap.Modal(document.getElementById('truckDetailModal'));
+    const title = document.getElementById('truckDetailModalLabel');
+    const content = document.getElementById('truckDetailContent');
+
+    title.textContent = `Truck Details: ${poId}`;
+    content.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+    try {
+        const response = await fetch(`/truck/detail/${truckId}/`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await response.json();
+        if (data.success) {
+            content.innerHTML = data.html;
+        } else {
+            content.innerHTML = '<p class="text-danger">Error loading truck details.</p>';
+        }
+    } catch (error) {
+        console.error('Error loading truck details:', error);
+        content.innerHTML = '<p class="text-danger">Error loading truck details.</p>';
+    }
+
+    modal.show();
+}
+
+async function deleteHujjat(hujjatId, truckId) {
+    if (!confirm('Are you sure you want to delete this document?')) return;
+    try {
+        const response = await fetch(`/truck/hujjat/delete/${hujjatId}/`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: new FormData()
+        });
+        const data = await response.json();
+        if (data.success) {
+            window.showAlert('success', data.message);
+
+            // Update the document list in the hujjatModal if it's open
+            const hujjatList = document.getElementById('hujjatList');
+            if (hujjatList) {
+                hujjatList.innerHTML = data.hujjatlar.length ? data.hujjatlar.map(h => `
+                    <div class="hujjat-item">
+                        <a href="${h.hujjat_url}" target="_blank">${h.original_file_name}</a>
+                        <button onclick="deleteHujjat(${h.id}, ${truckId})" class="delete-hujjat-btn">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                `).join('') : '<p class="text-muted">No documents available.</p>';
+            }
+
+            // Update the document list in the truckDetailModal if it's open
+            const truckDetailContent = document.getElementById('truckDetailContent');
+            if (truckDetailContent && bootstrap.Modal.getInstance(document.getElementById('truckDetailModal'))) {
+                const hujjatSection = truckDetailContent.querySelector('.hujjat-list');
+                if (hujjatSection) {
+                    hujjatSection.innerHTML = data.hujjatlar.length ? data.hujjatlar.map(h => `
+                        <div class="hujjat-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <a href="${h.hujjat_url}" target="_blank" class="doc-link text-truncate pe-2">
+                                <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                                ${h.original_file_name}
+                            </a>
+                            <button onclick="deleteHujjat(${h.id}, ${truckId})" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    `).join('') : '<p class="text-muted text-center py-2">No documents available.</p>';
+                }
+            }
+
+            // Update the document count on the dashboard
+            const truckCard = document.querySelector(`.truck-card[data-truck-id="${truckId}"]`);
+            if (truckCard) {
+                const countCell = truckCard.querySelector('.hujjat-count');
+                countCell.textContent = `${data.hujjatlar.length} documents`;
+            }
+        } else {
+            window.showAlert('error', data.message || 'Error deleting document');
+        }
+    } catch (error) {
+        console.error('Error deleting document:', error);
+        window.showAlert('error', 'Error deleting document');
+    }
+}
+</script>
+{% endblock %}

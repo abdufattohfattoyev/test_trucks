@@ -1,0 +1,260 @@
+<div class="loan-detail-container">
+  <!-- Header -->
+  <div class="loan-header">
+    <div class="loan-title">
+      <h3>Loan #{{ qarz.id }}</h3>
+      <span class="loan-status-badge {% if qarz.is_paid %}paid{% else %}pending{% endif %}">
+        {{ qarz.is_paid|yesno:"Paid,Pending" }}
+      </span>
+    </div>
+    <button class="close-btn" onclick="closeDetailSidebar()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="loan-content">
+    <!-- Metrics -->
+    <div class="loan-metrics">
+      <div class="metric-card">
+        <div class="metric-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 1V23M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6313 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6313 13.6815 18 14.5717 18 15.5C18 16.4283 17.6313 17.3185 16.9749 17.9749C16.3185 18.6313 15.4283 19 14.5 19H6" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="metric-info"><span class="metric-label">Loan Amount</span><span class="metric-value">${{ qarz.amount|floatformat:2 }}</span></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8V12L15 15" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="metric-info"><span class="metric-label">Issued Date</span><span class="metric-value">{{ qarz.created_date|date:"M d, Y" }}</span></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 7V3M16 7V3M7 11H17M5 21H19C20.1046 21 21 20.1046 21 19V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V19C3 20.1046 3.89543 21 5 21Z" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="metric-info"><span class="metric-label">Due Date</span><span class="metric-value">{{ qarz.payment_due_date|date:"M d, Y"|default:"Not set" }}</span></div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="loan-progress">
+      <div class="progress-header"><h4>Repayment Progress</h4><span class="progress-percentage">{{ qarz.percentage_paid|floatformat:0 }}%</span></div>
+      <div class="progress-bar-container"><div class="progress-bar" style="width: {{ qarz.percentage_paid }}%"></div></div>
+      <div class="progress-details">
+        <div class="progress-item"><span>Paid</span><span class="amount-paid">${{ qarz.get_paid_amount|floatformat:2 }}</span></div>
+        <div class="progress-item"><span>Remaining</span><span class="amount-remaining">${{ qarz.remaining_amount|floatformat:2 }}</span></div>
+      </div>
+    </div>
+
+    <!-- Parties -->
+    <div class="parties-section">
+      <div class="party-card lender">
+        <div class="party-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="party-info"><span class="party-role">Lender</span><span class="party-name">{{ qarz.lender.username|escape }}</span></div>
+      </div>
+      <div class="party-card borrower">
+        <div class="party-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="party-info"><span class="party-role">Borrower</span><span class="party-name">{{ qarz.borrower_name|escape }}</span></div>
+      </div>
+      {% if qarz.truck %}
+      <div class="party-card truck">
+        <div class="party-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M16 3H1V16H16V3Z" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 8H20L23 11V16H16V8Z" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 21C6.88071 21 8 19.8807 8 18.5C8 17.1193 6.88071 16 5.5 16C4.11929 16 3 17.1193 3 18.5C3 19.8807 4.11929 21 5.5 21Z" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 21C19.8807 21 21 19.8807 21 18.5C21 17.1193 19.8807 16 18.5 16C17.1193 16 16 17.1193 16 18.5C16 19.8807 17.1193 21 18.5 21Z" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="party-info"><span class="party-role">Truck</span><span class="party-name">{{ qarz.truck.make|escape }} {{ qarz.truck.model|escape }}</span></div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Payment History -->
+    <div class="payment-history">
+      <div class="section-header">
+        <h4>Payment History</h4>
+        {% if request.user == qarz.lender and not qarz.is_paid %}
+        <a href="{% url 'add_payment' qarz.id %}" class="add-payment-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3.33334V12.6667M3.33333 8H12.6667" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>Add Payment</a>
+        {% endif %}
+      </div>
+      {% if qarz.payments.exists %}
+      <div class="payment-list">
+        {% for payment in qarz.payments.all %}
+        <div class="payment-item">
+          <div class="payment-amount">${{ payment.amount|floatformat:2 }}</div>
+          <div class="payment-date">{{ payment.payment_date|date:"M d, Y" }}</div>
+          {% if payment.description %}
+          <div class="payment-notes"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 10.6667H8.00667M6 6.00001H10M14 8.00001C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8.00001C2 4.6863 4.68629 2.00001 8 2.00001C11.3137 2.00001 14 4.6863 14 8.00001Z" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round"/></svg><span>{{ payment.description|escape }}</span></div>
+          {% endif %}
+          {% if request.user == qarz.lender %}
+          <div class="payment-actions">
+            <a href="{% url 'update_payment' qarz.id payment.id %}" class="action-btn edit-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M11.3333 2.66668C11.5084 2.49158 11.7163 2.35341 11.9451 2.26118C12.1738 2.16894 12.419 2.12433 12.6667 2.12433C12.9143 2.12433 13.1595 2.16894 13.3883 2.26118C13.617 2.35341 13.8249 2.49158 14 2.66668C14.1751 2.84177 14.3133 3.04965 14.4055 3.27841C14.4977 3.50717 14.5424 3.75234 14.5424 4C14.5424 4.24766 14.4977 4.49283 14.4055 4.72159C14.3133 4.95035 14.1751 5.15823 14 5.33334L5.33333 14L2 14.6667L2.66667 11.3333L11.3333 2.66668Z" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a href="{% url 'delete_payment' qarz.id payment.id %}" class="action-btn delete-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4H3.33333M3.33333 4H14M3.33333 4V13.3333C3.33333 13.6869 3.47381 14.0261 3.72386 14.2761C3.97391 14.5262 4.31304 14.6667 4.66667 14.6667H11.3333C11.6869 14.6667 12.0261 14.5262 12.2761 14.2761C12.5262 14.0261 12.6667 13.6869 12.6667 13.3333V4H3.33333ZM5.33333 4V2.66667C5.33333 2.31304 5.47381 1.97391 5.72386 1.72386C5.97391 1.47381 6.31304 1.33333 6.66667 1.33333H9.33333C9.68696 1.33333 10.0261 1.47381 10.2761 1.72386C10.5262 1.97391 10.6667 2.31304 10.6667 2.66667V4" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z" stroke="#E5E7EB" stroke-width="2"/><path d="M24 16V24M24 32H24.02" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/></svg><p>No payments yet</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="loan-actions">
+    <button class="btn-secondary" onclick="closeDetailSidebar()">Close</button>
+    {% if request.user == qarz.lender %}
+    <a href="{% url 'update_qarz' qarz.id %}" class="btn-primary">Edit Loan</a>
+    <a href="{% url 'delete_qarz' qarz.id %}" class="btn-primary btn-danger">Delete Loan</a>
+    {% endif %}
+    <a href="#" class="btn-primary">Export Details</a>
+  </div>
+</div>
+
+<style>
+:root{--primary:#3B82F6;--primary-light:#EFF6FF;--secondary:#10B981;--secondary-light:#ECFDF5;--danger:#EF4444;--danger-light:#FEF2F2;--warning:#F59E0B;--warning-light:#FFFBEB;--info:#6366F1;--info-light:#EEF2FF;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;--gray-400:#9CA3AF;--gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;--gray-800:#1F2937;--gray-900:#111827}
+.loan-detail-container{display:flex;flex-direction:column;height:100%;background:#fff;padding:16px;overflow-y:auto}
+.loan-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.loan-title{display:flex;align-items:center;gap:8px}
+.loan-title h3{font-size:18px;font-weight:600;color:var(--gray-900);margin:0}
+.loan-status-badge{padding:3px 6px;border-radius:12px;font-size:11px;font-weight:500}
+.loan-status-badge.paid{background:var(--secondary-light);color:var(--secondary)}
+.loan-status-badge.pending{background:var(--warning-light);color:var(--warning)}
+.close-btn{background:none;border:none;cursor:pointer;color:var(--gray-500);transition:color .2s}
+.close-btn:hover{color:var(--gray-700)}
+.loan-content{flex:1;display:flex;flex-direction:column;gap:16px}
+.loan-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.metric-card{background:var(--gray-100);border-radius:6px;padding:12px;display:flex;align-items:center;gap:8px}
+.metric-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#fff}
+.metric-info{display:flex;flex-direction:column}
+.metric-label{font-size:11px;color:var(--gray-500);margin-bottom:2px}
+.metric-value{font-size:13px;font-weight:500;color:var(--gray-900)}
+.loan-progress{background:#fff;border:1px solid var(--gray-200);border-radius:8px;padding:12px}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.progress-header h4{font-size:13px;font-weight:600;color:var(--gray-800);margin:0}
+.progress-percentage{font-size:13px;font-weight:600;color:var(--primary)}
+.progress-bar-container{height:6px;background:var(--gray-100);border-radius:3px;margin-bottom:12px;overflow:hidden}
+.progress-bar{height:100%;background:var(--primary);border-radius:3px;transition:width .6s}
+.progress-details{display:flex;justify-content:space-between}
+.progress-item{display:flex;flex-direction:column}
+.progress-item span:first-child{font-size:11px;color:var(--gray-500);margin-bottom:3px}
+.progress-item span:last-child{font-size:13px;font-weight:500;color:var(--gray-900)}
+.amount-paid{color:var(--secondary)!important}
+.amount-remaining{color:var(--danger)!important}
+.parties-section{display:flex;flex-direction:column;gap:6px}
+.party-card{display:flex;align-items:center;padding:10px 12px;background:#fff;border:1px solid var(--gray-200);border-radius:6px;gap:8px}
+.party-card.lender{border-left:3px solid var(--primary)}
+.party-card.borrower{border-left:3px solid var(--secondary)}
+.party-card.truck{border-left:3px solid var(--info)}
+.party-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.party-card.lender .party-icon{background:var(--primary-light)}
+.party-card.borrower .party-icon{background:var(--secondary-light)}
+.party-card.truck .party-icon{background:var(--info-light)}
+.party-info{display:flex;flex-direction:column}
+.party-role{font-size:11px;color:var(--gray-500);margin-bottom:2px}
+.party-name{font-size:13px;font-weight:500;color:var(--gray-900)}
+.payment-history{flex:1;display:flex;flex-direction:column}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-header h4{font-size:13px;font-weight:600;color:var(--gray-800);margin:0}
+.add-payment-btn{display:flex;align-items:center;gap:4px;padding:5px 10px;background:var(--primary);color:#fff;border-radius:5px;font-size:11px;font-weight:500;text-decoration:none;transition:background .2s}
+.add-payment-btn:hover{background:#2563EB}
+.payment-list{display:flex;flex-direction:column;gap:6px}
+.payment-item{display:flex;align-items:center;padding:10px 12px;background:#fff;border:1px solid var(--gray-200);border-radius:6px;gap:12px;position:relative}
+.payment-amount{font-size:13px;font-weight:600;color:var(--gray-900);min-width:70px}
+.payment-date{font-size:11px;color:var(--gray-500);flex:1}
+.payment-notes{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--gray-500);flex:2}
+.payment-actions{display:flex;gap:6px}
+.action-btn{background:none;border:none;cursor:pointer;padding:3px;border-radius:3px;transition:background .2s}
+.action-btn:hover{background:var(--gray-100)}
+.edit-btn svg{stroke:var(--primary)}
+.delete-btn svg{stroke:var(--danger)}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 0;background:#fff;border:1px dashed var(--gray-200);border-radius:6px}
+.empty-state p{font-size:13px;color:var(--gray-500);margin-top:12px}
+.loan-actions{display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--gray-200)}
+.btn-primary,.btn-secondary{padding:8px 12px;border-radius:5px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;text-align:center}
+.btn-primary{background:var(--primary);color:#fff;border:none}
+.btn-primary:hover{background:#2563EB}
+.btn-danger{background:var(--danger)}
+.btn-danger:hover{background:#DC2626}
+.btn-secondary{background:#fff;color:var(--gray-700);border:1px solid var(--gray-300)}
+.btn-secondary:hover{background:var(--gray-100)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.loan-detail-container>*{animation:fadeIn .3s ease-out forwards}
+.loan-header{animation-delay:.1s}
+.loan-metrics{animation-delay:.15s}
+.loan-progress{animation-delay:.2s}
+.parties-section{animation-delay:.25s}
+.payment-history{animation-delay:.3s}
+.loan-actions{animation-delay:.35s}
+@media (max-width:768px){.loan-metrics{grid-template-columns:1fr}.loan-detail-container{padding:12px}.payment-item{flex-wrap:wrap}.payment-actions{position:absolute;top:6px;padding-right:6px}}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const progressBar = document.querySelector('.progress-bar');
+  const width = progressBar.style.width || '0';
+  progressBar.style.width = '0';
+  setTimeout(() => progressBar.style.width = width, 100);
+  console.log('qarz_detail.html script loaded');
+});
+
+function closeDetail() {
+  console.log('Closing sidebar');
+  document.querySelector('#sidebar .loan-detail').classList.remove('active');
+  document.querySelector('#overlay').classList.remove('active');
+}
+
+function deletePayment(qrId, pId) {
+  console.log(`Deleting payment: qrId=${qrId}, pId=${pId}`);
+  if (!confirm('Bu to‘lovni o‘chirishni xohlaysizmi?')) return console.log('Deletion cancelled');
+
+  const url = `/qarz/delete_payment/${qrId}/${pId}/`;
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+  if (!csrfToken) {
+    console.error('CSRF token not found');
+    alert('CSRF token topilmadi.');
+    return;
+  }
+
+  fetch(url, {
+    method: 'DELETE',
+    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-Token': csrfToken }
+  })
+  .then(res => {
+    console.log('Response status:', res.status);
+    if (!res.ok) throw new Error(`HTTP error: res.status}`);
+    return res.json();
+  })
+  .then(data => {
+    console.log('Response:', data);
+    let msgContainer = document.querySelector('#messagesContainer') || document.createElement('div');
+    if (!msgContainer.id) {
+      msgContainer.id = 'messagesContainer';
+      document.body.appendChild(msgContainer);
+    }
+
+    if (data.success) {
+      document.querySelector('.loan-detail-container').innerHTML = data.detail_html;
+      const card = document.querySelector(`.col-12.col-md-6.col-lg-4[data-qty="${data.q}"]`);
+      if (card) {
+        card.querySelector('.text-danger, .text-success').textContent = `$${data.q_amount.toFixed(2)}`;
+        card.querySelector('.text-danger, .text-success').className = `text-${data.q_amount > 0 ? 'danger' : 'success'}`;
+        card.querySelector('small').textContent = `Paid: $${data.paid_amount.toFixed(2)}`;
+        card.querySelector('small:last-child').textContent = `${Math.round(data.percentage_paid)}%`;
+        card.querySelector('.progress-bar').style.width = `${data.percentage_paid}%`;
+        card.querySelector('.badge').textContent = data.is_paid ? 'Paid' : 'Pending';
+        card.querySelector('.badge').className = `badge bg-${data.is_paid ? 'success' : 'warning'}`;
+        card.dataset.status = data.is_paid ? 'paid' : 'pending';
+        card.dataset.amount = data.q_amount.toFixed(2);
+      } else {
+        console.warn('Loan card not found:', data.q_amount);
+      }
+      msgContainer.innerHTML = `<div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-2"></i> ${data.message}<button type="btn-close" data-bs-dismiss="alert"></button></div>`;
+    } else {
+      console.error('Deletion failed:', data.message);
+      msgContainer.innerHTML = `<div class="alert alert-danger alert-dismiss fade show"><i class="bi bi-exclamation-triangle me-2"></i> ${data.message || 'To‘lovni o‘chirishda xatolik.'}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
+    }
+  })
+  .catch(err => {
+    console.error('Error:', err);
+    let msgContainer = document.querySelector('#messagesContainer') || document.createElement('div');
+    if (!msgContainer.id) {
+      msgContainer.id = 'messagesContainer';
+      document.body.appendChild(msgContainer);
+    }
+    msgContainer.innerHTML = `<div class="alert alert-danger alert-dismiss fade show"><i class="bi bi-exclamation-triangle me-2"></i> Xatolik: ${err.message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
+  });
+}
+</script>

@@ -1,0 +1,17 @@
+<div class="p-4">
+    <form method="POST" action="{% url 'xaridor_delete' xaridor.id %}">
+        {% csrf_token %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            "{{ xaridor.ism_familiya }}" xaridorini o'chirishni tasdiqlaysizmi? Ushbu amal qaytarib bo'lmaydi.
+        </div>
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+                <i class="bi bi-x-lg me-2"></i>Bekor qilish
+            </button>
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash me-2"></i>O'chirish
+            </button>
+        </div>
+    </form>
+</div>

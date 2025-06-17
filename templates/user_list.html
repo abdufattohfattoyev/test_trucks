@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Foydalanuvchilar - Truck Savdo{% endblock %}
+
+{% block content %}
+<div class="user-list-container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="dashboard-title">
+            <i class="bi bi-people me-2"></i>Foydalanuvchilar
+        </h1>
+        {% if user.is_superuser %}
+        <button class="btn btn-success btn-add-user form-open-btn" data-url="{% url 'add_user' %}" data-title="Yangi Foydalanuvchi Qo'shish">
+            <i class="bi bi-plus-lg me-1"></i>Foydalanuvchi Qo'shish
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Users Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light sticky-header">
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th class="text-end" style="width: 180px;">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr class="user-row">
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email|default:"Email kiritilmagan" }}</td>
+                            <td>
+                                {% if user.is_superuser %}
+                                Admin
+                                {% else %}
+                                Foydalanuvchi
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button class="btn btn-outline-primary btn-sm action-btn form-open-btn" data-url="{% url 'edit_user' user.id %}" data-title="Foydalanuvchini Tahrirlash">
+                                        <i class="bi bi-pencil"></i> Tahrirlash
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm action-btn delete-btn" data-url="{% url 'delete_user' user.id %}" data-name="{{ user.username }}">
+                                        <i class="bi bi-trash"></i> O'chirish
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">
+                                <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
+                                Hozircha foydalanuvchilar mavjud emas
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .user-list-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-title {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.75rem;
+    }
+
+    .btn-add-user {
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    .table th {
+        font-weight: 600;
+        color: #4a4a4a;
+        padding: 1rem;
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        background-color: white;
+    }
+
+    .action-btn {
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .action-btn i {
+        margin-right: 0.3rem;
+    }
+
+    @media (max-width: 768px) {
+        .user-list-container {
+            padding: 1rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.5rem;
+        }
+
+        .table th, .table td {
+            padding: 0.75rem;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<script>
+    function openAddUserForm() {
+        openFormSidebar("{% url 'add_user' %}", "Yangi Foydalanuvchi Qo'shish");
+    }
+
+    function openEditUserForm(userId) {
+        openFormSidebar(`/users/edit/${userId}/`, "Foydalanuvchini Tahrirlash");
+    }
+
+    function openDeleteUserForm(userId) {
+        const username = document.querySelector(`button[data-url="/users/delete/${userId}/"]`).dataset.name;
+        confirmDelete(`/users/delete/${userId}/`, username);
+    }
+</script>
+{% endblock %}

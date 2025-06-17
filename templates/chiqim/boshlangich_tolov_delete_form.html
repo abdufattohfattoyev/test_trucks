@@ -1,0 +1,9 @@
+{% load i18n %}
+<form id="boshlangichTolovDeleteForm" method="POST" class="p-4">
+    {% csrf_token %}
+    <p>{% trans "Are you sure you want to delete this initial payment?" %}</p>
+    <p><strong>{% trans "Amount" %}</strong>: ${{ tolov.summa|floatformat:2 }}</p>
+    <p><strong>{% trans "Date" %}</strong>: {{ tolov.sana|date:"Y-m-d" }}</p>
+    <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+    <button type="button" class="btn btn-secondary" onclick="closeFormSidebar()">{% trans "Cancel" %}</button>
+</form>

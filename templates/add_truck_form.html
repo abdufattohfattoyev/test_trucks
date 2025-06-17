@@ -1,0 +1,322 @@
+{% load static %}
+<div class="add-truck-form compact-form p-3">
+    <!-- Form Header -->
+    <form method="post" enctype="multipart/form-data" id="truckAddForm" action="{% url 'add_truck' %}">
+        {% csrf_token %}
+
+        <!-- Error messages container -->
+        <div id="formErrors" class="alert alert-danger d-none mb-3" role="alert" style="color: #dc3545; font-weight: bold;"></div>
+
+        <!-- 1. Basic Information Section -->
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3 text-secondary"><i class="bi bi-list-check me-1"></i>Basic Information</h6>
+                <div class="row g-3">
+                    <!-- User Field (Visible only for Superuser) -->
+                    {% if request.user.is_superuser %}
+                    <div class="col-12">
+                        <div class="form-floating mb-2">
+                            {{ form.user }}
+                            <label for="{{ form.user.id_for_label }}">User</label>
+                            <div class="invalid-feedback" id="user-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    {% else %}
+                        {{ form.user }}
+                    {% endif %}
+
+                    <!-- PO Number Field -->
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating mb-2 position-relative">
+                            {{ form.po_id }}
+                            <label for="{{ form.po_id.id_for_label }}" class="floating-label">PO Number</label>
+                            <small class="form-text text-muted d-block mt-1">{{ form.po_id.help_text }}</small>
+                            <div class="invalid-feedback" id="po_id-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating mb-2">
+                            {{ form.make }}
+                            <label for="{{ form.make.id_for_label }}">Make</label>
+                            <div class="invalid-feedback" id="make-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating mb-2">
+                            {{ form.model }}
+                            <label for="{{ form.model.id_for_label }}">Model</label>
+                            <div class="invalid-feedback" id="model-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating mb-2">
+                            {{ form.year }}
+                            <label for="{{ form.year.id_for_label }}">Year</label>
+                            <small class="form-text text-muted">{{ form.year.help_text }}</small>
+                            <div class="invalid-feedback" id="year-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating mb-2">
+                            {{ form.horsepower }}
+                            <label for="{{ form.horsepower.id_for_label }}">Horsepower (HP)</label>
+                            <small class="form-text text-muted">{{ form.horsepower.help_text }}</small>
+                            <div class="invalid-feedback" id="horsepower-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating mb-2">
+                            {{ form.seriya }}
+                            <label for="{{ form.seriya.id_for_label }}">Serial Number</label>
+                            <small class="form-text text-muted">{{ form.seriya.help_text }}</small>
+                            <div class="invalid-feedback" id="seriya-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Price & Location Section -->
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3 text-secondary"><i class="bi bi-cash-coin me-1"></i>Price and Location</h6>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating mb-2">
+                            {{ form.price }}
+                            <label for="{{ form.price.id_for_label }}">Price ($)</label>
+                            <small class="form-text text-muted">{{ form.price.help_text }}</small>
+                            <div class="invalid-feedback" id="price-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-floating mb-2">
+                            {{ form.location }}
+                            <label for="{{ form.location.id_for_label }}">Location</label>
+                            <small class="form-text text-muted">{{ form.location.help_text }}</small>
+                            <div class="invalid-feedback" id="location-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating mb-2">
+                            {{ form.company }}
+                            <label for="{{ form.company.id_for_label }}">Company Name</label>
+                            <small class="form-text text-muted">{{ form.company.help_text }}</small>
+                            <div class="invalid-feedback" id="company-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Additional Information Section -->
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3 text-secondary"><i class="bi bi-info-circle me-1"></i>Additional Information</h6>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="form-floating mb-2">
+                            {{ form.description }}
+                            <label for="{{ form.description.id_for_label }}">Additional Notes</label>
+                            <div class="invalid-feedback" id="description-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mb-2">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">Vehicle Image</label>
+                            {{ form.image }}
+                            <small class="form-text text-muted">{{ form.image.help_text }}</small>
+                            <div class="invalid-feedback" id="image-error" style="color: #dc3545; font-weight: bold;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <button type="button" class="btn btn-secondary" onclick="window.closeFormSidebar()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Truck</button>
+        </div>
+    </form>
+</div>
+
+<style>
+/* Custom styling to fix floating label overlap */
+.form-floating {
+    position: relative;
+}
+
+.form-floating input,
+.form-floating select,
+.form-floating textarea {
+    padding-top: 1.5rem; /* Ensure space for the label */
+    padding-bottom: 0.5rem;
+    height: calc(3.5rem + 2px); /* Match Bootstrap's default input height */
+}
+
+.form-floating label.floating-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    padding: 1rem 0.75rem;
+    pointer-events: none;
+    border: 1px solid transparent;
+    transform-origin: 0 0;
+    transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+    opacity: 0.65;
+    color: #6c757d;
+}
+
+.form-floating input:focus ~ label.floating-label,
+.form-floating input:not(:placeholder-shown) ~ label.floating-label,
+.form-floating select:focus ~ label.floating-label,
+.form-floating select:not([value=""]) ~ label.floating-label,
+.form-floating textarea:focus ~ label.floating-label,
+.form-floating textarea:not(:placeholder-shown) ~ label.floating-label {
+    opacity: 0.65;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+/* Ensure placeholder doesn't overlap with label */
+.form-floating input::placeholder,
+.form-floating textarea::placeholder {
+    color: transparent; /* Hide placeholder to avoid overlap */
+}
+
+/* Adjust for readonly fields */
+.form-floating input[readonly] ~ label.floating-label {
+    opacity: 0.65;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+/* Style for invalid feedback */
+.invalid-feedback {
+    display: none;
+    color: #dc3545; /* Red color for errors */
+    font-weight: bold; /* Bold text for emphasis */
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback,
+.form-control.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* Ensure small help text doesn't overlap */
+.form-text {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    color: #6c757d;
+}
+
+/* Style for general error container */
+#formErrors {
+    color: #dc3545; /* Red color */
+    font-weight: bold; /* Bold text */
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+/* Adjust form layout for better spacing */
+.compact-form .card-body {
+    padding: 1rem;
+}
+
+.compact-form h6 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.compact-form .form-control,
+.compact-form .form-select {
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.compact-form .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('truckAddForm');
+    const formErrors = document.getElementById('formErrors');
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        // Clear previous errors
+        formErrors.classList.add('d-none');
+        formErrors.textContent = '';
+        form.querySelectorAll('.is-invalid').forEach(input => input.classList.remove('is-invalid'));
+        form.querySelectorAll('.invalid-feedback').forEach(div => div.textContent = '');
+
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                window.showAlert('success', data.message);
+                window.closeFormSidebar();
+                window.location.href = data.redirect || '/';
+            } else {
+                formErrors.classList.remove('d-none');
+                formErrors.textContent = data.message || "Please correct the errors below.";
+                if (data.errors) {
+                    Object.keys(data.errors).forEach(field => {
+                        const errorDiv = document.getElementById(`${field}-error`);
+                        const input = form.querySelector(`[name="${field}"]`);
+                        if (errorDiv && input) {
+                            errorDiv.textContent = data.errors[field][0].message;
+                            input.classList.add('is-invalid');
+                        }
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            formErrors.classList.remove('d-none');
+            formErrors.textContent = "An error occurred while submitting the form.";
+        }
+    });
+
+    // Clear previous error messages on input
+    form.querySelectorAll('input, select, textarea').forEach(input => {
+        input.addEventListener('input', function() {
+            const errorDiv = document.getElementById(`${this.name}-error`);
+            if (errorDiv) {
+                errorDiv.textContent = '';
+                this.classList.remove('is-invalid');
+            }
+            formErrors.classList.add('d-none');
+            formErrors.textContent = '';
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>

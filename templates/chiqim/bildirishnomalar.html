@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% block title %}Upcoming Payments - Truck Sales{% endblock %}
+{% block content %}
+<div class="notifications-container" role="main" aria-label="Upcoming Payments" id="contentContainer">
+
+    <div class="notifications-header">
+        <div class="header-text">
+            <h1><i class="fas fa-bell"></i> Upcoming Payments</h1>
+            <p>List of upcoming payments</p>
+        </div>
+        <a href="{% url 'chiqim_list' %}" class="back-button" aria-label="Return to Expenses List">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+    <div class="filter-section">
+        <div class="time-filters" role="tablist" aria-label="Time-based filters">
+            <button class="filter {% if current_filter == '0' %}active{% endif %}" data-days="0" role="tab" aria-selected="{% if current_filter == '0' %}true{% else %}false{% endif %}">All</button>
+            <button class="filter {% if current_filter == '30' %}active{% endif %}" data-days="30" role="tab" aria-selected="{% if current_filter == '30' %}true{% else %}false{% endif %}">1 Month</button>
+            <button class="filter {% if current_filter == '7' %}active{% endif %}" data-days="7" role="tab" aria-selected="{% if current_filter == '7' %}true{% else %}false{% endif %}">1 Week</button>
+            <button class="filter {% if current_filter == '1' %}active{% endif %}" data-days="1" role="tab" aria-selected="{% if current_filter == '1' %}true{% else %}false{% endif %}">Today</button>
+        </div>
+        <div class="sort-options">
+            <label for="sortSelect" class="visually-hidden">Sort Method</label>
+            <select id="sortSelect" aria-label="Sort Notifications">
+                <option value="days_left" {% if current_sort == 'days_left' %}selected{% endif %}>By Days Left</option>
+                <option value="customer" {% if current_sort == 'customer' %}selected{% endif %}>By Customer</option>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="notifications-list" role="region" aria-live="polite">
+        {% include 'chiqim/bildirishnoma_list_partial.html' %}
+    </div>
+    {% if page_obj.has_previous or page_obj.has_next %}
+    <nav aria-label="Notification Pages" class="pagination-section">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&days={{ current_filter }}&sort={{ current_sort }}" aria-label="Previous Page">Previous</a>
+            </li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}&days={{ current_filter }}&sort={{ current_sort }}" aria-label="Next Page">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notifications-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .statistics-section { background-color: white; border-radius: 10px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .statistics-section h3 { font-size: 1.2rem; color: var(--primary-color); margin-bottom: 10px; }
+    .stats-box { display: flex; gap: 20px; }
+    .stats-box p { margin: 0; font-size: 0.9rem; }
+    .stats-box p strong { color: var(--primary-color); }
+    .notifications-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+    .header-text h1 { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
+    .header-text h1 i { color: var(--accent-color); }
+    .header-text p { color: #6c757d; margin-top: 5px; font-size: 0.95rem; }
+    .back-button { display: inline-flex; align-items: center; padding: 8px 15px; background-color: #f8f9fa; color: var(--primary-color); text-decoration: none; border-radius: 6px; transition: all 0.2s ease; gap: 8px; font-size: 0.9rem; }
+    .back-button:hover { background-color: #e0e0e0; transform: translateY(-1px); }
+    .filter-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+    .time-filters { display: flex; gap: 10px; }
+    .filter { padding: 8px 15px; background-color: #f8f9fa; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease; border: none; }
+    .filter.active { background-color: var(--accent-color); color: white; }
+    .filter:hover:not(.active) { background-color: #e0e0e0; transform: translateY(-1px); }
+    .sort-options select { padding: 8px; border: 1px solid #e0e0e0; border-radius: 6px; background-color: white; font-size: 0.9rem; transition: all 0.2s ease; }
+    .sort-options select:focus { border-color: var(--accent-color); outline: none; box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.1); }
+    .notifications-list { display: flex; flex-direction: column; gap: 12px; transition: opacity 0.3s ease; }
+    .notifications-list.loading { opacity: 0.5; pointer-events: none; }
+    .notification-card { background-color: white; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.2s ease; }
+    .notification-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .notification-badge { width: 40px; height: 40px; border-radius: 50%; background-color: rgba(26, 188, 156, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-color); font-size: 1.1rem; flex-shrink: 0; }
+    .notification-content { flex: 1; position: relative; }
+    .toggle-details { position: absolute; top: 0; right: 0; background: none; border: none; color: #6c757d; cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease; }
+    .toggle-details:hover { color: var(--accent-color); }
+    .toggle-details[aria-expanded="true"] i { transform: rotate(180deg); }
+    .main-info { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+    .customer-info h3 { font-size: 1.1rem; margin-bottom: 3px; }
+    .truck-info { font-size: 0.85rem; color: #6c757d; }
+    .payment-info { display: flex; gap: 10px; font-size: 0.85rem; align-items: center; }
+    .payment-date { display: flex; align-items: center; gap: 5px; color: #6c757d; }
+    .days-left { display: flex; align-items: center; gap: 5px; font-weight: 500; padding: 4px 8px; border-radius: 6px; }
+    .days-left.warning { background-color: rgba(248, 150, 30, 0.1); color: var(--warning-color); }
+    .days-left.urgent, .days-left.overdue { background-color: rgba(247, 37, 133, 0.1); color: var(--danger-color); }
+    .days-left.normal { background-color: rgba(26, 188, 156, 0.1); color: var(--accent-color); }
+    .payment-amount { display: flex; align-items: center; gap: 5px; font-weight: 500; padding: 4px 8px; border-radius: 6px; background-color: rgba(26, 188, 156, 0.1); color: var(--accent-color); }
+    .payment-amount::before { content: '$'; margin-right: 2px; }
+    .details { margin-top: 10px; padding: 10px; background-color: #f8f9fa; border-radius: 6px; font-size: 0.85rem; transition: max-height 0.3s ease, opacity 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; }
+    .details.active { max-height: 200px; opacity: 1; }
+    .detail-item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .detail-item span:first-child { color: #6c757d; }
+    .detail-item span:last-child.currency::before { content: '$'; margin-right: 2px; }
+    .notification-actions { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .view-button, .mark-button, .email-button, .email-history-button { padding: 8px 15px; border-radius: 6px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s ease; }
+    .view-button { background-color: var(--accent-color); color: white; text-decoration: none; }
+    .view-button:hover { background-color: #16a085; transform: translateY(-1px); }
+    .mark-button, .email-button, .email-history-button { background-color: var(--success-color); color: white; border: none; cursor: pointer; }
+    .mark-button:hover, .email-button:hover, .email-history-button:hover { background-color: #2ba84a; transform: translateY(-1px); }
+    .mark-button:disabled, .email-button:disabled, .email-history-button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .empty-state { background-color: white; border-radius: 10px; padding: 40px 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-top: 20px; }
+    .empty-state i { font-size: 2.5rem; color: #adb5bd; margin-bottom: 15px; }
+    .empty-state h3 { font-size: 1.3rem; margin-bottom: 10px; color: var(--primary-color); }
+    .empty-state p { color: #6c757d; margin-bottom: 20px; }
+    .loading-spinner { text-align: center; padding: 20px; }
+    .pagination-section { margin-top: 20px; display: flex; justify-content: center; }
+    .pagination { display: flex; gap: 5px; }
+    .page-link { padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 6px; color: var(--primary-color); text-decoration: none; transition: all 0.2s ease; }
+    .page-link:hover { background-color: #f8f9fa; transform: translateY(-1px); }
+    .page-item.disabled .page-link { color: #6c757d; cursor: not-allowed; }
+    @media (max-width: 768px) {
+        .notifications-container { padding: 15px; }
+        .notification-card { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .main-info { flex-direction: column; align-items: flex-start; }
+        .payment-info { flex-direction: column; gap: 5px; }
+        .notification-actions { width: 100%; flex-direction: column; gap: 8px; }
+        .view-button, .mark-button, .email-button, .email-history-button { width: 100%; justify-content: center; }
+        .stats-box { flex-direction: column; gap: 10px; }
+    }
+    @media (max-width: 480px) {
+        .header-text h1 { font-size: 1.5rem; }
+        .filter-section { flex-direction: column; align-items: flex-start; }
+        .time-filters { flex-wrap: wrap; width: 100%; }
+        .filter { flex: 1; text-align: center; }
+        .sort-options select { width: 100%; }
+        .payment-info { flex-direction: column; align-items: flex-start; }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const filters = document.querySelectorAll('.filter');
+        const sortSelect = document.getElementById('sortSelect');
+        const notificationsList = document.querySelector('.notifications-list');
+        const csrftoken = getCookie('csrftoken');
+
+        // Load Email Statistics
+
+
+        // Load Email History
+        window.openEmailHistory = async (notificationId, title) => {
+            try {
+                const response = await fetch(`/chiqim/bildirishnoma/email-history/${notificationId}/`, {
+                    method: 'GET',
+                    headers: {'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrftoken}
+                });
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                if (data.error) {
+                    window.showAlert('error', data.error);
+                    return;
+                }
+                detailContent.innerHTML = data.html;
+                detailSidebarTitle.textContent = title;
+                detailSidebar.classList.add('active');
+                overlay.classList.add('active');
+                document.title = `${title} - Truck Sales`;
+
+                if (window.innerWidth <= 768) {
+                    if (sidebar.classList.contains('active')) {
+                        sidebar.classList.remove('active');
+                        sidebar.classList.add('hidden');
+                        mainContent.classList.remove('sidebar-open');
+                        mainContent.classList.add('sidebar-closed');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading Email history:', error);
+                window.showAlert('error', "Error loading Email history");
+            }
+        };
+
+        function initializeToggleDetails() {
+            document.querySelectorAll('.toggle-details').forEach(button => {
+                button.addEventListener('click', function () {
+                    const expanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !expanded);
+                    document.getElementById(this.getAttribute('aria-controls')).classList.toggle('active');
+                });
+            });
+        }
+
+        function initializeMarkButtons() {
+            document.querySelectorAll('.mark-button:not([disabled])').forEach(button => {
+                button.addEventListener('click', function () {
+                    const id = this.dataset.id;
+                    this.disabled = true;
+                    this.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+                    fetch(`/chiqim/bildirishnoma/mark/${id}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.showAlert('success', 'Notification marked as reminded');
+                                const card = this.closest('.notification-card');
+                                const daysLeft = card.querySelector('.days-left');
+                                if (daysLeft) daysLeft.classList.add('normal');
+                            } else {
+                                throw new Error(data.error || 'Error occurred');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error marking notification:', error);
+                            window.showAlert('error', error.message || 'Error marking notification');
+                        })
+                        .finally(() => {
+                            this.disabled = false;
+                            this.innerHTML = `<i class="fas fa-check"></i> Mark`;
+                        });
+                });
+            });
+        }
+
+        function initializeEmailButtons() {
+            document.querySelectorAll('.email-button:not([disabled])').forEach(button => {
+                button.addEventListener('click', function () {
+                    const id = this.dataset.id;
+                    const card = this.closest('.notification-card');
+                    const daysLeftElement = card.querySelector('.days-left');
+                    let daysLeft = 0;
+                    if (daysLeftElement) {
+                        const daysText = daysLeftElement.textContent.match(/\d+/);
+                        daysLeft = daysText ? parseInt(daysText[0]) : 0;
+                    }
+                    const confirmResend = card.querySelector('.detail-item span:last-child').textContent === 'Yes';
+                    if (daysLeft > 5 && !confirmResend && !confirm('More than 5 days left. Would you like to send anyway?')) {
+                        return;
+                    }
+                    if (confirmResend && !confirm('An Email has already been sent for this notification. Would you like to resend?')) {
+                        return;
+                    }
+                    this.disabled = true;
+                    this.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sending...`;
+                    fetch(`/chiqim/send-email/${id}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ force_resend: confirmResend || daysLeft > 5 })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                window.showAlert('success', data.message);
+                                const emailStatus = card.querySelector('.detail-item:last-child span:last-child');
+                                if (emailStatus) emailStatus.textContent = 'Yes';
+                            } else {
+                                throw new Error(data.error || 'Error sending Email');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error sending Email:', error);
+                            window.showAlert('error', error.message || 'Error sending Email');
+                        })
+                        .finally(() => {
+                            this.disabled = false;
+                            this.innerHTML = `<i class="fas fa-envelope"></i> Send Email`;
+                        });
+                });
+            });
+        }
+
+        function initializeEmailHistoryButtons() {
+            document.querySelectorAll('.email-history-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const id = this.dataset.id;
+                    const title = this.dataset.title;
+                    window.openEmailHistory(id, title);
+                });
+            });
+        }
+
+        const updateNotifications = debounce(function () {
+            const activeFilter = document.querySelector('.filter.active');
+            const days = activeFilter.dataset.days;
+            const sortBy = sortSelect.value;
+            const page = new URLSearchParams(window.location.search).get('page') || 1;
+            const params = new URLSearchParams({ days, sort: sortBy, page });
+            window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
+            notificationsList.classList.add('loading');
+            notificationsList.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+            fetch(`${window.location.pathname}?${params}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrftoken,
+                    'X-Refresh-Content': 'true'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    notificationsList.innerHTML = data.html;
+                    notificationsList.classList.remove('loading');
+                    initializeToggleDetails();
+                    initializeMarkButtons();
+                    initializeEmailButtons();
+                    initializeEmailHistoryButtons();
+                })
+                .catch(error => {
+                    console.error('Error fetching notifications:', error);
+                    notificationsList.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error Occurred</h3><p>There was an issue loading the data. Please refresh the page.</p></div>`;
+                    notificationsList.classList.remove('loading');
+                    window.showAlert('error', 'Error loading data');
+                });
+        }, 300);
+
+        filters.forEach(filter => filter.addEventListener('click', function () {
+            if (!this.classList.contains('active')) {
+                filters.forEach(f => {
+                    f.classList.remove('active');
+                    f.setAttribute('aria-selected', 'false');
+                });
+                this.classList.add('active');
+                this.setAttribute('aria-selected', 'true');
+                updateNotifications();
+            }
+        }));
+        sortSelect.addEventListener('change', updateNotifications);
+        initializeToggleDetails();
+        initializeMarkButtons();
+        initializeEmailButtons();
+        initializeEmailHistoryButtons();
+    });
+</script>
+{% endblock %}

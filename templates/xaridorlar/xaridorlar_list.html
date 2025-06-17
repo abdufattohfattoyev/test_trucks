@@ -1,0 +1,635 @@
+{% extends 'base.html' %}
+
+{% block title %}Buyers List{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Main style */
+    .card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    /* Table styles */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+        border-collapse: collapse;
+    }
+
+    .table th {
+        background-color: #343a40;
+        color: white;
+        vertical-align: middle;
+        padding: 12px 8px;
+        font-weight: 500;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 10px 8px;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    /* Mobile view specific styles */
+    @media (max-width: 767.98px) {
+        .table thead {
+            display: none;
+        }
+
+        .table, .table tbody, .table tr, .table td {
+            display: block;
+            width: 100%;
+        }
+
+        .table tr {
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            position: relative;
+        }
+
+        .table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: right;
+        }
+
+        .table td:before {
+            content: attr(data-label);
+            font-weight: bold;
+            flex: 1;
+            padding-right: 10px;
+            text-align: left;
+        }
+
+        .table td:last-child {
+            border-bottom: 0;
+        }
+
+        /* Documents section mobile view */
+        .hujjatlar-section td {
+            padding: 0;
+        }
+
+        .hujjat-card {
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        /* Actions buttons mobile view */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons .btn {
+            padding: 5px 8px;
+            font-size: 12px;
+        }
+
+        /* Document addition section mobile view */
+        .hujjat-input-group {
+            margin-bottom: 10px;
+        }
+
+        .hujjat-input-group .input-group {
+            flex-direction: column;
+        }
+
+        .hujjat-input-group .input-group .form-control {
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        .hujjat-input-group .input-group .btn {
+            flex: 1;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+    }
+
+    /* Buttons */
+    .btn {
+        font-size: 0.85rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 4px;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap Confrontation: A New Hope
+        gap: 5px;
+        white-space: nowrap;
+    }
+
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .btn-accent {
+        background-color: #4e73df;
+        color: white;
+        border: none;
+    }
+
+    .btn-accent:hover {
+        background-color: #3a5ccc;
+        color: white;
+    }
+
+    /* Form elements */
+    .form-control {
+        font-size: 0.9rem;
+        border-radius: 4px;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+    }
+
+    /* Documents section */
+    .hujjatlar-section {
+        display: none;
+    }
+
+    .hujjatlar-section.active {
+        display: table-row;
+    }
+
+    .hujjat-card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 10px 0;
+    }
+
+    /* Upload animation */
+    .spinner-border {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    /* Alert messages */
+    .custom-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 400px;
+        width: calc(100% - 40px);
+    }
+
+    /* Mobile specific adjustments */
+    @media (max-width: 575.98px) {
+        .d-flex.flex-column.flex-md-row {
+            flex-direction: column !important;
+        }
+
+        .mb-3.mb-md-0 {
+            margin-bottom: 1rem !important;
+        }
+
+        .input-group {
+            flex-wrap: wrap;
+        }
+
+        .input-group .form-control {
+            margin-bottom: 5px;
+        }
+
+        .input-group .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="card">
+        <div class="card-body">
+            <!-- Header and Add Button -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+                <h2 class="mb-3 mb-md-0">
+                    <i class="bi bi-people-fill text-primary me-2"></i>
+                    Buyers List
+                </h2>
+                <button class="btn btn-accent form-open-btn" data-url="{% url 'xaridor_add' %}" data-title="Add New Buyer">
+                    <i class="bi bi-plus-circle me-1"></i> New Buyer
+                </button>
+            </div>
+
+            <!-- Search and Filter Forms -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <form method="GET" class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Name, surname, phone or email..." value="{{ query|default:'' }}">
+                        <button type="submit" class="btn btn-accent">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form method="GET" class="input-group">
+                        <input type="date" name="sana" class="form-control" value="{{ sana|default:'' }}">
+                        <button type="submit" class="btn btn-accent">
+                            <i class="bi bi-calendar"></i> Filter
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name Surname</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Documents</th>
+                            <th>Balance</th>
+                            <th>Date</th>
+                            {% if is_superuser %}<th>User</th>{% endif %}
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for xaridor in page_obj %}
+                        <tr>
+                            <td data-label="#">{{ forloop.counter|add:page_obj.start_index|add:-1 }}</td>
+                            <td data-label="Name Surname">{{ xaridor.ism_familiya }}</td>
+                            <td data-label="Phone">{{ xaridor.telefon_raqam|default:"-" }}</td>
+                            <td data-label="Email">{{ xaridor.email|default:"-" }}</td>
+                            <td data-label="Documents" data-xaridor-id="{{ xaridor.id }}">
+                                <div class="d-flex flex-column">
+                                    {% if xaridor.hujjatlar.exists %}
+                                    <button class="btn btn-sm btn-info detail-open-btn mb-1" data-url="{% url 'view_passport' xaridor.id %}" data-title="{{ xaridor.ism_familiya }} - Documents">
+                                        <i class="bi bi-eye"></i> View
+                                    </button>
+                                    {% else %}
+                                    <span class="text-muted mb-1">No Document</span>
+                                    {% endif %}
+                                    <button class="btn btn-sm btn-primary toggle-hujjat-btn" data-xaridor-id="{{ xaridor.id }}">
+                                        <i class="bi bi-file-earmark-plus"></i> Add
+                                    </button>
+                                </div>
+                            </td>
+                            <td data-label="Balance">{{ xaridor.hozirgi_balans|floatformat:2 }} $</td>
+                            <td data-label="Date">{{ xaridor.sana|date:"d.m.Y" }}</td>
+                            {% if is_superuser %}
+                            <td data-label="User">{{ xaridor.user.username }}</td>
+                            {% endif %}
+                            <td data-label="Actions">
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-warning form-open-btn" data-url="{% url 'edit_xaridor' xaridor.id %}" data-title="Edit Buyer">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger form-open-btn" data-url="{% url 'xaridor_delete' xaridor.id %}" data-title="Delete Buyer">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hujjatlar-section" id="hujjatlar-section-{{ xaridor.id }}">
+                            <td colspan="{% if is_superuser %}9{% else %}8{% endif %}">
+                                <div class="hujjat-card">
+                                    <h5 class="mb-3">
+                                        <i class="bi bi-file-earmark-text me-2"></i>
+                                        Documents for {{ xaridor.ism_familiya }}
+                                    </h5>
+
+                                    <div id="hujjat-inputs-{{ xaridor.id }}">
+                                        <div class="mb-3 hujjat-input-group" id="hujjat-group-{{ xaridor.id }}-1">
+                                            <label for="hujjat-{{ xaridor.id }}-1" class="form-label">Document File</label>
+                                            <div class="input-group">
+                                                <input type="file" name="hujjat" class="form-control hujjat-input" id="hujjat-{{ xaridor.id }}-1" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                                                <button type="button" class="btn btn-primary upload-hujjat-btn" data-input-id="hujjat-{{ xaridor.id }}-1" data-xaridor-id="{{ xaridor.id }}">
+                                                    <i class="bi bi-upload me-1"></i> Upload
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger remove-hujjat-btn" onclick="removeHujjatInput('hujjat-group-{{ xaridor.id }}-1')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">Supported formats: JPG, PNG, PDF, DOC, DOCX (max. 10MB)</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+                                        <button type="button" class="btn btn-secondary add-hujjat-btn" data-xaridor-id="{{ xaridor.id }}">
+                                            <i class="bi bi-plus-circle me-1"></i> Add More Document
+                                        </button>
+                                        <button type="button" class="btn btn-success yakunlash-btn" data-xaridor-id="{{ xaridor.id }}">
+                                            <i class="bi bi-check-circle me-1"></i> Finish
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="{% if is_superuser %}9{% else %}8{% endif %}" class="text-center py-4">
+                                <div class="alert alert-info mb-0">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    No buyers found.
+                                    {% if query or sana %}
+                                    <a href="?" class="alert-link">Clear filters</a>
+                                    {% else %}
+                                    <button class="btn btn-sm btn-link form-open-btn p-0" data-url="{% url 'xaridor_add' %}" data-title="Add New Buyer">
+                                        Add new buyer
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sana %}&sana={{ sana }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">«</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if sana %}&sana={{ sana }}{% endif %}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sana %}&sana={{ sana }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">»</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- xaridorlar_list.html script section -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initially hide all document sections
+    document.querySelectorAll('.hujjatlar-section').forEach(section => {
+        section.classList.remove('active');
+    });
+
+    // Toggle document section visibility
+    document.querySelectorAll('.toggle-hujjat-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const xaridorId = this.getAttribute('data-xaridor-id');
+            const section = document.getElementById(`hujjatlar-section-${xaridorId}`);
+
+            if (section.classList.contains('active')) {
+                section.classList.remove('active');
+                return;
+            }
+
+            document.querySelectorAll('.hujjatlar-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+
+            section.classList.add('active');
+
+            if (section.classList.contains('active')) {
+                setTimeout(() => {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+        });
+    });
+
+    // Add new document input
+    document.querySelectorAll('.add-hujjat-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const xaridorId = this.getAttribute('data-xaridor-id');
+            const container = document.getElementById(`hujjat-inputs-${xaridorId}`);
+            const count = container.querySelectorAll('.hujjat-input-group').length + 1;
+
+            const newInputGroup = document.createElement('div');
+            newInputGroup.className = 'mb-3 hujjat-input-group';
+            newInputGroup.id = `hujjat-group-${xaridorId}-${count}`;
+            newInputGroup.innerHTML = `
+                <label for="hujjat-${xaridorId}-${count}" class="form-label">Document File</label>
+                <div class="input-group">
+                    <input type="file" name="hujjat" class="form-control hujjat-input" id="hujjat-${xaridorId}-${count}" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                    <button type="button" class="btn btn-primary upload-hujjat-btn" data-input-id="hujjat-${xaridorId}-${count}" data-xaridor-id="${xaridorId}">
+                        <i class="bi bi-upload me-1"></i> Upload
+                    </button>
+                    <button type="button" class="btn btn-outline-danger remove-hujjat-btn" onclick="removeHujjatInput('hujjat-group-${xaridorId}-${count}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <small class="text-muted">Supported formats: JPG, PNG, PDF, DOC, DOCX (max. 10MB)</small>
+            `;
+
+            container.appendChild(newInputGroup);
+            bindUploadEvents();
+
+            setTimeout(() => {
+                const input = document.getElementById(`hujjat-${xaridorId}-${count}`);
+                if (input) input.focus();
+            }, 100);
+        });
+    });
+
+    // Remove document input
+    window.removeHujjatInput = function(groupId) {
+        const group = document.getElementById(groupId);
+        if (group && document.querySelectorAll('.hujjat-input-group').length > 1) {
+            group.remove();
+        } else if (group) {
+            showAlert('warning', "At least one document field is required!");
+        }
+    }
+
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    console.log(`CSRF token found: ${cookieValue}`);
+                    break;
+                }
+            }
+        }
+        if (!cookieValue) {
+            console.error(`CSRF token not found: ${name}`);
+        }
+        return cookieValue;
+    }
+
+    // File upload
+    function bindUploadEvents() {
+        document.querySelectorAll('.hujjat-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const file = this.files[0];
+                if (!file) return;
+
+                const ext = file.name.split('.').pop().toLowerCase();
+                const validExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+                const sizeMB = file.size / (1024 * 1024);
+
+                if (!validExtensions.includes(ext)) {
+                    showAlert('error', `Invalid file format: ${file.name}\nOnly ${validExtensions.join(', ')} formats are supported.`);
+                    this.value = '';
+                    return;
+                }
+
+                if (sizeMB > 10) {
+                    showAlert('error', `File size exceeds 10MB: ${file.name}\nSize: ${sizeMB.toFixed(2)}MB`);
+                    this.value = '';
+                    return;
+                }
+            });
+        });
+
+        document.querySelectorAll('.upload-hujjat-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const inputId = this.getAttribute('data-input-id');
+                const xaridorId = this.getAttribute('data-xaridor-id');
+                const input = document.getElementById(inputId);
+
+                if (!input.files || !input.files[0]) {
+                    showAlert('error', 'Please select a file first!');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('hujjat', input.files[0]);
+                formData.append('xaridor_id', xaridorId);
+                formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Uploading...';
+                this.disabled = true;
+
+                fetch('{% url "upload_hujjat" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('success', data.message);
+                        input.value = '';
+
+                        const cell = document.querySelector(`td[data-xaridor-id="${xaridorId}"]`);
+                        if (cell) {
+                            cell.innerHTML = `
+                                <div class="d-flex flex-column">
+                                    {% if xaridor.hujjatlar.exists %}
+                                    <button class="btn btn-sm btn-info detail-open-btn mb-1" data-url="{% url 'view_passport' xaridor.id %}" data-title="{{ xaridor.ism_familiya }} - Documents">
+                                        <i class="bi bi-eye"></i> View
+                                    </button>
+                                    {% endif %}
+                                    <button class="btn btn-sm btn-primary toggle-hujjat-btn" data-xaridor-id="${xaridorId}">
+                                        <i class="bi bi-file-earmark-plus"></i> Add
+                                    </button>
+                                </div>
+                            `;
+
+                            cell.querySelector('.toggle-hujjat-btn').addEventListener('click', function() {
+                                const section = document.getElementById(`hujjatlar-section-${xaridorId}`);
+                                section.classList.toggle('active');
+                            });
+                        }
+                    } else {
+                        showAlert('error', data.message || 'An error occurred while uploading the document!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('error', 'Connection error with the server');
+                })
+                .finally(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                });
+            });
+        });
+    }
+
+    // Finish button
+    document.querySelectorAll('.yakunlash-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const xaridorId = this.getAttribute('data-xaridor-id');
+            const section = document.getElementById(`hujjatlar-section-${xaridorId}`);
+            section.classList.remove('active');
+            showAlert('success', 'Document addition process completed!');
+        });
+    });
+
+    // Initial event binding
+    bindUploadEvents();
+
+    // Alert function
+    function showAlert(type, message) {
+        document.querySelectorAll('.custom-alert').forEach(el => el.remove());
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `custom-alert alert alert-${type} alert-dismissible fade show`;
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.maxWidth = '400px';
+        alertDiv.style.width = 'calc(100% - 40px)';
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 150);
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

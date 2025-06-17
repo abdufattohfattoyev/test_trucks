@@ -1,0 +1,49 @@
+<div class="email-history-container" role="main" aria-label="Email History">
+    <div class="email-history-list">
+        {% if email_history %}
+            {% for email in email_history %}
+            <div class="email-history-card {% if email.status == 'success' %}success{% else %}failed{% endif %}">
+                <div class="email-header">
+                    <h3>{{ email.subject }}</h3>
+                    <p><strong>Status:</strong> {{ email.get_status_display }}</p>
+                    <p><strong>Recipient:</strong> {{ email.recipient }}</p>
+                    <p><strong>Sent:</strong> {{ email.sent_at|date:"Y-m-d H:i:s" }}</p>
+                    {% if email.error_message %}
+                    <p><strong>Error:</strong> {{ email.error_message }}</p>
+                    {% endif %}
+                </div>
+                <div class="email-content">
+                    <pre>{{ email.message }}</pre>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-envelope-open"></i>
+                <h3>No Email History</h3>
+                <p>No emails have been sent for this notification.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.email-history-container { padding: 15px; }
+.email-history-list { display: flex; flex-direction: column; gap: 15px; }
+.email-history-card { background-color: white; border-radius: 10px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.email-history-card.success { border-left: 4px solid var(--success-color); }
+.email-history-card.failed { border-left: 4px solid var(--danger-color); }
+.email-header h3 { font-size: 1.2rem; margin-bottom: 10px; }
+.email-header p { font-size: 0.9rem; margin: 5px 0; }
+.email-content pre { background-color: #f8f9fa; padding: 10px; border-radius: 6px; font-size: 0.85rem; white-space: pre-wrap; }
+.empty-state { text-align: center; padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.empty-state i { font-size: 2rem; color: #adb5bd; margin-bottom: 10px; }
+.empty-state h3 { font-size: 1.1rem; margin-bottom: 10px; color: var(--primary-color); }
+.empty-state p { color: #6c757d; }
+@media (max-width: 768px) {
+    .email-history-container { padding: 10px; }
+    .email-history-card { padding: 10px; }
+    .email-header h3 { font-size: 1.1rem; }
+    .email-content pre { font-size: 0.8rem; }
+}
+</style>

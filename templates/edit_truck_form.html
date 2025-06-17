@@ -1,0 +1,535 @@
+<div class="edit-truck-form compact-form p-3">
+    <!-- Form Header -->
+    <form method="post" enctype="multipart/form-data" id="truckEditForm" action="{% url 'edit_truck' truck.id %}">
+        {% csrf_token %}
+
+        <!-- Error messages container -->
+        <div id="formErrors" class="alert alert-danger d-none mb-3" role="alert"></div>
+
+        <!-- 1. Basic Information Section -->
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3 text-secondary"><i class="bi bi-list-check me-1"></i>Basic Information</h6>
+                <div class="row g-3">
+                    <!-- User Field (Visible only for Superuser) -->
+                    {% if request.user.is_superuser %}
+                    <div class="col-12">
+                        <div class="form-floating mb-2">
+                            {{ form.user }}
+                            <label for="{{ form.user.id_for_label }}">User</label>
+                            <div class="invalid-feedback" id="user-error"></div>
+                        </div>
+                    </div>
+                    {% else %}
+                        {{ form.user }}
+                    {% endif %}
+
+                    <!-- PO ID Field -->
+                    <div class="col-12 col-sm-6">
+                        <div class="form-floating mb-2">
+                            {{ form.po_id }}
+                            <label for="{{ form.po_id.id_for_label }}">PO ID</label>
+                            <small class="form-text text-muted">{{ form.po_id.help_text }}</small>
+                            <div class="invalid-feedback" id="po_id-error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-floating mb-2">
+                            {{ form.make }}
+                            <label for="{{ form.make.id_for_label }}">Make</label>
+                            <div class="invalid-feedback" id="make-error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-floating mb-2">
+                            {{ form.model }}
+                            <label for="{{ form.model.id_for_label }}">Model</label>
+                            <div class="invalid-feedback" id="model-error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-floating mb-2">
+                            {{ form.year }}
+                            <label for="{{ form.year.id_for_label }}">Year</label>
+                            <small class="form-text text-muted">{{ form.year.help_text }}</small>
+                            <div class="invalid-feedback" id="year-error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-floating mb-2">
+                            {{ form.horsepower }}
+                            <label for="{{ form.horsepower.id_for_label }}">Horsepower (HP)</label>
+                            <small class="form-text text-muted">{{ form.horsepower.help_text }}</small>
+                            <div class="invalid-feedback" id="horsepower-error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-floating mb-2">
+                            {{ form.seriya }}
+                            <label for="{{ form.seriya.id_for_label }}">Serial Number</label>
+                            <small class="form-text text-muted">{{ form.seriya.help_text }}</small>
+                            <div class="invalid-feedback" id="seriya-error"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Price & Location Section -->
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3 text-secondary"><i class="bi bi-cash-coin me-1"></i>Price and Location</h6>
+                <div class="row g-3">
+                    <div class="col-12 col-sm-6">
+                        <div class="form-floating mb-2">
+                            {{ form.price }}
+                            <label for="{{ form.price.id_for_label }}">Price ($)</label>
+                            <small class="form-text text-muted">{{ form.price.help_text }}</small>
+                            <div class="invalid-feedback" id="price-error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-floating mb-2">
+                            {{ form.location }}
+                            <label for="{{ form.location.id_for_label }}">Location</label>
+                            <small class="form-text text-muted">{{ form.location.help_text }}</small>
+                            <div class="invalid-feedback" id="location-error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating mb-2">
+                            {{ form.company }}
+                            <label for="{{ form.company.id_for_label }}">Company Name</label>
+                            <small class="form-text text-muted">{{ form.company.help_text }}</small>
+                            <div class="invalid-feedback" id="company-error"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Media Section -->
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3 text-secondary"><i class="bi bi-images me-1"></i>Media</h6>
+                <div class="row g-3">
+                    <!-- Image Upload -->
+                    <div class="col-12">
+                        <h6 class="small mb-2"><i class="bi bi-car-front me-1"></i>Vehicle Image</h6>
+                        {% if truck.image %}
+                        <div class="mb-2">
+                            <img src="{{ truck.image.url }}" alt="{{ truck.make }}" class="img-thumbnail" style="max-height: 100px; max-width: 100%;">
+                            <div class="form-check mt-1">
+                                <input type="checkbox" name="remove_image" id="remove_image" class="form-check-input">
+                                <label class="form-check-label" for="remove_image">Remove Image</label>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="file-upload-box mb-2 position-relative">
+                            <label for="id_image" class="btn btn-outline-accent w-100 text-start d-flex align-items-center justify-content-between">
+                                <span><i class="bi bi-upload me-2"></i>{% if truck.image %}Replace Image{% else %}Upload Image{% endif %}</span>
+                                <span id="fileName" class="text-muted small"></span>
+                            </label>
+                            {{ form.image }}
+                            <small class="form-text text-muted">{{ form.image.help_text }}</small>
+                            <div class="invalid-feedback" id="image-error"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Description Section -->
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3 text-secondary"><i class="bi bi-card-text me-1"></i>Additional Information</h6>
+                <div class="form-floating">
+                    {{ form.description }}
+                    <label for="{{ form.description.id_for_label }}">Additional Notes</label>
+                    <div class="invalid-feedback" id="description-error"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex gap-2 mt-4">
+            <button type="button" class="btn btn-outline-secondary flex-grow-1" onclick="closeFormSidebar()">
+                <i class="bi bi-x-circle me-1"></i>Cancel
+            </button>
+            <button type="submit" class="btn btn-accent flex-grow-1" id="submitBtn">
+                <i class="bi bi-save me-1"></i>Save
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --accent-color: #1abc9c;
+        --text-color: #ffffff;
+        --bg-color: #f4f6f9;
+        --shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+        --border-radius: 8px;
+        --transition-speed: 0.2s;
+        --danger-color: #ff3b30;
+    }
+
+    .edit-truck-form {
+        background-color: #ffffff;
+        border-radius: var(--border-radius);
+        max-width: 500px;
+        margin: 0 auto;
+        height: 100%;
+        overflow-y: auto;
+        box-shadow: var(--shadow);
+    }
+
+    .text-primary { color: var(--primary-color) !important; }
+    .text-secondary { color: #6c757d !important; }
+
+    .card {
+        transition: transform var(--transition-speed) ease;
+        background: #ffffff;
+        border: none;
+    }
+
+    .card:hover { transform: translateY(-2px); }
+
+    .form-floating label {
+        color: #6c757d;
+        transition: all var(--transition-speed) ease;
+        font-size: 0.95rem;
+    }
+
+    .form-floating input:focus,
+    .form-floating select:focus,
+    .form-floating textarea:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.2rem rgba(26, 188, 156, 0.25);
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 6px;
+        height: calc(2.5rem + 2px);
+        font-size: 0.95rem;
+        border-color: #ced4da;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--accent-color);
+    }
+
+    .invalid-feedback {
+        font-size: 0.85rem;
+        color: var(--danger-color);
+        font-weight: bold;
+    }
+
+    .file-upload-box {
+        position: relative;
+        padding: 0.2rem;
+    }
+
+    .file-upload-box input[type="file"] { display: none; }
+
+    .file-upload-box label {
+        padding: 0.5rem 1rem;
+        transition: all var(--transition-speed) ease;
+        cursor: pointer;
+    }
+
+    #fileName {
+        max-width: 60%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .btn-outline-accent {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+        transition: all var(--transition-speed) ease;
+    }
+
+    .btn-outline-accent:hover {
+        background-color: var(--accent-color);
+        color: var(--text-color);
+    }
+
+    .btn-accent {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        color: var(--text-color);
+        transition: all var(--transition-speed) ease;
+    }
+
+    .btn-accent:hover {
+        background-color: #16a085;
+        border-color: #16a085;
+    }
+
+    .btn-outline-secondary {
+        border-color: #6c757d;
+        color: #6c757d;
+        transition: all var(--transition-speed) ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: var(--text-color);
+    }
+
+    .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.9;
+    }
+
+    .form-text {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    textarea.form-control {
+        height: 80px;
+        resize: vertical;
+    }
+
+    .alert-danger {
+        font-size: 0.9rem;
+        padding: 0.75rem;
+        font-weight: bold;
+    }
+
+    .img-thumbnail {
+        border-radius: var(--border-radius);
+        object-fit: cover;
+    }
+
+    .form-check-label {
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 767px) {
+        .edit-truck-form {
+            padding: 1rem;
+            max-width: 100%;
+        }
+        h6 { font-size: 0.95rem; }
+        .form-control,
+        .form-select {
+            height: calc(2.2rem);
+            font-size: 0.9rem;
+        }
+        .form-floating label { font-size: 0.9rem; }
+        .invalid-feedback { font-size: 0.75rem; }
+        .btn {
+            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+        }
+        .file-upload-box label { font-size: 0.9rem; }
+        .form-text { font-size: 0.75rem; }
+        .row.g-3 { gap: 0.75rem !important; }
+        .img-thumbnail { max-height: 80px; }
+    }
+
+    @media (max-width: 575px) {
+        .edit-truck-form { padding: 0.5rem; }
+        .row.g-3 { gap: 0.5rem !important; }
+        .col-12, .col-sm-6 { width: 100%; }
+        .form-control,
+        .form-select {
+            height: calc(2rem);
+            font-size: 0.85rem;
+        }
+        .form-floating label { font-size: 0.85rem; }
+        .btn {
+            font-size: 0.85rem;
+            padding: 0.3rem 0.6rem;
+        }
+        .file-upload-box label {
+            font-size: 0.85rem;
+            padding: 0.4rem;
+        }
+        #fileName { max-width: 50%; }
+        .img-thumbnail { max-height: 60px; }
+    }
+</style>
+
+<script>
+    // Utility function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Reset form errors
+    function resetFormErrors(form) {
+        const errorContainer = form.querySelector('#formErrors');
+        errorContainer.classList.add('d-none');
+        errorContainer.textContent = '';
+        form.querySelectorAll('.invalid-feedback').forEach(div => {
+            div.textContent = '';
+        });
+        form.querySelectorAll('.is-invalid').forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+    }
+
+    // Show form errors
+    function showFormErrors(form, errors, generalMessage) {
+        const errorContainer = form.querySelector('#formErrors');
+        errorContainer.classList.remove('d-none');
+        let errorMessages = [];
+
+        if (generalMessage) {
+            errorMessages.push(generalMessage);
+        }
+
+        for (const field in errors) {
+            if (field === '__all__') {
+                errorMessages.push(...errors[field].map(error => error.message || error));
+            } else {
+                const errorDiv = form.querySelector(`#${field}-error`);
+                const input = form.querySelector(`#id_${field}`);
+                if (errorDiv && input) {
+                    const errorMessage = errors[field][0].message || errors[field][0];
+                    errorDiv.textContent = errorMessage;
+                    input.classList.add('is-invalid');
+                    errorMessages.push(`${field.replace('_', ' ')}: ${errorMessage}`);
+                }
+            }
+        }
+
+        errorContainer.textContent = errorMessages.join('\n') || 'Please correct the errors below.';
+    }
+
+    // Handle file input changes
+    function handleFileInputChange(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        const label = input.previousElementSibling;
+        const fileNameSpan = label.querySelector('#fileName');
+        const defaultLabel = `<span><i class="bi bi-upload me-2"></i>${input.value ? 'Replace Image' : 'Upload Image'}</span><span id="fileName" class="text-muted small"></span>`;
+
+        input.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileNameSpan.textContent = this.files[0].name;
+                label.classList.add('text-success');
+                label.classList.remove('btn-outline-accent');
+            } else {
+                label.innerHTML = defaultLabel;
+                label.classList.remove('text-success');
+                label.classList.add('btn-outline-accent');
+            }
+        });
+
+        // Reset file input
+        input.addEventListener('reset', () => {
+            label.innerHTML = defaultLabel;
+            label.classList.remove('text-success');
+            label.classList.add('btn-outline-accent');
+        });
+    }
+
+    // Form submission handler
+    function handleFormSubmission(form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('#submitBtn');
+            const inputs = form.querySelectorAll('input, select, textarea');
+
+            // Disable form inputs during submission
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Saving...';
+            inputs.forEach(input => input.disabled = true);
+
+            resetFormErrors(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrfmiddlewaretoken')
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    window.showAlert('success', data.message);
+                    window.closeFormSidebar();
+                    setTimeout(() => {
+                        showHujjatModal(data.truck_id, data.po_id || form.querySelector('#id_po_id').value);
+                    }, 500);
+                } else {
+                    showFormErrors(form, data.errors, data.message);
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                const errorContainer = form.querySelector('#formErrors');
+                errorContainer.classList.remove('d-none');
+                errorContainer.textContent = 'An unexpected error occurred. Please try again.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-save me-1"></i>Save';
+                inputs.forEach(input => input.disabled = false);
+            }
+        });
+
+        // Clear errors on input change
+        form.querySelectorAll('input, select, textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                const errorDiv = form.querySelector(`#${this.id.replace('id_', '')}-error`);
+                if (errorDiv) {
+                    errorDiv.textContent = '';
+                    this.classList.remove('is-invalid');
+                }
+                const errorContainer = form.querySelector('#formErrors');
+                if (errorContainer) {
+                    errorContainer.classList.add('d-none');
+                    errorContainer.textContent = '';
+                }
+            });
+        });
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('truckEditForm');
+        if (!form) return;
+
+        // Set up file input
+        handleFileInputChange('id_image');
+
+        // Set up form submission
+        handleFormSubmission(form);
+
+        // Ensure po_id is editable
+        const poIdInput = document.getElementById('id_po_id');
+        if (poIdInput) {
+            poIdInput.removeAttribute('readonly');
+            poIdInput.classList.add('form-control');
+            poIdInput.classList.remove('form-control-plaintext');
+            poIdInput.style.backgroundColor = '';
+            poIdInput.style.cursor = 'text';
+        }
+    });
+</script>

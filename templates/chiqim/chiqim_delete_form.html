@@ -1,0 +1,9 @@
+<form id="chiqimDeleteForm" method="post" class="p-3">
+    {% csrf_token %}
+    <div class="alert alert-warning" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Are you sure you want to delete the expense for "{{ chiqim.truck.make }} {{ chiqim.truck.model }}"? This action cannot be undone!
+    </div>
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <button type="button" class="btn btn-secondary" onclick="closeFormSidebar()">Cancel</button>
+</form>

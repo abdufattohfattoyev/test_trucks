@@ -1,0 +1,693 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if section == 'truck_details' %}{{ truck.make }} {{ truck.model }} - Details
+{% elif section == 'form' %}Loan {% if qarz %}Update{% else %}Add{% endif %}
+{% elif section == 'delete' %}Delete Loan
+{% elif section == 'add_payment' %}Add Payment
+{% elif section == 'detail' %}Loan History
+{% else %}Loans Management
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Messages -->
+    <div id="messagesContainer" class="messages-container">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="bi bi-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    {% if section == 'list' %}
+    <!-- Dashboard -->
+    <div class="dashboard-overview mb-4">
+        <div class="row g-3">
+            <!-- Total Debt Card -->
+            <div class="col-12 col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="flex-shrink-0 bg-primary text-white rounded-circle p-3 me-3">
+                            <i class="bi bi-cash-stack fs-4"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Total Debt</h6>
+                            <h3 class="mb-2">${{ total_remaining_amount|floatformat:2 }}</h3>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-primary" style="width: {{ total_remaining_percentage|floatformat:0 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Loans Card -->
+            <div class="col-12 col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="flex-shrink-0 bg-warning text-white rounded-circle p-3 me-3">
+                            <i class="bi bi-hourglass-split fs-4"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Active Loans</h6>
+                            <h3 class="mb-2">{{ active_loan_count }}</h3>
+                            <span class="badge bg-light text-dark">Paid: {{ paid_loan_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last Payment Card -->
+            <div class="col-12 col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="flex-shrink-0 bg-success text-white rounded-circle p-3 me-3">
+                            <i class="bi bi-currency-exchange fs-4"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Last Payment</h6>
+                            {% if last_payment %}
+                                <h3 class="mb-2">${{ last_payment.amount|floatformat:2 }}</h3>
+                                <small>{{ last_payment.payment_date|date:"M d, Y" }}</small>
+                            {% else %}
+                                <h3 class="mb-2">$0.00</h3>
+                                <small>No payments yet</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loans Management -->
+    <div class="loans-management-section">
+        <!-- Header with Search and Add Button -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div class="mb-3 mb-md-0">
+                <h2 class="h4 mb-1">Loans Management</h2>
+                <p class="text-muted small m-0">Track and manage all loan transactions</p>
+            </div>
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" id="loanSearch" class="form-control" placeholder="Search loans...">
+                </div>
+                <a href="{% url 'add_qarz' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Loan</a>
+            </div>
+        </div>
+
+        <!-- Loans Grid -->
+        <div class="row g-3">
+            {% for qarz in qarzlar %}
+            <div class="col-12 col-md-6 col-lg-4" data-status="{% if qarz.is_paid %}paid{% else %}pending{% endif %}"
+                 data-lender="{{ qarz.lender.username|lower }}" data-borrower="{{ qarz.borrower_name|lower }}" data-amount="{{ qarz.amount }}">
+                <div class="card h-100 border-0 shadow-sm">
+                    <!-- Card Header -->
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle text-white d-flex align-items-center justify-content-center"
+                                 style="width: 40px; height: 40px; background-color: {% cycle '#3b82f6' '#10b981' '#6366f1' '#f59e0b' '#ec4899' %}">
+                                {{ qarz.lender.username|first|upper }}
+                            </div>
+                            <div class="ms-2">
+                                <h6 class="mb-0">{{ qarz.lender.username }}</h6>
+                                <small class="text-muted">Lender</small>
+                            </div>
+                        </div>
+                        <span class="badge {% if qarz.is_paid %}bg-success{% else %}bg-warning{% endif %}">
+                            {% if qarz.is_paid %}Paid{% else %}Pending{% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Borrower</small>
+                                <strong>{{ qarz.borrower_name }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Truck</small>
+                                <strong>{% if qarz.truck %}{{ qarz.truck.make }} {{ qarz.truck.model }}{% else %}None{% endif %}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Amount</small>
+                                <strong>${{ qarz.amount|floatformat:2 }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Remaining</small>
+                                <strong class="{% if qarz.remaining_amount > 0 %}text-danger{% else %}text-success{% endif %}">
+                                    ${{ qarz.remaining_amount|floatformat:2 }}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small>Paid: ${{ qarz.get_paid_amount|floatformat:2 }}</small>
+                                <small>{{ qarz.percentage_paid|floatformat:0 }}%</small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-primary" style="width: {{ qarz.percentage_paid }}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-sm btn-outline-primary" onclick="openDetailSidebar('/qarz/detail/{{ qarz.id }}/', 'Loan #{{ qarz.id }}')">
+                                <i class="bi bi-eye"></i> Details
+                            </button>
+                            {% if request.user == qarz.lender %}
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{% url 'update_qarz' qarz.id %}"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'delete_qarz' qarz.id %}"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                                    {% if not qarz.is_paid %}
+                                    <li><a class="dropdown-item" href="{% url 'add_payment' qarz.id %}"><i class="bi bi-cash me-2"></i>Add Payment</a></li>
+                                    {% endif %}
+
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="mb-3">
+                    <i class="bi bi-wallet2 text-muted" style="font-size: 3rem;"></i>
+                </div>
+                <h5>No Loans Found</h5>
+                <p class="text-muted mb-4">You haven't given any loans yet</p>
+                <a href="{% url 'add_qarz' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add New Loan</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if qarzlar.has_other_pages %}
+        <nav class="mt-4 d-flex justify-content-center">
+            <ul class="pagination">
+                {% if qarzlar.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1"><i class="bi bi-chevron-double-left"></i></a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ qarzlar.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
+                {% endif %}
+
+                {% for num in qarzlar.paginator.page_range %}
+                    {% if qarzlar.number == num %}
+                    <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% elif num > qarzlar.number|add:'-3' and num < qarzlar.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if qarzlar.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ qarzlar.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ qarzlar.paginator.num_pages }}"><i class="bi bi-chevron-double-right"></i></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+
+    {% elif section == 'form' %}
+    <!-- Loan Form -->
+    <div class="form-section">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+                <h2 class="h4 mb-1">{% if qarz %}Update Loan{% else %}Create New Loan{% endif %}</h2>
+                <p class="text-muted small m-0">{% if qarz %}Edit the loan details{% else %}Fill in the loan information{% endif %}</p>
+            </div>
+            <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary mt-2 mt-md-0"><i class="bi bi-arrow-left"></i> Back</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        {% for field in form %}
+                        <div class="col-12 col-md-6">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback">{{ field.errors|first }}</div>{% endif %}
+                            {% if field.help_text %}<small class="text-muted">{{ field.help_text }}</small>{% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> {% if qarz %}Update{% else %}Create{% endif %} Loan
+                        </button>
+                        <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% elif section == 'delete' %}
+    <!-- Delete Confirmation -->
+    <div class="form-section">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+                <h2 class="h4 mb-1">Delete Loan</h2>
+                <p class="text-muted small m-0">Confirm deletion of this loan record</p>
+            </div>
+            <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary mt-2 mt-md-0"><i class="bi bi-arrow-left"></i> Back</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Warning!</strong> This action cannot be undone.
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <small class="text-muted d-block">Lender</small>
+                        <strong>{{ qarz.lender.username }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Borrower</small>
+                        <strong>{{ qarz.borrower_name }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Amount</small>
+                        <strong>${{ qarz.amount|floatformat:2 }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Remaining</small>
+                        <strong>${{ qarz.remaining_amount|floatformat:2 }}</strong>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Confirm Delete</button>
+                        <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% elif section == 'add_payment' %}
+    <!-- Add Payment -->
+    <div class="form-section">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+                <h2 class="h4 mb-1">Add Payment</h2>
+                <p class="text-muted small m-0">Record a new payment for this loan</p>
+            </div>
+            <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary mt-2 mt-md-0"><i class="bi bi-arrow-left"></i> Back</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <!-- Loan Summary -->
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Total Amount</small>
+                                <strong>${{ qarz.amount|floatformat:2 }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Remaining</small>
+                                <strong class="{% if qarz.remaining_amount > 0 %}text-danger{% else %}text-success{% endif %}">
+                                    ${{ qarz.remaining_amount|floatformat:2 }}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small>Paid: ${{ qarz.get_paid_amount|floatformat:2 }}</small>
+                            <small>{{ qarz.percentage_paid|floatformat:0 }}%</small>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" style="width: {{ qarz.percentage_paid }}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    {% for field in payment_form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="invalid-feedback">{{ field.errors|first }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-cash"></i> Add Payment</button>
+                        <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% elif section == 'update_payment' %}
+    <!-- Update Payment -->
+    <div class="form-section">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+                <h2 class="h4 mb-1">Update Payment</h2>
+                <p class="text-muted small m-0">Edit the payment details for this loan</p>
+            </div>
+            <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary mt-2 mt-md-0"><i class="bi bi-arrow-left"></i> Back</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <!-- Loan Summary -->
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Total Amount</small>
+                                <strong>${{ qarz.amount|floatformat:2 }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Remaining</small>
+                                <strong class="{% if qarz.remaining_amount > 0 %}text-danger{% else %}text-success{% endif %}">
+                                    ${{ qarz.remaining_amount|floatformat:2 }}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    {% for field in payment_form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="invalid-feedback">{{ field.errors|first }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Update Payment</button>
+                        <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% elif section == 'delete_payment' %}
+    <!-- Delete Payment Confirmation -->
+    <div class="form-section">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+                <h2 class="h4 mb-1">Delete Payment</h2>
+                <p class="text-muted small m-0">Confirm deletion of this payment record</p>
+            </div>
+            <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary mt-2 mt-md-0"><i class="bi bi-arrow-left"></i> Back</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Warning!</strong> This action cannot be undone.
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <small class="text-muted d-block">Loan Amount</small>
+                        <strong>${{ qarz.amount|floatformat:2 }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Payment Amount</small>
+                        <strong>${{ payment.amount|floatformat:2 }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Payment Date</small>
+                        <strong>{{ payment.payment_date|date:"M d, Y" }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Description</small>
+                        <strong>{{ payment.description|default:"No description" }}</strong>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Confirm Delete</button>
+                        <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% elif section == 'truck_details' %}
+    <!-- Truck Details -->
+    <div class="form-section">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+                <h2 class="h4 mb-1">{{ truck.make }} {{ truck.model }}</h2>
+                <p class="text-muted small m-0">Truck details and specifications</p>
+            </div>
+            <a href="{% url 'qarz_view' %}" class="btn btn-outline-secondary mt-2 mt-md-0"><i class="bi bi-arrow-left"></i> Back</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <!-- Truck Image -->
+                    <div class="col-lg-6">
+                        {% if truck.image %}
+                        <img src="{{ truck.image.url }}" alt="{{ truck.make }} {{ truck.model }}" class="img-fluid rounded">
+                        {% else %}
+                        <div class="bg-light rounded d-flex flex-column align-items-center justify-content-center p-5" style="min-height: 200px;">
+                            <i class="bi bi-truck text-muted mb-2" style="font-size: 3rem;"></i>
+                            <p class="text-muted">No image available</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Truck Details -->
+                    <div class="col-lg-6">
+                        <h5 class="mb-3">Specifications</h5>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Make</small>
+                                <strong>{{ truck.make }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Model</small>
+                                <strong>{{ truck.model }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Year</small>
+                                <strong>{{ truck.year }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Color</small>
+                                <strong>{{ truck.color }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">VIN</small>
+                                <strong>{{ truck.vin }}</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">License Plate</small>
+                                <strong>{{ truck.license_plate }}</strong>
+                            </div>
+                            <div class="col-12">
+                                <small class="text-muted d-block">Description</small>
+                                <p>{{ truck.description|default:"No description available." }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% elif section == 'detail' %}
+    <!-- Loan Detail -->
+    <div class="detail-content">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0">Loan Information</h5>
+                    <span class="badge {% if qarz.is_paid %}bg-success{% else %}bg-warning{% endif %}">
+                        {% if qarz.is_paid %}Paid{% else %}Pending{% endif %}
+                    </span>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <small class="text-muted d-block">Lender</small>
+                        <strong>{{ qarz.lender.username }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Borrower</small>
+                        <strong>{{ qarz.borrower_name }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Amount</small>
+                        <strong>${{ qarz.amount|floatformat:2 }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Remaining</small>
+                        <strong class="{% if qarz.remaining_amount > 0 %}text-danger{% else %}text-success{% endif %}">
+                            ${{ qarz.remaining_amount|floatformat:2 }}
+                        </strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Date Created</small>
+                        <strong>{{ qarz.created_date|date:"M d, Y" }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted d-block">Last Updated</small>
+                        <strong>{{ qarz.updated_date|date:"M d, Y" }}</strong>
+                    </div>
+                    {% if qarz.truck %}
+                    <div class="col-12">
+                        <small class="text-muted d-block">Truck</small>
+                        <strong>{{ qarz.truck.make }} {{ qarz.truck.model }} ({{ qarz.truck.year }})</strong>
+                    </div>
+                    {% endif %}
+                    {% if qarz.description %}
+                    <div class="col-12">
+                        <small class="text-muted d-block">Description</small>
+                        <p>{{ qarz.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <small>Paid: ${{ qarz.get_paid_amount|floatformat:2 }}</small>
+                    <small>{{ qarz.percentage_paid|floatformat:0 }}%</small>
+                </div>
+                <div class="progress mb-4" style="height: 8px;">
+                    <div class="progress-bar bg-primary" style="width: {{ qarz.percentage_paid }}%"></div>
+                </div>
+
+                {% if request.user == qarz.lender %}
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'update_qarz' qarz.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <a href="{% url 'delete_qarz' qarz.id %}" class="btn btn-sm btn-outline-danger">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                    {% if not qarz.is_paid %}
+                    <a href="{% url 'add_payment' qarz.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-cash"></i> Add Payment
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Payment History -->
+        <h5 class="mb-3">Payment History</h5>
+        {% if qarz.payments.exists %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Note</th>
+                        {% if request.user == qarz.lender %}
+                        <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in qarz.payments.all %}
+                    <tr>
+                        <td>{{ payment.payment_date|date:"M d, Y" }}</td>
+                        <td>${{ payment.amount|floatformat:2 }}</td>
+                        <td>{{ payment.description|default:"-" }}</td>
+                        {% if request.user == qarz.lender %}
+                        <td>
+                            <a href="{% url 'update_payment' qarz.id payment.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'delete_payment' qarz.id payment.id %}" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <th>Total</th>
+                        <th>${{ qarz.get_paid_amount|floatformat:2 }}</th>
+                        <th></th>
+                        {% if request.user == qarz.lender %}
+                        <th></th>
+                        {% endif %}
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-light text-center">
+            <i class="bi bi-info-circle me-2"></i> No payment records found
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- JavaScript for search functionality -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('loanSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const loanCards = document.querySelectorAll('.col-12.col-md-6.col-lg-4');
+
+            loanCards.forEach(card => {
+                const lender = card.dataset.lender || '';
+                const borrower = card.dataset.borrower || '';
+                const amount = card.dataset.amount || '';
+                const status = card.dataset.status || '';
+
+                if (lender.includes(searchTerm) ||
+                    borrower.includes(searchTerm) ||
+                    amount.includes(searchTerm) ||
+                    status.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

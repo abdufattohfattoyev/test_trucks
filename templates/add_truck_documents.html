@@ -1,0 +1,121 @@
+<div class="add-truck-documents-form p-3">
+    <h4 class="mb-3">Hujjatlar qo'shish: {{ truck.make }} {{ truck.model }}</h4>
+    <form method="post" enctype="multipart/form-data" id="truckDocumentForm">
+        {% csrf_token %}
+        <div id="document-formset">
+            {{ document_formset.management_form }}
+            {% for form in document_formset.forms %}
+                <div class="document-form mb-3">
+                    {{ form.document.label_tag }}
+                    {{ form.document }}
+                    {% if form.document.errors %}
+                        <div class="invalid-feedback">{{ form.document.errors|join:", " }}</div>
+                    {% endif %}
+                    <button type="button" class="btn btn-danger btn-sm remove-document mt-2" style="display: {% if forloop.first and document_formset.forms|length == 1 %}none{% endif %;}">O'chirish</button>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-primary mb-3" id="add-document">Yana hujjat qo'shish</button>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{% url 'dashboard' %}'">
+                <i class="bi bi-x-circle me-1"></i>Bekor qilish
+            </button>
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-save me-1"></i>Saqlash
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formsetContainer = document.getElementById('document-formset');
+        const addButton = document.getElementById('add-document');
+        const totalForms = document.getElementById('id_documents-TOTAL_FORMS');
+
+        addButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const formCount = parseInt(totalForms.value);
+            const newFormIndex = formCount;
+            const newForm = document.createElement('div');
+            newForm.className = 'document-form mb-3';
+            newForm.innerHTML = `
+                <label for="id_documents-${newFormIndex}-document">Mashina hujjati</label>
+                <input type="file" name="documents-${newFormIndex}-document" id="id_documents-${newFormIndex}-document" class="form-control file-upload" accept=".pdf,.doc,.docx">
+                <button type="button" class="btn btn-danger btn-sm remove-document mt-2">O'chirish</button>
+            `;
+            formsetContainer.appendChild(newForm);
+            totalForms.value = formCount + 1;
+
+            // Add remove functionality
+            newForm.querySelector('.remove-document').addEventListener('click', function() {
+                newForm.remove();
+                updateFormIndices();
+            });
+
+            updateFormIndices();
+        });
+
+        // Remove document form
+        formsetContainer.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-document')) {
+                e.target.parentElement.remove();
+                updateFormIndices();
+            }
+        });
+
+        function updateFormIndices() {
+            const forms = formsetContainer.getElementsByClassName('document-form');
+            for (let i = 0; i < forms.length; i++) {
+                const inputs = forms[i].getElementsByTagName('input');
+                for (let input of inputs) {
+                    const name = input.getAttribute('name').replace(/\d+/, i);
+                    const id = input.getAttribute('id').replace(/\d+/, i);
+                    input.setAttribute('name', name);
+                    input.setAttribute('id', id);
+                    const label = forms[i].getElementsByTagName('label')[0];
+                    if (label) {
+                        label.setAttribute('for', `id_documents-${i}-document`);
+                    }
+                }
+                totalForms.value = forms.length;
+                forms[i].querySelector('.remove-document').style.display = forms.length > 1 ? 'inline-block' : 'none';
+            }
+        }
+
+        // Handle form submission with AJAX
+        const form = document.getElementById('truckDocumentForm');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
+                } else {
+                    alert(data.message);
+                    // Handle errors if needed
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+</script>
+
+<style>
+    .document-form { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+    .remove-document { margin-left: 10px; }
+</style>

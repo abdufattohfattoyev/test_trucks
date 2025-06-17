@@ -1,0 +1,247 @@
+<div class="add-user-form">
+    <!-- Form Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+        <h4 class="mb-0 text-primary">
+            <i class="bi bi-person-plus me-2"></i>Yangi Foydalanuvchi Qo'shish
+        </h4>
+        <button type="button" class="btn-close" onclick="closeFormSidebar()" aria-label="Close"></button>
+    </div>
+
+    <form id="addUserForm" method="post" action="{% url 'add_user' %}" class="ajax-form needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="card mb-3 border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3 text-secondary"><i class="bi bi-person-circle me-1"></i> Foydalanuvchi ma'lumotlari</h6>
+                <div class="row g-2">
+                    <div class="col-12">
+                        <div class="form-floating mb-2">
+                            <input type="text" name="username" id="id_username" class="form-control" placeholder="Username" required>
+                            <label for="id_username">Username</label>
+                            <div class="invalid-feedback" id="username-error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating mb-2">
+                            <input type="password" name="password" id="id_password" class="form-control" placeholder="Parol" required>
+                            <label for="id_password">Parol</label>
+                            <div class="invalid-feedback" id="password-error"></div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating mb-2">
+                            <input type="email" name="email" id="id_email" class="form-control" placeholder="Email (ixtiyoriy)">
+                            <label for="id_email">Email (ixtiyoriy)</label>
+                            <div class="invalid-feedback" id="email-error"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex gap-2 mt-3">
+            <button type="button" class="btn btn-outline-secondary flex-grow-1" onclick="closeFormSidebar()">
+                <i class="bi bi-x-circle me-1"></i> Bekor qilish
+            </button>
+            <button type="submit" class="btn btn-primary flex-grow-1" id="submitBtn">
+                <i class="bi bi-save me-1"></i> Saqlash
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .add-user-form {
+        padding: 1rem;
+    }
+
+    .form-floating > label {
+        color: #5c6c75;
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .btn {
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .btn-outline-secondary {
+        border-color: #dee2e6;
+    }
+
+    .invalid-feedback {
+        font-size: 0.8rem;
+        color: #dc3545;
+        display: none;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .form-control.is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+
+    h6 {
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('addUserForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const requiredFields = ['username', 'password'];
+
+        // Reset form errors
+        function resetFormErrors(form) {
+            form.querySelectorAll('.form-control').forEach(input => {
+                input.classList.remove('is-invalid');
+            });
+            form.querySelectorAll('.invalid-feedback').forEach(div => {
+                div.textContent = '';
+                div.style.display = 'none';
+            });
+        }
+
+        // Show form errors
+        function showFormErrors(form, errors) {
+            Object.keys(errors).forEach(key => {
+                const field = form.querySelector(`[name="${key}"]`);
+                if (field) {
+                    field.classList.add('is-invalid');
+                    const errorDiv = form.querySelector(`#${key}-error`);
+                    if (errorDiv) {
+                        errorDiv.textContent = errors[key];
+                        errorDiv.style.display = 'block';
+                    }
+                }
+            });
+        }
+
+        // Form submission
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            try {
+                // Reset previous errors
+                resetFormErrors(form);
+
+                // Client-side validation
+                let hasClientError = false;
+                requiredFields.forEach(field => {
+                    const input = form.querySelector(`[name="${field}"]`);
+                    if (!input || !input.value.trim()) {
+                        const errorDiv = form.querySelector(`#${field}-error`);
+                        if (errorDiv) {
+                            errorDiv.textContent = `${input.labels[0].textContent} kiritish majburiy!`;
+                            errorDiv.style.display = 'block';
+                            input.classList.add('is-invalid');
+                            hasClientError = true;
+                        }
+                    }
+                });
+
+                const usernameInput = form.querySelector('[name="username"]');
+                const passwordInput = form.querySelector('[name="password"]');
+
+                if (usernameInput && usernameInput.value && usernameInput.value.trim().length < 3) {
+                    const errorDiv = form.querySelector('#username-error');
+                    errorDiv.textContent = 'Username kamida 3 belgidan iborat bo‘lishi kerak!';
+                    errorDiv.style.display = 'block';
+                    usernameInput.classList.add('is-invalid');
+                    hasClientError = true;
+                }
+
+                if (passwordInput && passwordInput.value && passwordInput.value.trim().length < 6) {
+                    const errorDiv = form.querySelector('#password-error');
+                    errorDiv.textContent = 'Parol kamida 6 belgidan iborat bo‘lishi kerak!';
+                    errorDiv.style.display = 'block';
+                    passwordInput.classList.add('is-invalid');
+                    hasClientError = true;
+                }
+
+                if (hasClientError) {
+                    showAlert('error', 'Iltimos, barcha majburiy maydonlarni to‘g‘ri to‘ldiring!');
+                    form.classList.add('was-validated');
+                    return;
+                }
+
+                // Send form via AJAX
+                const formData = new FormData(form);
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Yuborilmoqda...';
+
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('success', data.message || 'Foydalanuvchi muvaffaqiyatli qo‘shildi!');
+                    closeFormSidebar();
+                } else {
+                    showFormErrors(form, data.errors || {});
+                    showAlert('error', data.message || 'Xatolik yuz berdi, iltimos xatolarni tuzating!');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showAlert('error', 'Xatolik yuz berdi, iltimos qaytadan urinib ko‘ring.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-save me-1"></i> Saqlash';
+            }
+        });
+
+        // Real-time validation
+        form.querySelectorAll('[name="username"], [name="password"]').forEach(input => {
+            input.addEventListener('input', function () {
+                const field = this.name;
+                const errorDiv = form.querySelector(`#${field}-error`);
+                errorDiv.textContent = '';
+                errorDiv.style.display = 'none';
+                this.classList.remove('is-invalid');
+
+                if (field === 'username' && this.value && this.value.trim().length < 3) {
+                    errorDiv.textContent = 'Username kamida 3 belgidan iborat bo‘lishi kerak!';
+                    errorDiv.style.display = 'block';
+                    this.classList.add('is-invalid');
+                }
+                if (field === 'password' && this.value && this.value.trim().length < 6) {
+                    errorDiv.textContent = 'Parol kamida 6 belgidan iborat bo‘lishi kerak!';
+                    errorDiv.style.display = 'block';
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+    });
+</script>

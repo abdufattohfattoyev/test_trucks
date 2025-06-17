@@ -1,0 +1,23 @@
+{% load i18n %}
+<div class="form-container">
+    <h2 class="form-title">Delete Payment</h2>
+    <p>Are you sure you want to delete the payment of <strong>${{ tolov.summa|floatformat:2 }}</strong>? This action cannot be undone.</p>
+    <form id="tolovDeleteForm" method="POST">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</button>
+            <button type="button" class="btn btn-secondary" onclick="closeFormSidebar()">Cancel</button>
+        </div>
+    </form>
+</div>
+<style>
+    .form-container { padding: 1.5rem; background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
+    .form-title { font-size: 1.25rem; color: var(--dark); margin-bottom: 1rem; }
+    p { color: var(--gray); margin-bottom: 1.5rem; }
+    .form-actions { display: flex; gap: 1rem; justify-content: flex-end; }
+    .btn { padding: 0.5rem 1rem; border: none; border-radius: var(--radius-sm); font-size: 0.875rem; cursor: pointer; transition: var(--transition); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #d1145a; }
+    .btn-secondary { background: var(--light-gray); color: var(--dark); }
+    .btn-secondary:hover { background: #e0e0e0; }
+</style>

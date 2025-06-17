@@ -1,0 +1,353 @@
+<div class="truck-detail-container p-3">
+    <!-- Header -->
+    <div class="header-top mb-3">
+        <h1><i class="bi bi-truck"></i> {{ truck.po_id }}: {{ truck.make }} {{ truck.model }}</h1>
+        <div class="actions">
+            <a href="{% url 'trucks_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Orqaga
+            </a>
+            <button onclick="openFormSidebar('/truck/edit/{{ truck.id }}/', 'Mashina Tahrirlash')" class="btn btn-accent">
+                <i class="bi bi-pencil"></i> Tahrirlash
+            </button>
+            <button onclick="showDeleteModal({{ truck.id }}, '{{ truck.po_id|escapejs }}: {{ truck.make|escapejs }} {{ truck.model|escapejs }}')" class="btn btn-danger">
+                <i class="bi bi-trash"></i> O'chirish
+            </button>
+        </div>
+    </div>
+
+    <!-- Truck Details -->
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="row g-3">
+                <!-- Image -->
+                <div class="col-md-6">
+                    {% if truck.image %}
+                    <img src="{{ truck.image.url }}" alt="{{ truck.make }}" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;">
+                    {% else %}
+                    <div class="no-image"><i class="bi bi-image"></i> Rasm mavjud emas</div>
+                    {% endif %}
+                </div>
+                <!-- Details -->
+                <div class="col-md-6">
+                    <h6 class="text-secondary"><i class="bi bi-list-check me-1"></i>Asosiy ma'lumotlar</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>PO raqami:</strong> {{ truck.po_id }}</li>
+                        <li><strong>Brend:</strong> {{ truck.make }}</li>
+                        <li><strong>Model:</strong> {{ truck.model }}</li>
+                        <li><strong>Yil:</strong> {{ truck.year }}</li>
+                        <li><strong>Ot kuchi:</strong> {{ truck.horsepower }} HP</li>
+                        <li><strong>Seriya raqami:</strong> {{ truck.seriya|default:"Yo'q" }}</li>
+                    </ul>
+                    <h6 class="text-secondary mt-3"><i class="bi bi-cash-coin me-1"></i>Narx va manzil</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>Narxi:</strong> ${{ truck.price|floatformat:"0" }}</li>
+                        <li><strong>Joylashuv:</strong> {{ truck.location|default:"Yo'q" }}</li>
+                        <li><strong>Kompaniya:</strong> {{ truck.company|default:"Yo'q" }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description -->
+    {% if truck.description %}
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body">
+            <h6 class="text-secondary"><i class="bi bi-card-text me-1"></i>Tavsif</h6>
+            <p>{{ truck.description }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Hujjatlar -->
+    <div class="card mb-3 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="text-secondary"><i class="bi bi-file-earmark-text me-1"></i>Hujjatlar ({{ truck.hujjatlar.count }})</h6>
+                <button onclick="showHujjatModal({{ truck.id }}, '{{ truck.po_id|escapejs }}')" class="btn btn-accent">
+                    <i class="bi bi-file-earmark-arrow-up"></i> Hujjat yuklash
+                </button>
+            </div>
+            {% if truck.hujjatlar.exists %}
+            <div class="hujjat-list">
+                {% for hujjat in truck.hujjatlar.all %}
+                <div class="hujjat-item">
+                    <a href="{{ hujjat.hujjat.url }}" target="_blank">{{ hujjat.original_file_name }}</a>
+                    <button onclick="deleteHujjat({{ hujjat.id }}, {{ truck.id }})" class="delete-hujjat-btn">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">Hujjatlar mavjud emas.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteConfirmationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>O'chirishni tasdiqlang</h5>
+                <button onclick="closeDeleteModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Haqiqatan ham <strong id="truckNameToDelete"></strong> ni o'chirmoqchimisiz?</p>
+                <p class="text-danger">Bu amalni qaytarib bo'lmaydi!</p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeDeleteModal()" class="btn btn-secondary">Bekor qilish</button>
+                <form id="deleteTruckForm" method="POST" action="{% url 'delete_truck' truck.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">O'chirish</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --accent-color: #1abc9c;
+        --text-color: #ffffff;
+        --bg-color: #f4f6f9;
+        --shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+        --border-radius: 8px;
+        --transition-speed: 0.2s;
+        --danger-color: #ff3b30;
+    }
+
+    .truck-detail-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: var(--border-radius);
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .card {
+        transition: transform var(--transition-speed) ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .no-image {
+        width: 100%;
+        height: 300px;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 1.5rem;
+        border-radius: var(--border-radius);
+    }
+
+    .hujjat-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .hujjat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .hujjat-item a {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+
+    .hujjat-item a:hover {
+        text-decoration: underline;
+    }
+
+    .delete-hujjat-btn {
+        background: none;
+        border: none;
+        color: var(--danger-color);
+        cursor: pointer;
+    }
+
+    .btn-accent {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        color: var(--text-color);
+    }
+
+    .btn-accent:hover {
+        background-color: #16a085;
+        border-color: #16a085;
+    }
+
+    .btn-outline-secondary {
+        border-color: #6c757d;
+        color: #6c757d;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: var(--text-color);
+    }
+
+    .btn-danger {
+        background-color: var(--danger-color);
+        border-color: var(--danger-color);
+        color: var(--text-color);
+    }
+
+    .btn-danger:hover {
+        background-color: #e02a20;
+        border-color: #e02a20;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1001;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: #ffffff;
+        border-radius: var(--border-radius);
+        width: 90%;
+        max-width: 400px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        animation: modalFadeIn 0.3s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+        padding: 0.75rem;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-body {
+        padding: 0.75rem;
+    }
+
+    .modal-footer {
+        padding: 0.75rem;
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .truck-detail-container { padding: 1rem; }
+        h1 { font-size: 1.25rem; }
+        .header-top { flex-direction: column; align-items: flex-start; }
+        .no-image { height: 200px; }
+        .btn { font-size: 0.9rem; padding: 0.4rem 0.8rem; }
+    }
+
+    @media (max-width: 576px) {
+        .truck-detail-container { padding: 0.75rem; }
+        .row.g-3 { gap: 0.75rem !important; }
+        .img-fluid { max-height: 150px; }
+    }
+</style>
+
+<script>
+    function showDeleteModal(truckId, truckName) {
+        const modal = document.getElementById('deleteConfirmationModal');
+        const truckNameEl = document.getElementById('truckNameToDelete');
+        const form = document.getElementById('deleteTruckForm');
+
+        truckNameEl.textContent = truckName;
+        modal.style.display = 'flex';
+
+        form.onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.showAlert('success', data.message);
+                    setTimeout(() => window.location.href = '{% url 'trucks_list' %}', 1000);
+                } else {
+                    window.showAlert('error', data.message || 'O\'chirishda xato yuz berdi');
+                }
+                closeDeleteModal();
+            } catch (error) {
+                console.error('Error deleting truck:', error);
+                window.showAlert('error', 'O\'chirishda xato yuz berdi');
+                closeDeleteModal();
+            }
+        };
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteConfirmationModal').style.display = 'none';
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

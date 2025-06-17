@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - Truck Savdo{% endblock %}
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --accent: #4895ef;
+        --danger: #f72585;
+        --success: #4cc9f0;
+        --dark: #212529;
+        --light: #f8f9fa;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        --radius-sm: 0.25rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 1rem;
+        --transition: all 0.3s ease;
+    }
+
+    .container-xl { max-width: 1400px; padding: 2rem 1rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .page-title { color: var(--dark); font-weight: 700; margin: 0; }
+    .btn-add { background-color: var(--accent); color: white; border: none; padding: 0.625rem 1.25rem; border-radius: var(--radius-sm); font-weight: 500; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; }
+    .btn-add:hover { background-color: var(--secondary); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .btn-add i { font-size: 1rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .stat-card { background-color: white; border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm); transition: var(--transition); }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+    .stat-card h3 { color: var(--dark); font-size: 1.25rem; margin: 0 0 0.5rem; }
+    .stat-card p { color: #495057; font-size: 1.5rem; font-weight: 600; margin: 0; }
+    .stat-card.success p { color: var(--success); }
+    .stat-card.danger p { color: var(--danger); }
+    .stat-card.warning p { color: #f48c06; }
+    .empty-state { background-color: white; border-radius: var(--radius-md); padding: 2rem; text-align: center; box-shadow: var(--shadow-sm); }
+    .empty-state i { font-size: 2rem; color: #adb5bd; margin-bottom: 1rem; }
+    .empty-state p { color: #6c757d; margin: 0; }
+    @media (max-width: 992px) { .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } .stat-card { padding: 1rem; } }
+    @media (max-width: 576px) { .page-header { flex-direction: column; align-items: flex-start; } .stat-card h3 { font-size: 1rem; } .stat-card p { font-size: 1.25rem; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-xl">
+    <div class="page-header">
+        <h1 class="page-title">Admin Dashboard</h1>
+        <a href="{% url 'chiqim_list' %}" class="btn-add">
+            <i class="bi bi-list-ul"></i> Chiqimlar Ro'yxati
+        </a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Jami Chiqimlar</h3>
+            <p>{{ total_chiqimlar }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Jami Qoldiq</h3>
+            <p>{{ total_qoldiq|floatformat:2 }} so'm</p>
+        </div>
+        <div class="stat-card warning">
+            <h3>Shoshilinch Eslatmalar</h3>
+            <p>{{ urgent_notifications }}</p>
+        </div>
+        <div class="stat-card danger">
+            <h3>Kechikkan Eslatmalar</h3>
+            <p>{{ overdue_notifications }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Jami SMS</h3>
+            <p>{{ total_sms }}</p>
+        </div>
+        <div class="stat-card success">
+            <h3>Muvaffaqiyatli SMS</h3>
+            <p>{{ successful_sms }}</p>
+        </div>
+        <div class="stat-card danger">
+            <h3>Muvaffaqiyatsiz SMS</h3>
+            <p>{{ failed_sms }}</p>
+        </div>
+    </div>
+
+    {% if not total_chiqimlar %}
+    <div class="empty-state">
+        <i class="bi bi-exclamation-circle"></i>
+        <p>Chiqimlar mavjud emas</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showAlert(type, message) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.role = 'alert';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(alert);
+        setTimeout(() => alert.remove(), 3000);
+    }
+</script>
+{% endblock %}
