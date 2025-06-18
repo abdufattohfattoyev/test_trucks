@@ -1,40 +1,51 @@
-
 import os
 from pathlib import Path
-from celery.schedules import crontab
 from decouple import config
 from dotenv import load_dotenv
 
-# Load .env file for local development
+# Load .env file
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
+# Security settings
 SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY must be set in the .env file or environment variables.")
-DEBUG = True
-ALLOWED_HOSTS = ["*"]
+
+DEBUG = config('DEBUG', default=False, cast=bool)  # Serverda DEBUG=False
+ALLOWED_HOSTS = ['truck-trade.uz', 'www.truck-trade.uz', '109.199.110.21', 'localhost', '127.0.0.1']
+
+# HTTPS settings
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 
 CORS_ALLOWED_ORIGINS = [
-    "http://147.93.130.94:8585",
+    "https://truck-trade.uz",
+    "http://truck-trade.uz",
+    "https://www.truck-trade.uz",
+    "http://www.truck-trade.uz",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://147.93.130.94:8585",
+    "https://truck-trade.uz",
+    "http://truck-trade.uz",
+    "https://www.truck-trade.uz",
+    "http://www.truck-trade.uz",
 ]
 
 # Celery settings
-CELERY_BROKER_URL = config('CELERY_BROKER_URL')  # .env faylidan oladi
+CELERY_BROKER_URL = config('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
-
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Tashkent'
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # Application definition
 INSTALLED_APPS = [
@@ -52,20 +63,19 @@ INSTALLED_APPS = [
     'qarz',
     'chiqim',
     'widget_tweaks',
-    'django_celery_beat',
+    # 'django_celery_beat',  # Vaqtincha o'chirilgan
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 
 ROOT_URLCONF = 'config.urls'
 
@@ -90,18 +100,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'truck_savdodb',  # Yuqorida yaratgan DB nomi
-        'USER': 'postgres',         # Standart foydalanuvchi
-        'PASSWORD': '123',  # O'rnatishda kiritgan parol
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': config('DB_NAME', default='truck_savdodb'),
+        'USER': config('DB_USER', default='postgres'),
+        'PASSWORD': config('DB_PASSWORD', default='123'),
+        'HOST': config('DB_HOST', default='db'),
+        'PORT': config('DB_PORT', default='5432'),
     }
 }
 
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6380/1',
+        'LOCATION': config('REDIS_URL', default='redis://redis:6379/1'),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
@@ -123,7 +133,7 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -137,42 +147,15 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-# Logging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-    },
-}
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER')
 
-
-# Celery Beat Schedule
-
-CELERY_BEAT_SCHEDULE = {
-
-    'send-daily-payment-reminders-every-minute': {
-        'task': 'chiqim.tasks.check_payment_reminders',
-        'schedule': 60.0,  # bu ham test uchun 1 daqiqada bir
-    },
-}
-
-# settings.py ga qo'shiladigan qism
+# Telegram settings
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID')
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # or your email provider
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'abdufattohfattoyev0@gmail.com'
-EMAIL_HOST_PASSWORD = 'iqadjanpggmmiran'
-DEFAULT_FROM_EMAIL = 'abdufattohfattoyev0@gmail.com'
