@@ -29,7 +29,7 @@ class TruckForm(forms.ModelForm):
             self.fields['user'].queryset = User.objects.all()
             self.fields['user'].widget.attrs.update({
                 'class': 'form-control',
-                'placeholder': 'Foydalanuvchi tanlang'
+                'placeholder': 'Select user'
             })
 
         # Apply styling to all fields
@@ -37,7 +37,7 @@ class TruckForm(forms.ModelForm):
             if field != 'user':
                 self.fields[field].widget.attrs.update({
                     'class': 'form-control',
-                    'placeholder': f"{self.fields[field].label.lower()} kiriting"
+                    'placeholder': f"Enter {self.fields[field].label.lower()}"
                 })
 
         # Set required fields
@@ -48,7 +48,7 @@ class TruckForm(forms.ModelForm):
 
         # Configure po_id field
         self.fields['po_id'].widget.attrs.update({
-            'placeholder': 'PO ID kiriting (masalan, PO-12345)'
+            'placeholder': 'Enter PO ID (e.g., PO-12345)'
         })
 
         # Additional field attributes
@@ -66,14 +66,14 @@ class TruckForm(forms.ModelForm):
         })
 
         # Help texts
-        self.fields['image'].help_text = 'Ixtiyoriy - Tavsiya etilgan olcham: 800x600px'
-        self.fields['seriya'].help_text = 'Ixtiyoriy - Mashina seriya raqami'
-        self.fields['po_id'].help_text = 'PO ID kiriting'
-        self.fields['year'].help_text = '1900 va 2100 oraligida'
-        self.fields['horsepower'].help_text = 'Minimal 0 HP'
-        self.fields['price'].help_text = 'AQSh dollarida'
-        self.fields['company'].help_text = 'Kompaniya nomini kiriting'
-        self.fields['location'].help_text = 'Mashina joylashuvi'
+        self.fields['image'].help_text = 'Optional - Recommended size: 800x600px'
+        self.fields['seriya'].help_text = 'Optional - Vehicle serial number'
+        self.fields['po_id'].help_text = 'Enter PO ID'
+        self.fields['year'].help_text = 'Between 1900 and 2100'
+        self.fields['horsepower'].help_text = 'Minimum 0 HP'
+        self.fields['price'].help_text = 'In US dollars'
+        self.fields['company'].help_text = 'Enter company name'
+        self.fields['location'].help_text = 'Vehicle location'
 
     class Meta:
         model = Truck
@@ -82,30 +82,30 @@ class TruckForm(forms.ModelForm):
             'location', 'description', 'image', 'seriya'
         ]
         labels = {
-            'user': 'Foydalanuvchi',
+            'user': 'User',
             'po_id': 'PO ID',
-            'make': 'Marka',
+            'make': 'Make',
             'model': 'Model',
-            'year': 'Yil',
-            'horsepower': 'Ot kuchi (HP)',
-            'price': 'Narx ($)',
-            'company': 'Kompaniya nomi',
-            'location': 'Joylashuv',
-            'image': 'Mashina rasmi',
-            'description': 'Qoshimcha izohlar',
-            'seriya': 'Seriya raqami'
+            'year': 'Year',
+            'horsepower': 'Horsepower (HP)',
+            'price': 'Price ($)',
+            'company': 'Company Name',
+            'location': 'Location',
+            'image': 'Vehicle Image',
+            'description': 'Additional Notes',
+            'seriya': 'Serial Number'
         }
 
     def clean_po_id(self):
         po_id = self.cleaned_data.get('po_id')
         if not po_id:
-            raise ValidationError("PO ID kiritilishi shart.")
+            raise ValidationError("PO ID is required.")
         if not po_id.startswith('PO-'):
             po_id = f"PO-{po_id}"
         if not re.match(r'^PO-\d+$', po_id):
-            raise ValidationError("PO ID 'PO-' bilan boshlanib, raqamlar bilan davom etishi kerak.")
+            raise ValidationError("PO ID must start with 'PO-' followed by digits.")
         if Truck.objects.filter(po_id=po_id).exclude(id=self.instance.id if self.instance else None).exists():
-            raise ValidationError("Bu PO ID allaqachon band qilingan.")
+            raise ValidationError("This PO ID is already taken.")
         return po_id
 
     def clean(self):
@@ -120,21 +120,21 @@ class TruckForm(forms.ModelForm):
         seriya = cleaned_data.get('seriya')
 
         if year and (year < 1900 or year > 2100):
-            self.add_error('year', 'Yil 1900 va 2100 oralig\'ida bo\'lishi kerak.')
+            self.add_error('year', 'Year must be between 1900 and 2100.')
         if horsepower is not None and horsepower < 0:
-            self.add_error('horsepower', 'Ot kuchi manfiy bo\'lishi mumkin emas.')
+            self.add_error('horsepower', 'Horsepower cannot be negative.')
         if price is not None and price < 0:
-            self.add_error('price', 'Narx manfiy bo\'lishi mumkin emas.')
+            self.add_error('price', 'Price cannot be negative.')
         if make and len(make.strip()) < 2:
-            self.add_error('make', 'Marka kamida 2 ta belgidan iborat bo\'lishi kerak.')
+            self.add_error('make', 'Make must be at least 2 characters long.')
         if model and len(model.strip()) < 2:
-            self.add_error('model', 'Model kamida 2 ta belgidan iborat bo\'lishi kerak.')
+            self.add_error('model', 'Model must be at least 2 characters long.')
         if company and len(company.strip()) < 2:
-            self.add_error('company', 'Kompaniya nomi kamida 2 ta belgidan iborat bo\'lishi kerak.')
+            self.add_error('company', 'Company name must be at least 2 characters long.')
         if location and len(location.strip()) < 2:
-            self.add_error('location', 'Joylashuv kamida 2 ta belgidan iborat bo\'lishi kerak.')
+            self.add_error('location', 'Location must be at least 2 characters long.')
         if seriya and len(seriya.strip()) < 2:
-            self.add_error('seriya', 'Seriya raqami kamida 2 ta belgidan iborat bo\'lishi kerak.')
+            self.add_error('seriya', 'Serial number must be at least 2 characters long.')
 
         return cleaned_data
 
@@ -151,7 +151,7 @@ class TruckHujjatForm(forms.ModelForm):
             }),
         }
         labels = {
-            'hujjat': "Hujjat yoki rasm (JPG, PNG, PDF, DOC, DOCX, bir nechta fayl ruxsat etiladi)",
+            'hujjat': "Document or image (JPG, PNG, PDF, DOC, DOCX, multiple files allowed)",
         }
 
     def __init__(self, *args, **kwargs):
@@ -164,14 +164,14 @@ class TruckHujjatForm(forms.ModelForm):
             if isinstance(hujjatlar, list):
                 for file in hujjatlar:
                     if file.size > 10 * 1024 * 1024:
-                        raise ValidationError("Har bir fayl hajmi 10MB dan kichik bo'lishi kerak!")
+                        raise ValidationError("Each file size must be less than 10MB!")
                     ext = file.name.split('.')[-1].lower()
                     if ext not in ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx']:
-                        raise ValidationError("Faqat JPG, PNG, PDF, DOC yoki DOCX fayllari qo'llab-quvvatlanadi!")
+                        raise ValidationError("Only JPG, PNG, PDF, DOC, or DOCX files are supported!")
             else:
                 if hujjatlar.size > 10 * 1024 * 1024:
-                    raise ValidationError("Fayl hajmi 10MB dan kichik bo'lishi kerak!")
+                    raise ValidationError("File size must be less than 10MB!")
                 ext = hujjatlar.name.split('.')[-1].lower()
                 if ext not in ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx']:
-                    raise ValidationError("Faqat JPG, PNG, PDF, DOC yoki DOCX fayllari qo'llab-quvvatlanadi!")
+                    raise ValidationError("Only JPG, PNG, PDF, DOC, or DOCX files are supported!")
         return hujjatlar

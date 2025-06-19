@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY must be set in the .env file or environment variables.")
 
-DEBUG = config('DEBUG', default=False, cast=bool)  # Serverda DEBUG=False
+DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = ['truck-trade.uz', 'www.truck-trade.uz', '109.199.110.21', 'localhost', '127.0.0.1']
 
 # HTTPS settings
@@ -25,11 +25,32 @@ SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 SECURE_HSTS_PRELOAD = not DEBUG
 
+# CSRF sozlamalari
+CSRF_COOKIE_HTTPONLY = False  # JavaScript orqali CSRF tokenga kirish uchun
+CSRF_COOKIE_SAMESITE = 'Lax'  # Cross-site requestlar uchun
+CSRF_USE_SESSIONS = False  # Cookie orqali yuborish
+CSRF_COOKIE_AGE = 31449600  # 1 yil
+
 CORS_ALLOWED_ORIGINS = [
     "https://truck-trade.uz",
     "http://truck-trade.uz",
     "https://www.truck-trade.uz",
     "http://www.truck-trade.uz",
+]
+
+# CORS sozlamalari qo'shildi
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Faqat development da
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',  # CSRF token header qo'shildi
+    'x-requested-with',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -68,8 +89,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Buni yuqoriga ko'chirdim
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

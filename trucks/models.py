@@ -10,74 +10,74 @@ from datetime import datetime
 from .utils import send_to_telegram, send_file_to_telegram
 
 def generate_unique_truck_filename(instance, filename):
-    """Fayl nomini unikal qilib, truck_id asosida papkada saqlash."""
+    """Generate a unique file name and store it in a folder based on truck_id."""
     ext = os.path.splitext(filename)[1]
     unique_name = f"{uuid.uuid4()}{ext}"
     truck_id = instance.truck.po_id if instance.truck else 'unknown'
-    return os.path.join(f'truck_hujjatlar/{truck_id}/', slugify(unique_name))
+    return os.path.join(f'truck_documents/{truck_id}/', slugify(unique_name))
 
 class Truck(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='trucks',
-        verbose_name="Foydalanuvchi"
+        verbose_name="User"
     )
     po_id = models.CharField(
         max_length=50,
         unique=True,
-        verbose_name="PO raqami",
-        help_text="PO-{raqam} formatida kiriting, masalan, PO-12345"
+        verbose_name="PO Number",
+        help_text="Enter in the format PO-{number}, e.g., PO-12345"
     )
-    make = models.CharField(max_length=100, verbose_name="Marka")
+    make = models.CharField(max_length=100, verbose_name="Make")
     model = models.CharField(max_length=100, verbose_name="Model")
     year = models.PositiveIntegerField(
-        verbose_name="Yil",
+        verbose_name="Year",
         validators=[MinValueValidator(1886)]
     )
     horsepower = models.PositiveIntegerField(
-        verbose_name="Ot kuchi (HP)",
+        verbose_name="Horsepower (HP)",
         validators=[MinValueValidator(1)]
     )
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        verbose_name="Narx",
+        verbose_name="Price",
         validators=[MinValueValidator(0.01)]
     )
-    company = models.CharField(max_length=200, blank=True, verbose_name="Kompaniya nomi")
-    location = models.CharField(max_length=100, verbose_name="Joylashuv")
-    sotilgan = models.BooleanField(default=False, verbose_name="Sotilgan")
-    description = models.TextField(blank=True, verbose_name="Tavsif")
-    purchase_date = models.DateField(auto_now_add=True, verbose_name="Sotib olingan sana")
-    created_date = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan sana")
+    company = models.CharField(max_length=200, blank=True, verbose_name="Company Name")
+    location = models.CharField(max_length=100, verbose_name="Location")
+    sotilgan = models.BooleanField(default=False, verbose_name="Sold")
+    description = models.TextField(blank=True, verbose_name="Description")
+    purchase_date = models.DateField(auto_now_add=True, verbose_name="Purchase Date")
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name="Created Date")
     image = models.ImageField(
         upload_to='trucks/',
         blank=True,
         null=True,
-        verbose_name="Rasm"
+        verbose_name="Image"
     )
     seriya = models.CharField(
         max_length=50,
         blank=True,
         null=True,
-        verbose_name="Seriya raqami",
+        verbose_name="Serial Number",
         unique=True
     )
 
     def clean(self):
-        """po_id formatini tekshirish."""
+        """Validate the po_id format."""
         po_id = self.po_id.strip()
         if not po_id.startswith("PO-"):
             po_id = f"PO-{po_id}"
             self.po_id = po_id
         if not re.match(r'^PO-\d+$', po_id):
-            raise ValidationError({"po_id": "PO raqami 'PO-' bilan boshlanib, faqat raqamlar bilan davom etishi kerak!"})
+            raise ValidationError({"po_id": "PO number must start with 'PO-' followed by digits only!"})
         if Truck.objects.filter(po_id=po_id).exclude(id=self.id).exists():
-            raise ValidationError({"po_id": "Bu PO-ID allaqachon band qilingan"})
+            raise ValidationError({"po_id": "This PO-ID is already taken"})
 
     def save(self, *args, **kwargs):
-        is_new = not self.pk  # Yangi ob'ektmi yoki yangilanayotganmi
+        is_new = not self.pk  # Check if it's a new object or being updated
         self.clean()
         super().save(*args, **kwargs)
 
@@ -140,8 +140,8 @@ class Truck(models.Model):
         return f"{self.po_id}: {self.make} {self.model} ({self.year}) - {self.user.username}"
 
     class Meta:
-        verbose_name = "Yuk mashinasi"
-        verbose_name_plural = "Yuk mashinalari"
+        verbose_name = "Truck"
+        verbose_name_plural = "Trucks"
         indexes = [
             models.Index(fields=['po_id']),
             models.Index(fields=['user', 'sotilgan']),
@@ -153,22 +153,22 @@ class TruckHujjat(models.Model):
         Truck,
         on_delete=models.CASCADE,
         related_name='hujjatlar',
-        verbose_name="Yuk mashinasi"
+        verbose_name="Truck"
     )
     hujjat = models.FileField(
         upload_to=generate_unique_truck_filename,
         validators=[
             FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'])
         ],
-        verbose_name="Hujjat fayli"
+        verbose_name="Document File"
     )
     original_file_name = models.CharField(
         max_length=255,
-        verbose_name="Asl fayl nomi",
+        verbose_name="Original File Name",
         blank=True,
         null=True
     )
-    uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name="Yuklangan sana")
+    uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name="Uploaded Date")
 
     def save(self, *args, **kwargs):
         is_new = not self.pk
@@ -226,8 +226,8 @@ class TruckHujjat(models.Model):
         return f"{self.truck.po_id} - {self.original_file_name or os.path.basename(self.hujjat.name)}"
 
     class Meta:
-        verbose_name = "Yuk mashinasi hujjati"
-        verbose_name_plural = "Yuk mashinasi hujjatlari"
+        verbose_name = "Truck Document"
+        verbose_name_plural = "Truck Documents"
         indexes = [
             models.Index(fields=['truck']),
         ]
