@@ -68,11 +68,11 @@ class ChiqimForm(forms.ModelForm):
         user = self.initial.get('user')
 
         if narx and boshlangich_summa > narx:
-            raise forms.ValidationError("Boshlang'ich to'lov summasi narxdan oshib ketmasligi kerak!")
+            raise forms.ValidationError("The initial payment amount cannot exceed the price!")
         if truck and truck.sotilgan and (not self.initial_instance or truck != self.initial_instance.truck):
-            raise forms.ValidationError("Bu transport vositasi allaqachon sotilgan!")
+            raise forms.ValidationError("This vehicle has already been sold!")
         if user and not user.is_superuser and xaridor and xaridor.user != user:
-            raise forms.ValidationError("Bu xaridor sizga tegishli emas!")
+            raise forms.ValidationError("This customer does not belong to you!")
         return cleaned_data
 
 class BoshlangichTolovForm(forms.ModelForm):
@@ -109,7 +109,7 @@ class BoshlangichTolovForm(forms.ModelForm):
             boshlangich_qoldiq = chiqim.get_boshlangich_qoldiq()
             if summa > boshlangich_qoldiq:
                 raise forms.ValidationError(
-                    f"To'lov summasi boshlang'ich qoldiq summasidan (${boshlangich_qoldiq:,.2f}) oshib ketdi!"
+                    f"The payment amount exceeds the initial remaining balance (${boshlangich_qoldiq:,.2f})!"
                 )
         return cleaned_data
 
@@ -145,10 +145,10 @@ class TolovForm(forms.ModelForm):
         chiqim = self.initial.get('chiqim')
 
         if chiqim and summa:
-            chiqim.refresh_from_db()  # Qoldiqni yangilash
+            chiqim.refresh_from_db()  # Refresh the remaining balance
             remaining_balance = chiqim.qoldiq_summa
             if remaining_balance <= 0:
-                raise ValidationError("Qoldiq summa to'langan, qo'shimcha to'lov qilish mumkin emas!")
+                raise ValidationError("The remaining balance is already paid, no additional payment is allowed!")
             if summa > remaining_balance:
-                raise ValidationError(f"To'lov summasi qoldiq balansdan (${remaining_balance:,.2f}) oshib ketdi!")
+                raise ValidationError(f"The payment amount exceeds the remaining balance (${remaining_balance:,.2f})!")
         return cleaned_data
