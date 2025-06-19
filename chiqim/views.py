@@ -451,7 +451,7 @@ def chiqim_create(request):
         else:
             logger.warning(f"Form validation failed: {form.errors.as_json()}")
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                errors = {field: [error['message'] for error in errors] for field, errors in form.errors.as_data().items()}
+                errors = {field: [str(error) for error in error_list] for field, error_list in form.errors.as_data().items()}
                 return JsonResponse({
                     'success': False,
                     'errors': errors,
@@ -835,15 +835,16 @@ def send_payment_reminder_email(request, bildirishnoma_id):
             logger.warning(f"Email already sent for ID {bildirishnoma_id}, days_left: {days_left}")
             return JsonResponse({'error': 'Email already sent and more than 5 days left'}, status=400)
 
-        subject = f"Payment Reminder for {chiqim.truck.make} {chiqim.truck.model}"
+        subject = "Monthly Payment Reminder – NCL TRUCK SALES INC"
         message = (
-            f"Assalomu alaykum, {xaridor.ism_familiya},\n\n"
-            f"Sizning {chiqim.truck.make} {chiqim.truck.model} uchun to'lov muddati yaqinlashmoqda.\n"
-            f"To'lov summasi: ${chiqim.oyiga_tolov:,.2f}\n"
-            f"To'lov sanasi: {bildirishnoma.tolov_sana}\n"
-            f"Qoldiq summa: ${chiqim.qoldiq_summa:,.2f}\n\n"
-            f"Iltimos, to'lovni o'z vaqtida amalga oshiring.\n"
-            f"Rahmat!"
+            f"Dear {xaridor.ism_familiya},\n\n"
+            f"This is a reminder from NCL TRUCK SALES INC that your monthly payment is due on {bildirishnoma.tolov_sana}.\n\n"
+            f"Please make sure to submit your payment on time to avoid a late fee.\n\n"
+            f"If you have already made the payment, please disregard this message.\n\n"
+            f"Thank you for your prompt attention.\n\n"
+            f"Sincerely,\n"
+            f"NCL TRUCK SALES INC\n"
+            f"Billing Department"
         )
         recipient_list = [xaridor.email]
 
@@ -869,7 +870,6 @@ def send_payment_reminder_email(request, bildirishnoma_id):
             return JsonResponse({'success': True, 'message': 'Email sent successfully'})
 
         except Exception as e:
-            # Xato bo'lsa, tarixni xato sifatida saqlash
             EmailHistory.objects.create(
                 bildirishnoma=bildirishnoma,
                 subject=subject,
@@ -884,6 +884,7 @@ def send_payment_reminder_email(request, bildirishnoma_id):
     except Bildirishnoma.DoesNotExist:
         logger.error(f"Notification not found for ID {bildirishnoma_id}")
         return JsonResponse({'error': 'Notification not found'}, status=404)
+
 
 @login_required
 def email_history(request, bildirishnoma_id):

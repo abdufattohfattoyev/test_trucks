@@ -97,7 +97,10 @@ class Chiqim(models.Model):
 
     def calculate_monthly_payment(self):
         remaining_amount = self.narx - self.boshlangich_summa
-        self.oyiga_tolov = (remaining_amount / self.bo_lib_tolov_muddat) if self.bo_lib_tolov_muddat > 0 and remaining_amount > 0 else Decimal('0')
+        if self.bo_lib_tolov_muddat > 0 and remaining_amount > 0:
+            self.oyiga_tolov = remaining_amount / Decimal(str(self.bo_lib_tolov_muddat))
+        else:
+            self.oyiga_tolov = Decimal('0')
 
     def update_totals(self, save=True):
         if not self.pk:
@@ -629,14 +632,14 @@ class Bildirishnoma(models.Model):
                 f"  • Name: {self.chiqim.xaridor.get_user_full_name()}"
             )
             self._original_status = self.status
-            self.save()
+            super().save(update_fields=['status', 'eslatma', 'days_left', 'days_overdue'])
             send_to_telegram(message)
         else:
-            self.save()
+            super().save(update_fields=['status', 'eslatma', 'days_left', 'days_overdue'])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._original_status = self.status
+        self._original_status = getattr(self, 'status', 'pending')
 
     @property
     def progress_percentage(self):
