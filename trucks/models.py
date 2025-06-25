@@ -16,6 +16,7 @@ def generate_unique_truck_filename(instance, filename):
     truck_id = instance.truck.po_id if instance.truck else 'unknown'
     return os.path.join(f'truck_documents/{truck_id}/', slugify(unique_name))
 
+
 class Truck(models.Model):
     user = models.ForeignKey(
         User,
@@ -147,6 +148,7 @@ class Truck(models.Model):
             models.Index(fields=['user', 'sotilgan']),
         ]
         ordering = ['-created_date']
+
 
 class TruckHujjat(models.Model):
     truck = models.ForeignKey(

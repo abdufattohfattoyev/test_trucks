@@ -526,6 +526,7 @@ def chiqim_delete(request, id):
     else:
         return render(request, 'chiqim/chiqim_delete_form.html', {'chiqim': chiqim})
 
+
 @login_required
 def add_boshlangich_payment(request, chiqim_id):
     chiqim = get_object_or_404(Chiqim, id=chiqim_id)
@@ -536,29 +537,63 @@ def add_boshlangich_payment(request, chiqim_id):
         )
 
     if request.method == 'POST':
-        form = BoshlangichTolovForm(request.POST, initial={'chiqim': chiqim})
-        if form.is_valid():
-            tolov = form.save(commit=False)
-            tolov.chiqim = chiqim
-            tolov.xaridor = chiqim.xaridor
-            tolov.sana = form.cleaned_data['sana'] or timezone.now().date()
-            tolov.save()
-            chiqim.update_totals()
-            chiqim.save()
-            cache.delete(f'notifications_chiqim_{chiqim.id}')
-            update_notifications(chiqim)
+        try:
+            form = BoshlangichTolovForm(request.POST, initial={'chiqim': chiqim})
+            if form.is_valid():
+                with transaction.atomic():
+                    tolov = form.save(commit=False)
+                    tolov.chiqim = chiqim
+                    tolov.xaridor = chiqim.xaridor
+                    tolov.sana = form.cleaned_data.get('sana') or timezone.now().date()
+                    tolov.save()
+
+                    # Chiqim ma'lumotlarini yangilash
+                    chiqim.update_totals()
+                    chiqim.save()
+
+                    # Cache va bildirishnomalarni yangilash
+                    cache.delete(f'notifications_chiqim_{chiqim.id}')
+                    update_notifications(chiqim)
+
+                    logger.info(f"Initial payment added: ID={tolov.id}, Chiqim={chiqim.id}, Amount={tolov.summa}")
+
+                    return JsonResponse({
+                        'success': True,
+                        'message': "Boshlang'ich to'lov muvaffaqiyatli qo'shildi!",
+                        'reload': True,
+                        'boshlangich_qoldiq': float(chiqim.get_boshlangich_qoldiq()),
+                        'tolov_summa': float(tolov.summa)
+                    })
+            else:
+                # Form validatsiya xatoliklari
+                errors = {}
+                for field, error_list in form.errors.items():
+                    errors[field] = [str(error) for error in error_list]
+
+                logger.warning(f'Initial payment form validation errors: {errors}')
+
+                # Asosiy xatolikni aniqlash
+                main_error = "Formada xatoliklar mavjud"
+                if 'summa' in errors:
+                    main_error = errors['summa'][0]
+                elif '__all__' in errors:
+                    main_error = errors['__all__'][0]
+
+                return JsonResponse({
+                    'success': False,
+                    'error': main_error,
+                    'errors': errors
+                }, status=400)
+
+        except Exception as e:
+            logger.error(f'Unexpected error in add_boshlangich_payment: {str(e)}', exc_info=True)
             return JsonResponse({
-                'success': True,
-                'message': "Boshlang'ich to'lov muvaffaqiyatli qo'shildi!",
-                'reload': True,
-                'boshlangich_qoldiq': float(chiqim.get_boshlangich_qoldiq()),
-                'tolov_summa': float(tolov.summa)
-            })
-        else:
-            errors = {field: [str(error) for error in errors] for field, errors in form.errors.items()}
-            logger.warning(f'Initial payment form errors: {errors}')
-            return JsonResponse({'success': False, 'errors': errors}, status=400)
+                'success': False,
+                'error': 'Server xatosi yuz berdi. Iltimos qayta urinib ko\'ring.',
+                'details': str(e) if settings.DEBUG else None
+            }, status=500)
     else:
+        # GET so'rovi uchun
         form = BoshlangichTolovForm(initial={'chiqim': chiqim})
         context = {
             'form': form,

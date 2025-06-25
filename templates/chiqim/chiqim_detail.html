@@ -12,9 +12,9 @@
         <div class="card"><h3>Vehicle</h3><p class="value">{{ chiqim.truck.make }} {{ chiqim.truck.model|default:"No data" }}</p></div>
         <div class="card"><h3>Buyer</h3><p class="value">{{ chiqim.xaridor.ism_familiya|default:"No data" }}</p><p class="value">Phone: {{ chiqim.xaridor.telefon_raqam|default:"No phone" }}</p></div>
         <div class="card"><h3>Total Price</h3><p class="value">${{ chiqim.narx|floatformat:2 }}</p></div>
-        <div class="card"><h3>Initial Payment (Planned)</h3><p class="value">${{ chiqim.boshlangich_summa|floatformat:2 }}</p></div>
-        <div class="card"><h3>Initial Paid Amount</h3><p class="value">${{ total_boshlangich_paid|floatformat:2 }}</p></div>
-        <div class="card"><h3>Initial Remaining</h3><p class="value" id="initial-remaining">${{ boshlangich_qoldiq|floatformat:2 }}</p></div>
+        <div class="card"><h3>Down Payment (Planned)</h3><p class="value">${{ chiqim.boshlangich_summa|floatformat:2 }}</p></div>
+        <div class="card"><h3>Down Paid Amount</h3><p class="value">${{ total_boshlangich_paid|floatformat:2 }}</p></div>
+        <div class="card"><h3>Down Remaining</h3><p class="value" id="initial-remaining">${{ boshlangich_qoldiq|floatformat:2 }}</p></div>
         <div class="card"><h3>Total Monthly Paid</h3><p class="value">${{ total_monthly_paid|floatformat:2 }}</p></div>
         <div class="card"><h3>Remaining Debt</h3><p class="value">${{ remaining_debt|floatformat:2 }}</p></div>
         <div class="card"><h3>Debt Percentage</h3><p class="value">{{ payment_schedule.0.debt_percentage|floatformat:2 }}%</p></div>
@@ -148,257 +148,372 @@
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('searchInput');
-        const filterStatus = document.getElementById('filterStatus');
-        const tableBody = document.getElementById('paymentTableBody');
-        const addInitialButton = document.getElementById('add-initial-payment-btn');
-        const initialRemaining = document.getElementById('initial-remaining');
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const filterStatus = document.getElementById('filterStatus');
+    const tableBody = document.getElementById('paymentTableBody');
+    const addInitialButton = document.getElementById('add-initial-payment-btn');
+    const initialRemaining = document.getElementById('initial-remaining');
 
-        function filterTable() {
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            const statusFilter = filterStatus.value;
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                const month = row.dataset.month.toLowerCase();
-                const status = row.dataset.status;
-                const matchesSearch = month.includes(searchTerm);
-                const matchesStatus = !statusFilter || status === statusFilter;
-                row.style.display = matchesSearch && matchesStatus ? '' : 'none';
-            });
-        }
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const statusFilter = filterStatus.value;
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const month = row.dataset.month.toLowerCase();
+            const status = row.dataset.status;
+            const matchesSearch = month.includes(searchTerm);
+            const matchesStatus = !statusFilter || status === statusFilter;
+            row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+        });
+    }
 
-        searchInput.addEventListener('input', filterTable);
-        filterStatus.addEventListener('change', filterTable);
+    if (searchInput) searchInput.addEventListener('input', filterTable);
+    if (filterStatus) filterStatus.addEventListener('change', filterTable);
 
-        function clearErrors() {
-            document.querySelectorAll('.is-invalid, .invalid-feedback').forEach(el => {
-                el.classList.remove('is-invalid');
-                if (el.classList.contains('invalid-feedback')) el.remove();
-            });
-        }
+    function clearErrors() {
+        document.querySelectorAll('.is-invalid, .invalid-feedback').forEach(el => {
+            el.classList.remove('is-invalid');
+            if (el.classList.contains('invalid-feedback')) el.remove();
+        });
+    }
 
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
+        return cookieValue;
+    }
 
-        function showAlert(type, message) {
-            const existingAlerts = document.querySelectorAll('.alert');
-            existingAlerts.forEach(alert => alert.remove());
+    function showAlert(type, message, duration = 5000) {
+        document.querySelectorAll('.custom-alert').forEach(alert => alert.remove());
 
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.style.position = 'fixed';
-            alertDiv.style.top = '20px';
-            alertDiv.style.right = '20px';
-            alertDiv.style.zIndex = '1000';
-            alertDiv.style.padding = '1rem';
-            alertDiv.style.borderRadius = '0.5rem';
-            alertDiv.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
-            alertDiv.style.color = type === 'success' ? '#155724' : '#721c24';
-            alertDiv.style.border = `1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'}`;
-            alertDiv.style.maxWidth = '400px';
-            alertDiv.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-            alertDiv.textContent = message;
-            document.body.appendChild(alertDiv);
-            setTimeout(() => alertDiv.remove(), 5000);
-        }
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `custom-alert alert alert-${type}`;
+        alertDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-weight: 500;
+            ${type === 'success' ?
+                'background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;' :
+                'background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;'
+            }
+        `;
+        alertDiv.textContent = message;
 
-        function displayErrors(errors) {
-            clearErrors();
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+            alertDiv.style.opacity = '0';
+            alertDiv.style.transform = 'translateX(100%)';
+            setTimeout(() => alertDiv.remove(), 300);
+        }, duration);
+    }
+
+    function displayErrors(errors) {
+        clearErrors();
+
+        if (typeof errors === 'object' && errors !== null) {
             for (const [field, messages] of Object.entries(errors)) {
                 const input = document.querySelector(`#id_${field}`);
-                if (input) {
+                if (input && Array.isArray(messages)) {
                     input.classList.add('is-invalid');
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'invalid-feedback';
                     errorDiv.textContent = messages.join(', ');
                     input.parentNode.appendChild(errorDiv);
-                } else {
-                    showAlert('error', messages.join(', '));
+                } else if (Array.isArray(messages)) {
+                    showAlert('danger', messages.join(', '));
                 }
             }
+        } else {
+            showAlert('danger', 'An unknown error occurred');
+        }
+    }
+
+    async function submitForm(formId, url, successMessage, callback = () => {}) {
+        const form = document.getElementById(formId);
+        if (!form) {
+            console.error(`Form ${formId} not found`);
+            return;
         }
 
-        async function submitForm(formId, url, successMessage, callback = () => {}) {
-            const form = document.getElementById(formId);
-            if (form) {
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    clearErrors();
-                    const formData = new FormData(form);
-                    try {
-                        const response = await fetch(url, {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-CSRFToken': getCookie('csrftoken'),
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            showAlert('success', successMessage);
-                            closeFormSidebar();
-                            callback(data);
-                            if (data.reload) {
-                                setTimeout(() => location.reload(), 1500);
-                            }
-                        } else {
-                            displayErrors(data.errors || { '__all__': ['Unexpected error occurred'] });
-                        }
-                    } catch (error) {
-                        console.error('Form submission error:', error);
-                        showAlert('error', 'Error connecting to server');
-                    }
-                }, { once: true });
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+
+        newForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const formData = new FormData(newForm);
+            const submitButton = newForm.querySelector('button[type="submit"]');
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Submitting...';
             }
-        }
 
-        function openFormSidebar(url, title) {
-            fetch(url, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.text();
-                })
-                .then(html => {
-                    const sidebar = document.getElementById('formSidebar');
-                    if (sidebar) {
-                        sidebar.innerHTML = html;
-                        sidebar.classList.add('active');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading form:', error);
-                    showAlert('error', 'Error loading form');
+            try {
+                const csrfToken = getCookie('csrftoken');
+                if (!csrfToken) {
+                    throw new Error('CSRF token not found');
+                }
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
                 });
-        }
 
-        function closeFormSidebar() {
-            const sidebar = document.getElementById('formSidebar');
-            if (sidebar) {
-                sidebar.classList.remove('active');
-                sidebar.innerHTML = '';
-            }
-        }
-
-        window.openEditChiqimForm = (id) => {
-            openFormSidebar(`/chiqim/edit/${id}/`, "Edit Expense");
-            setTimeout(() => submitForm('chiqimForm', `/chiqim/edit/${id}/`, "Expense successfully updated!"), 300);
-        };
-
-        window.openDeleteChiqimForm = (id) => {
-            openFormSidebar(`/chiqim/delete/${id}/`, "Delete Expense");
-            setTimeout(() => submitForm('chiqimDeleteForm', `/chiqim/delete/${id}/`, "Expense successfully deleted!"), 300);
-        };
-
-        window.openAddPaymentForm = (chiqimId) => {
-            openFormSidebar(`/chiqim/payment/add/${chiqimId}/`, "Add Monthly Payment");
-            setTimeout(() => submitForm('tolovForm', `/chiqim/payment/add/${chiqimId}/`, "Monthly payment successfully added!"), 300);
-        };
-
-        window.openEditPaymentForm = (tolovId) => {
-            openFormSidebar(`/chiqim/payment/edit/${tolovId}/`, "Edit Monthly Payment");
-            setTimeout(() => submitForm('tolovForm', `/chiqim/payment/edit/${tolovId}/`, "Monthly payment successfully updated!"), 300);
-        };
-
-        window.openDeletePaymentForm = (tolovId) => {
-            openFormSidebar(`/chiqim/payment/delete/${tolovId}/`, "Delete Monthly Payment");
-            setTimeout(() => submitForm('tolovDeleteForm', `/chiqim/payment/delete/${tolovId}/`, "Monthly payment successfully deleted!"), 300);
-        };
-
-        window.openAddBoshlangichPaymentForm = (chiqimId) => {
-            openFormSidebar(`/chiqim/boshlangich_payment/add/${chiqimId}/`, "Add Initial Payment");
-            setTimeout(() => submitForm('boshlangichTolovForm', `/chiqim/boshlangich_payment/add/${chiqimId}/`, "Initial payment successfully added!", (data) => {
-                if (data.success) {
-                    initialRemaining.textContent = `$${data.boshlangich_qoldiq.toFixed(2)}`;
-                    if (data.boshlangich_qoldiq <= 0) {
-                        addInitialButton.style.display = 'none';
-                    }
-                    const tableBody = document.querySelector('.payment-history-section tbody');
-                    const newRow = document.createElement('tr');
-                    newRow.dataset.id = data.tolov_id || new Date().getTime();
-                    newRow.dataset.type = 'boshlangich';
-                    newRow.innerHTML = `
-                        <td>${new Date().toISOString().split('T')[0]}</td>
-                        <td class="tolov-summa">$${data.tolov_summa.toFixed(2)}</td>
-                        <td>${data.tolov_turi || 'Unknown'}</td>
-                        <td>${data.xaridor || 'Unknown'}</td>
-                        <td>Initial Payment</td>
-                        <td>${data.izoh || 'No notes'}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-action btn-edit" onclick="openEditBoshlangichPaymentForm(${data.tolov_id || newRow.dataset.id})">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </button>
-                                <button class="btn-action btn-delete" onclick="openDeleteBoshlangichPaymentForm(${data.tolov_id || newRow.dataset.id})">
-                                    <i class="bi bi-trash"></i> Delete
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    tableBody.prepend(newRow);
-                } else {
-                    showAlert('error', data.errors.__all__ ? data.errors.__all__.join(', ') : 'Error adding payment!');
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
                 }
-            }), 300);
-        };
 
-        window.openEditBoshlangichPaymentForm = (tolovId) => {
-            openFormSidebar(`/chiqim/boshlangich_payment/edit/${tolovId}/`, "Edit Initial Payment");
-            setTimeout(() => submitForm('boshlangichTolovForm', `/chiqim/boshlangich_payment/edit/${tolovId}/`, "Initial payment successfully updated!", (data) => {
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server did not return JSON response');
+                }
+
+                const data = await response.json();
+
                 if (data.success) {
-                    initialRemaining.textContent = `$${data.boshlangich_qoldiq.toFixed(2)}`;
-                    if (data.boshlangich_qoldiq > 0) {
-                        addInitialButton.style.display = 'block';
-                    } else {
-                        addInitialButton.style.display = 'none';
+                    showAlert('success', successMessage);
+                    closeFormSidebar();
+                    if (typeof callback === 'function') {
+                        callback(data);
                     }
+                    if (data.reload) {
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                } else {
+                    if (data.errors) {
+                        displayErrors(data.errors);
+                    } else if (data.error) {
+                        showAlert('danger', data.error);
+                    } else {
+                        showAlert('danger', 'An unknown error occurred');
+                    }
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                showAlert('danger', `Connection error: ${error.message}`);
+            } finally {
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Save';
+                }
+            }
+        });
+    }
+
+    function openFormSidebar(url, title) {
+        const sidebar = document.getElementById('formSidebar');
+        if (!sidebar) {
+            console.error('FormSidebar element not found');
+            return;
+        }
+
+        sidebar.innerHTML = `
+            <div style="padding: 2rem; text-align: center;">
+                <div style="margin-bottom: 1rem;">Loading...</div>
+                <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 2s linear infinite; margin: 0 auto;"></div>
+            </div>
+            <style>
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            </style>
+        `;
+        sidebar.classList.add('active');
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            }
+            return response.text();
+        })
+        .then(html => {
+            sidebar.innerHTML = html;
+
+            const closeButton = document.createElement('button');
+            closeButton.innerHTML = '×';
+            closeButton.style.cssText = `
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #666;
+                z-index: 1001;
+            `;
+            closeButton.onclick = closeFormSidebar;
+            sidebar.insertBefore(closeButton, sidebar.firstChild);
+        })
+        .catch(error => {
+            console.error('Error loading form:', error);
+            sidebar.innerHTML = `
+                <div style="padding: 2rem; text-align: center; color: #dc3545;">
+                    <h4>Error!</h4>
+                    <p>Failed to load form: ${error.message}</p>
+                    <button onclick="closeFormSidebar()" style="padding: 0.5rem 1rem; background: #6c757d; color: white; border: none; border-radius: 4px;">Close</button>
+                </div>
+            `;
+        });
+    }
+
+    function closeFormSidebar() {
+        const sidebar = document.getElementById('formSidebar');
+        if (sidebar) {
+            sidebar.classList.remove('active');
+            setTimeout(() => {
+                sidebar.innerHTML = '';
+            }, 300);
+        }
+    }
+
+    window.closeFormSidebar = closeFormSidebar;
+
+    window.openEditChiqimForm = (id) => {
+        openFormSidebar(`/chiqim/edit/${id}/`, "Edit Expense");
+        setTimeout(() => submitForm('chiqimForm', `/chiqim/edit/${id}/`, "Expense updated successfully!"), 500);
+    };
+
+    window.openDeleteChiqimForm = (id) => {
+        openFormSidebar(`/chiqim/delete/${id}/`, "Delete Expense");
+        setTimeout(() => submitForm('chiqimDeleteForm', `/chiqim/delete/${id}/`, "Expense deleted successfully!"), 500);
+    };
+
+    window.openAddPaymentForm = (chiqimId) => {
+        openFormSidebar(`/chiqim/payment/add/${chiqimId}/`, "Add Monthly Payment");
+        setTimeout(() => submitForm('tolovForm', `/chiqim/payment/add/${chiqimId}/`, "Monthly payment added successfully!"), 500);
+    };
+
+    window.openEditPaymentForm = (tolovId) => {
+        openFormSidebar(`/chiqim/payment/edit/${tolovId}/`, "Edit Monthly Payment");
+        setTimeout(() => submitForm('tolovForm', `/chiqim/payment/edit/${tolovId}/`, "Monthly payment updated successfully!"), 500);
+    };
+
+    window.openDeletePaymentForm = (tolovId) => {
+        openFormSidebar(`/chiqim/payment/delete/${tolovId}/`, "Delete Monthly Payment");
+        setTimeout(() => submitForm('tolovDeleteForm', `/chiqim/payment/delete/${tolovId}/`, "Monthly payment deleted successfully!"), 500);
+    };
+
+    window.openAddBoshlangichPaymentForm = (chiqimId) => {
+        openFormSidebar(`/chiqim/boshlangich_payment/add/${chiqimId}/`, "Add Initial Payment");
+        setTimeout(() => {
+            submitForm('boshlangichTolovForm', `/chiqim/boshlangich_payment/add/${chiqimId}/`, "Initial payment added successfully!", (data) => {
+                if (data.success) {
+                    if (initialRemaining) {
+                        initialRemaining.textContent = `$${(data.boshlangich_qoldiq || 0).toFixed(2)}`;
+                    }
+
+                    if (addInitialButton) {
+                        if (data.boshlangich_qoldiq <= 0) {
+                            addInitialButton.style.display = 'none';
+                        } else {
+                            addInitialButton.style.display = 'block';
+                        }
+                    }
+                } else {
+                    const errorMsg = data.error || (data.errors && data.errors.__all__ ? data.errors.__all__.join(', ') : 'An unknown error occurred!');
+                    showAlert('danger', errorMsg);
+                }
+            });
+        }, 500);
+    };
+
+    window.openEditBoshlangichPaymentForm = (tolovId) => {
+        openFormSidebar(`/chiqim/boshlangich_payment/edit/${tolovId}/`, "Edit Initial Payment");
+        setTimeout(() => {
+            submitForm('boshlangichTolovForm', `/chiqim/boshlangich_payment/edit/${tolovId}/`, "Initial payment updated successfully!", (data) => {
+                if (data.success) {
+                    if (initialRemaining) {
+                        initialRemaining.textContent = `$${(data.boshlangich_qoldiq || 0).toFixed(2)}`;
+                    }
+
+                    if (addInitialButton) {
+                        addInitialButton.style.display = data.boshlangich_qoldiq > 0 ? 'block' : 'none';
+                    }
+
                     const row = document.querySelector(`tr[data-id="${tolovId}"][data-type="boshlangich"] .tolov-summa`);
-                    if (row) {
+                    if (row && data.tolov_summa) {
                         row.textContent = `$${data.tolov_summa.toFixed(2)}`;
                     }
-                    const noteRow = document.querySelector(`tr[data-id="${tolovId}"][data-type="boshlangich"] td:nth-child(6)`);
-                    if (noteRow) {
-                        noteRow.textContent = data.izoh || 'No notes';
-                    }
                 } else {
-                    showAlert('error', data.errors.__all__ ? data.errors.__all__.join(', ') : 'Error updating payment!');
+                    const errorMsg = data.error || (data.errors && data.errors.__all__ ? data.errors.__all__.join(', ') : 'An unknown error occurred!');
+                    showAlert('danger', errorMsg);
                 }
-            }), 300);
-        };
+            });
+        }, 500);
+    };
 
-        window.openDeleteBoshlangichPaymentForm = (tolovId) => {
-            openFormSidebar(`/chiqim/boshlangich_payment/delete/${tolovId}/`, "Delete Initial Payment");
-            setTimeout(() => submitForm('boshlangichTolovDeleteForm', `/chiqim/boshlangich_payment/delete/${tolovId}/`, "Initial payment successfully deleted!", (data) => {
+    window.openDeleteBoshlangichPaymentForm = (tolovId) => {
+        openFormSidebar(`/chiqim/boshlangich_payment/delete/${tolovId}/`, "Delete Initial Payment");
+        setTimeout(() => {
+            submitForm('boshlangichTolovDeleteForm', `/chiqim/boshlangich_payment/delete/${tolovId}/`, "Initial payment deleted successfully!", (data) => {
                 if (data.success) {
-                    initialRemaining.textContent = `$${data.boshlangich_qoldiq.toFixed(2)}`;
-                    if (data.boshlangich_qoldiq > 0) {
+                    if (initialRemaining) {
+                        initialRemaining.textContent = `$${(data.boshlangich_qoldiq || 0).toFixed(2)}`;
+                    }
+
+                    if (addInitialButton && data.boshlangich_qoldiq > 0) {
                         addInitialButton.style.display = 'block';
                     }
+
                     const row = document.querySelector(`tr[data-id="${tolovId}"][data-type="boshlangich"]`);
                     if (row) {
                         row.remove();
                     }
                 } else {
-                    showAlert('error', data.errors.__all__ ? data.errors.__all__.join(', ') : 'Error deleting payment!');
+                    const errorMsg = data.error || (data.errors && data.errors.__all__ ? data.errors.__all__.join(', ') : 'An unknown error occurred!');
+                    showAlert('danger', errorMsg);
                 }
-            }), 300);
-        };
+            });
+        }, 500);
+    };
+
+    document.addEventListener('click', (e) => {
+        const sidebar = document.getElementById('formSidebar');
+        if (sidebar && sidebar.classList.contains('active') && !sidebar.contains(e.target)) {
+            const isButton = e.target.closest('button') && (
+                e.target.closest('button').onclick ||
+                e.target.closest('button').getAttribute('onclick')
+            );
+            if (!isButton) {
+                closeFormSidebar();
+            }
+        }
     });
+});
 </script>
 {% endblock %}
 

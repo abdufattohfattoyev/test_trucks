@@ -1,3 +1,4 @@
-from django.test import TestCase
-
-# Create your tests here.
+a = 2
+b = 3
+c = a+b
+print(c)
