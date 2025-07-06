@@ -92,7 +92,7 @@
                         <td class="tolov-summa">${{ tolov.summa|floatformat:2 }}</td>
                         <td>{{ tolov.get_tolov_turi_display }}</td>
                         <td>{{ tolov.xaridor.ism_familiya }}</td>
-                        <td>Down Payment</td>
+                        <td>Initial Payment</td>
                         <td>{{ tolov.izoh|default:"No notes" }}</td>
                         <td>
                             <div class="action-buttons">
