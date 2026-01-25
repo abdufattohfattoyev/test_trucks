@@ -602,6 +602,8 @@ def add_boshlangich_payment(request, chiqim_id):
         }
         return render(request, 'chiqim/boshlangich_tolov_form.html', context)
 
+
+
 @login_required
 def update_boshlangich_payment(request, tolov_id):
     tolov = get_object_or_404(BoshlangichTolov, id=tolov_id)

@@ -105,8 +105,15 @@ class BoshlangichTolovForm(forms.ModelForm):
         cleaned_data = super().clean()
         summa = cleaned_data.get('summa')
         chiqim = self.initial.get('chiqim')
+
         if chiqim and summa:
             boshlangich_qoldiq = chiqim.get_boshlangich_qoldiq()
+
+            # Agar bu update operation bo'lsa, mavjud payment summani qo'shib hisoblash kerak
+            if self.instance and self.instance.pk:
+                # Update qilayotgan bo'lsak, eski summa qo'shiladi
+                boshlangich_qoldiq += self.instance.summa
+
             if summa > boshlangich_qoldiq:
                 raise forms.ValidationError(
                     f"The payment amount exceeds the initial remaining balance (${boshlangich_qoldiq:,.2f})!"

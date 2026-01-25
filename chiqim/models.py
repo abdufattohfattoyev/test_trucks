@@ -1,15 +1,18 @@
+from datetime import date
 from decimal import Decimal
 import calendar
 import logging
 import uuid
 from django.db import DatabaseError
 from django.db import models, transaction
+from django.db.models import Sum
 from django.utils import timezone
 from trucks.models import Truck
 from django.utils.text import slugify
 import os
 from .telegram_utils import send_to_telegram, send_file_to_telegram
 from typing import Optional
+
 
 logger = logging.getLogger(__name__)
 
@@ -149,6 +152,15 @@ class Chiqim(models.Model):
             status__in=['pending', 'warning', 'urgent', 'overdue'],
             tolov_sana__gte=current_date
         ).order_by('tolov_sana').first()
+
+    def already_paid_for_month(self, tolov_sana: date) -> float:
+        """Berilgan oy uchun to‘langan summa."""
+        return (
+                self.tolovlar.filter(
+                    sana__year=tolov_sana.year,
+                    sana__month=tolov_sana.month
+                ).aggregate(total=Sum('summa'))['total'] or 0
+        )
 
     def save(self, *args, skip_telegram=False, **kwargs):
         is_new = not self.pk
