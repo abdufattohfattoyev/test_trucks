@@ -8,13 +8,13 @@ from django.urls import reverse
 from .models import Xaridor, XaridorHujjat
 from .forms import XaridorForm, XaridorHujjatForm
 from chiqim.models import Chiqim
-from trucks.models import Truck
 import os
 import logging
 from datetime import datetime
 from django.db import models
 
 logger = logging.getLogger(__name__)
+
 
 @login_required
 def xaridorlar_list(request):
