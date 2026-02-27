@@ -6,192 +6,206 @@
 {% block extra_css %}
 <style>
     :root {
-        --primary : #2563eb;
-        --accent  : #7c3aed;
-        --warning : #f59e0b;
-        --success : #10b981;
-        --danger  : #ef4444;
-        --r       : 10px;
+        --card-radius: 12px;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+        --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --primary: #2563eb;
+        --accent: #7c3aed;
     }
 
-    /* ── Wrapper ── */
-    .tl-wrap {
+    .trucks-container { max-width: 100%; margin: 0; padding: 0; }
+
+    .trucks-wrapper {
         background: white;
-        border-radius: var(--r);
-        box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+        border-radius: var(--card-radius);
+        box-shadow: var(--shadow-sm);
         overflow: hidden;
     }
 
     /* ── Header ── */
-    .tl-header {
-        padding: 1.25rem 1.5rem;
+    .header-section {
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(37,99,235,0.02), rgba(139,92,246,0.02));
         border-bottom: 1px solid #e5e7eb;
-        background: linear-gradient(135deg,rgba(37,99,235,.02),rgba(124,58,237,.02));
     }
 
-    .tl-top {
+    .header-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1rem;
+        margin-bottom: 1.25rem;
         flex-wrap: wrap;
-        gap: .75rem;
+        gap: 0.75rem;
     }
 
-    .tl-title {
-        font-size: 1.25rem;
+    .page-title {
+        font-size: 1.375rem;
         font-weight: 700;
         color: #111827;
-        margin: 0;
         display: flex;
         align-items: center;
-        gap: .5rem;
+        gap: 0.5rem;
+        margin: 0;
     }
 
     .btn-add {
-        padding: .5rem 1.1rem;
-        background: linear-gradient(135deg,var(--primary),var(--accent));
+        padding: 0.625rem 1.25rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
         color: white;
         border: none;
         border-radius: 8px;
         font-weight: 600;
-        font-size: .875rem;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: var(--transition);
         display: inline-flex;
         align-items: center;
-        gap: .4rem;
+        gap: 0.5rem;
         text-decoration: none;
-        transition: all .2s;
     }
 
-    .btn-add:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,.3); color: white; }
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37,99,235,0.35);
+        color: white;
+    }
 
     /* ── Search ── */
-    .tl-search {
+    .search-form { margin-bottom: 1.25rem; }
+
+    .search-input-group {
         display: flex;
-        gap: .5rem;
+        gap: 0.5rem;
         flex-wrap: wrap;
-        margin-bottom: 1rem;
     }
 
-    .tl-input {
+    .search-input {
         flex: 1;
         min-width: 0;
-        padding: .6rem .875rem;
+        padding: 0.7rem 1rem;
         border: 1.5px solid #e5e7eb;
         border-radius: 8px;
-        font-size: .875rem;
-        outline: none;
+        font-size: 0.9375rem;
+        transition: var(--transition);
         background: white;
-        transition: border-color .2s, box-shadow .2s;
     }
 
-    .tl-input:focus {
+    .search-input:focus {
+        outline: none;
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
 
-    .tl-sbtn {
-        padding: .6rem 1rem;
-        background: linear-gradient(135deg,var(--primary),var(--accent));
+    .search-btn {
+        padding: 0.7rem 1.25rem;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
         color: white;
         border: none;
         border-radius: 8px;
         font-weight: 600;
-        font-size: .875rem;
         cursor: pointer;
+        transition: var(--transition);
         display: inline-flex;
         align-items: center;
-        gap: .375rem;
+        gap: 0.4rem;
         white-space: nowrap;
-        transition: all .2s;
     }
 
-    .tl-sbtn:hover { transform: translateY(-1px); }
+    .search-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
 
-    .tl-cbtn {
-        padding: .6rem 1rem;
+    .clear-btn {
+        padding: 0.7rem 1.25rem;
         background: #f3f4f6;
         color: #374151;
         border: none;
         border-radius: 8px;
         font-weight: 600;
-        font-size: .875rem;
         cursor: pointer;
+        transition: var(--transition);
         display: inline-flex;
         align-items: center;
-        gap: .375rem;
+        gap: 0.4rem;
         text-decoration: none;
         white-space: nowrap;
-        transition: background .2s;
     }
 
-    .tl-cbtn:hover { background: #e5e7eb; color: #111827; }
+    .clear-btn:hover { background: #e5e7eb; color: #111827; }
 
     /* ── Stats ── */
-    .tl-stats {
+    .stats-grid {
         display: grid;
-        grid-template-columns: repeat(3,1fr);
-        gap: .75rem;
-    }
-
-    .tl-stat {
-        display: flex;
-        align-items: center;
-        gap: .75rem;
-        padding: .875rem 1rem;
-        border-radius: 8px;
-        color: white;
-        background: linear-gradient(135deg,var(--primary),var(--accent));
-        overflow: hidden;
-    }
-
-    .tl-stat.warn { background: linear-gradient(135deg,#f59e0b,#d97706); }
-    .tl-stat.ok   { background: linear-gradient(135deg,#10b981,#059669); }
-
-    .tl-stat-icon {
-        font-size: 1.2rem;
-        background: rgba(255,255,255,.2);
-        width: 40px; height: 40px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .tl-stat-lbl { font-size: .68rem; font-weight: 500; opacity: .9; }
-    .tl-stat-val { font-size: 1.05rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    /* ── Content ── */
-    .tl-body { padding: 1.25rem 1.5rem; }
-
-    /* ── Grid ── */
-    .tl-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill,minmax(270px,1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 1rem;
     }
 
-    /* ── Card ── */
-    .tc {
-        background: white;
-        border-radius: var(--r);
-        border: 1px solid #e5e7eb;
+    .stat-card {
+        display: flex;
+        align-items: center;
+        padding: 1.1rem 1.25rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
         overflow: hidden;
+    }
+
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .stat-card.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .stat-card.success { background: linear-gradient(135deg, #10b981, #059669); }
+
+    .stat-icon {
+        font-size: 1.5rem;
+        background: rgba(255,255,255,0.2);
+        width: 44px; height: 44px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        margin-right: 0.875rem;
+        flex-shrink: 0;
+    }
+
+    .stat-content { flex: 1; min-width: 0; }
+    .stat-title { font-size: 0.8rem; font-weight: 500; opacity: 0.9; margin-bottom: 0.15rem; }
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* ── Cards Grid ── */
+    .trucks-content { padding: 1.5rem; }
+
+    .trucks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.25rem;
+    }
+
+    /* ── Single Card ── */
+    .truck-card {
+        background: white;
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        transition: var(--transition);
         display: flex;
         flex-direction: column;
-        transition: all .2s;
     }
 
-    .tc:hover {
-        box-shadow: 0 4px 18px rgba(0,0,0,.1);
-        border-color: rgba(37,99,235,.3);
-        transform: translateY(-2px);
+    .truck-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(37,99,235,0.35);
     }
 
-    /* ── IMAGE – phone-list style ── */
-    .tc-img {
-        height: 130px;
+    /* ── IMAGE (phone-list style) ── */
+    .truck-image-wrapper {
+        height: 120px;
         background: #f9fafb;
         display: flex;
         align-items: center;
@@ -199,582 +213,423 @@
         position: relative;
         overflow: hidden;
         flex-shrink: 0;
-        transition: background .2s;
+        cursor: pointer;
+        transition: background 0.2s;
     }
 
-    .tc:hover .tc-img { background: #f3f4f6; }
+    .truck-image-wrapper:hover {
+        background: #f3f4f6;
+    }
 
-    .tc-img img {
-        max-width: 82%;
-        max-height: 82%;
+    .truck-image {
+        max-width: 80%;
+        max-height: 80%;
         object-fit: contain;
         display: block;
-        transition: transform .2s;
+        transition: transform 0.2s ease;
     }
 
-    .tc:hover .tc-img img { transform: scale(1.05); }
+    .truck-card:hover .truck-image { transform: scale(1.05); }
 
-    .tc-img .no-img {
-        font-size: 2.25rem;
+    /* placeholder when no image */
+    .no-img-placeholder {
         color: #9ca3af;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .tc-badge {
+    .truck-status-badge {
         position: absolute;
-        top: .5rem; right: .5rem;
-        padding: .2rem .55rem;
+        top: 0.625rem;
+        right: 0.625rem;
+        padding: 0.25rem 0.625rem;
         border-radius: 20px;
-        font-size: .62rem;
+        font-size: 0.68rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: .4px;
+        letter-spacing: 0.5px;
         backdrop-filter: blur(4px);
     }
 
-    .tc-badge.sold  { background: rgba(220,38,38,.9);  color: white; }
-    .tc-badge.avail { background: rgba(16,185,129,.9); color: white; }
+    .truck-status-badge.sold      { background: rgba(220,38,38,0.92);  color: white; }
+    .truck-status-badge.available { background: rgba(16,185,129,0.92); color: white; }
 
     /* ── Body ── */
-    .tc-body {
-        padding: .875rem;
+    .truck-body {
+        padding: 0.875rem 1rem;
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: .5rem;
     }
 
-    /* title */
-    .tc-title-row {
-        padding-bottom: .5rem;
+    .truck-header {
+        margin-bottom: 0.625rem;
+        padding-bottom: 0.625rem;
         border-bottom: 1px solid #f3f4f6;
     }
 
-    .tc-title {
-        font-size: .9rem;
+    .truck-title {
+        font-size: 0.9375rem;
         font-weight: 700;
         color: #111827;
-        margin: 0 0 .15rem;
+        margin-bottom: 0.2rem;
+        line-height: 1.3;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
-    .tc-sub {
-        font-size: .72rem;
+    .truck-po-id {
+        font-size: 0.775rem;
         color: #6b7280;
+        font-weight: 500;
         margin: 0;
-        display: flex;
-        align-items: center;
-        gap: .3rem;
-        flex-wrap: wrap;
     }
 
-    .tc-sub i { color: var(--primary); }
+    .truck-po-id i { color: var(--primary); margin-right: 0.2rem; }
 
-    /* info rows */
-    .tc-info {
-        background: #f9fafb;
-        border-radius: 6px;
-        padding: .45rem .625rem;
-        font-size: .78rem;
-    }
+    .truck-details { flex: 1; margin-bottom: 0.75rem; }
 
-    .tc-row {
+    .detail-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: .2rem 0;
-        border-bottom: 1px solid #f0f0f0;
+        padding: 0.35rem 0;
+        border-bottom: 1px solid #f3f4f6;
     }
 
-    .tc-row:last-child { border-bottom: none; }
+    .detail-row:last-child { border-bottom: none; }
 
-    .tc-lbl { color: #6b7280; }
-    .tc-val { font-weight: 600; color: #111827; text-align: right; }
-    .tc-val.blue   { color: var(--primary); }
-    .tc-val.yellow { color: #d97706; }
-    .tc-val.green  { color: #059669; }
-    .tc-val.mono   { font-family: monospace; font-size: .72rem; }
-
-    /* ── Expense Block ── */
-    .tc-exp {
-        background: #fffbeb;
-        border-left: 3px solid #f59e0b;
-        border-radius: 0 6px 6px 0;
-        padding: .45rem .625rem;
-        font-size: .76rem;
-    }
-
-    .tc-exp-head {
+    .detail-label {
+        font-size: 0.775rem;
+        color: #6b7280;
+        font-weight: 500;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: .25rem;
+        gap: 0.3rem;
     }
 
-    .tc-exp-title {
-        font-size: .68rem;
-        font-weight: 700;
-        color: #92400e;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-        display: flex;
-        align-items: center;
-        gap: .25rem;
-    }
-
-    .tc-exp-count {
-        background: #fde68a;
-        color: #92400e;
-        font-size: .62rem;
-        font-weight: 700;
-        border-radius: 20px;
-        padding: .05rem .4rem;
-    }
-
-    .tc-exp-list {
-        max-height: 88px;
-        overflow-y: auto;
-    }
-
-    .tc-exp-list::-webkit-scrollbar { width: 3px; }
-    .tc-exp-list::-webkit-scrollbar-thumb { background: #fcd34d; border-radius: 2px; }
-
-    .tc-exp-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: .175rem 0;
-        border-bottom: 1px solid #fef3c7;
-        color: #78350f;
-    }
-
-    .tc-exp-row:last-child { border-bottom: none; }
-
-    .tc-exp-name {
-        display: flex;
-        align-items: center;
-        gap: .25rem;
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .tc-exp-date { color: #a78bfa; font-size: .65rem; margin-left: .25rem; }
-
-    .tc-exp-amt { font-weight: 700; color: #d97706; flex-shrink: 0; margin-left: .5rem; }
-
-    .tc-exp-total {
-        display: flex;
-        justify-content: space-between;
-        margin-top: .3rem;
-        padding-top: .3rem;
-        border-top: 1.5px solid #fcd34d;
-        font-weight: 700;
-        color: #92400e;
-        font-size: .76rem;
-    }
-
-    .tc-exp-empty {
-        font-size: .72rem;
-        color: #9ca3af;
-        text-align: center;
-        padding: .2rem 0;
-        font-style: italic;
-    }
-
-    /* ── Footer ── */
-    .tc-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: .4rem;
-        border-top: 1px solid #f3f4f6;
-    }
-
-    .tc-total { font-size: .9rem; font-weight: 700; color: #059669; }
-    .tc-total-lbl { font-size: .68rem; color: #9ca3af; }
+    .detail-value           { font-size: 0.875rem; font-weight: 700; }
+    .detail-value.price     { color: var(--primary); }
+    .detail-value.expense   { color: #f59e0b; }
+    .detail-value.total     { color: #10b981; }
 
     /* ── Actions ── */
-    .tc-actions {
+    .truck-actions {
         display: grid;
-        grid-template-columns: repeat(3,1fr);
-        gap: .3rem;
-        margin-top: .4rem;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.375rem;
     }
 
-    .tc-btn {
-        padding: .4rem .25rem;
-        border-radius: 6px;
-        font-size: .72rem;
+    .action-btn {
+        padding: 0.45rem 0.3rem;
+        border-radius: 7px;
         font-weight: 600;
-        border: 1px solid transparent;
+        font-size: 0.75rem;
         cursor: pointer;
+        border: 1px solid transparent;
+        transition: var(--transition);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: .25rem;
+        gap: 0.25rem;
         text-decoration: none;
-        transition: all .15s;
         white-space: nowrap;
     }
 
-    .tc-btn.view   { background: rgba(37,99,235,.08);  color: var(--primary); border-color: rgba(37,99,235,.2); }
-    .tc-btn.edit   { background: rgba(245,158,11,.08); color: #d97706;        border-color: rgba(245,158,11,.2); }
-    .tc-btn.del    { background: rgba(239,68,68,.08);  color: #dc2626;        border-color: rgba(239,68,68,.2); }
+    .action-btn.view   { background: rgba(37,99,235,0.08);  color: var(--primary); border-color: rgba(37,99,235,0.2); }
+    .action-btn.edit   { background: rgba(245,158,11,0.08); color: #d97706;        border-color: rgba(245,158,11,0.2); }
+    .action-btn.delete { background: rgba(239,68,68,0.08);  color: #dc2626;        border-color: rgba(239,68,68,0.2); }
 
-    .tc-btn.view:hover { background: rgba(37,99,235,.15); border-color: var(--primary); color: var(--primary); }
-    .tc-btn.edit:hover { background: rgba(245,158,11,.15); border-color: #f59e0b; color: #d97706; }
-    .tc-btn.del:hover  { background: rgba(239,68,68,.15);  border-color: #ef4444; color: #dc2626; }
+    .action-btn.view:hover   { background: rgba(37,99,235,0.15);  border-color: var(--primary); color: var(--primary); }
+    .action-btn.edit:hover   { background: rgba(245,158,11,0.15); border-color: #f59e0b;        color: #d97706; }
+    .action-btn.delete:hover { background: rgba(239,68,68,0.15);  border-color: #ef4444;        color: #dc2626; }
 
     /* ── Empty ── */
-    .tl-empty {
-        text-align: center;
-        padding: 4rem 2rem;
-        color: #6b7280;
-        grid-column: 1 / -1;
-    }
-
-    .tl-empty i  { font-size: 3.5rem; color: #d1d5db; display: block; margin-bottom: 1rem; }
-    .tl-empty h4 { font-size: 1.1rem; font-weight: 600; color: #374151; margin-bottom: .5rem; }
-    .tl-empty p  { font-size: .875rem; color: #9ca3af; margin: 0; }
+    .empty-state { text-align: center; padding: 4rem 2rem; color: #6b7280; }
+    .empty-state i  { font-size: 4rem; color: #d1d5db; margin-bottom: 1rem; display: block; }
+    .empty-state h4 { font-size: 1.25rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; }
+    .empty-state p  { font-size: 0.9375rem; color: #9ca3af; margin: 0; }
 
     /* ── Pagination ── */
-    .tl-pager {
-        padding: 1rem 1.5rem;
+    .pagination-wrapper {
+        padding: 1.5rem;
         border-top: 1px solid #e5e7eb;
         background: #f9fafb;
+    }
+
+    .pagination {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
+        gap: 0.5rem;
         flex-wrap: wrap;
-        gap: .75rem;
+        margin: 0; padding: 0; list-style: none;
     }
 
-    .tl-pager-info { font-size: .78rem; color: #6b7280; }
-    .tl-pager-info strong { color: #374151; }
+    .page-item { list-style: none; }
 
-    .pg {
-        display: flex;
-        gap: .3rem;
-        list-style: none;
-        margin: 0; padding: 0;
-        flex-wrap: wrap;
-    }
-
-    .pg li { list-style: none; }
-
-    .pg a, .pg span {
+    .page-link {
         display: flex;
         align-items: center;
         justify-content: center;
-        min-width: 34px; height: 34px;
-        padding: 0 .5rem;
+        min-width: 40px; height: 40px;
+        padding: 0.5rem 0.75rem;
         border: 1px solid #e5e7eb;
-        border-radius: 6px;
+        border-radius: 8px;
         color: #374151;
-        font-size: .8rem;
         font-weight: 500;
+        font-size: 0.9375rem;
         text-decoration: none;
-        transition: all .15s;
+        transition: var(--transition);
     }
 
-    .pg a:hover { background: #f3f4f6; border-color: #d1d5db; }
+    .page-link:hover { background: #f3f4f6; border-color: #d1d5db; }
 
-    .pg .active span,
-    .pg .active a {
-        background: linear-gradient(135deg,var(--primary),var(--accent));
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
         color: white;
         border-color: var(--primary);
+        box-shadow: 0 2px 8px rgba(37,99,235,0.3);
     }
 
-    .pg .disabled span,
-    .pg .disabled a { opacity: .4; pointer-events: none; }
+    .page-item.disabled .page-link { opacity: 0.5; pointer-events: none; }
 
     /* ── Responsive ── */
-    @media (max-width: 992px) {
-        .tl-grid { grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); }
+    @media (max-width: 1100px) {
+        .trucks-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    }
+
+    @media (max-width: 900px) {
+        .stats-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 768px) {
-        .tl-header { padding: 1rem; }
-        .tl-body   { padding: 1rem; }
-        .tl-top    { flex-direction: column; align-items: flex-start; }
-        .tl-stats  { grid-template-columns: 1fr; gap: .5rem; }
-        .tl-grid   { grid-template-columns: repeat(2,1fr); gap: .75rem; }
-        .tl-pager  { justify-content: center; }
+        .header-section { padding: 1rem; }
+        .trucks-content { padding: 1rem; }
+        .header-top     { flex-direction: column; align-items: flex-start; }
+        .stats-grid     { grid-template-columns: 1fr; gap: 0.625rem; }
+        .trucks-grid    { grid-template-columns: repeat(2, 1fr); gap: 0.875rem; }
     }
 
     @media (max-width: 576px) {
-        .tl-header { padding: .875rem; }
-        .tl-body   { padding: .75rem; }
-        .tl-grid   { grid-template-columns: repeat(2,1fr); gap: .625rem; }
-        .tc-body   { padding: .625rem .75rem; gap: .375rem; }
-        .tl-input  { width: 100%; flex: none; }
-        .tl-sbtn, .tl-cbtn { flex: 1; justify-content: center; }
-        .tl-stat-val { font-size: .9rem; }
-        .tc-img    { height: 110px; }
+        .trucks-grid    { grid-template-columns: repeat(2, 1fr); gap: 0.625rem; }
+        .trucks-content { padding: 0.75rem; }
+        .header-section { padding: 0.875rem; }
+        .truck-body     { padding: 0.625rem 0.75rem; }
+        .truck-title    { font-size: 0.8125rem; }
+        .search-input   { width: 100%; flex: none; }
+        .search-btn, .clear-btn { flex: 1; justify-content: center; }
+        .stat-value     { font-size: 1rem; }
+        .stat-title     { font-size: 0.7rem; }
+        .stat-icon      { width: 36px; height: 36px; font-size: 1.1rem; margin-right: 0.5rem; }
+        .action-btn     { font-size: 0.68rem; padding: 0.35rem 0.2rem; }
     }
 
     @media (max-width: 400px) {
-        .tl-grid { grid-template-columns: 1fr; }
-        .tc-img  { height: 150px; }
+        .trucks-grid { grid-template-columns: 1fr; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="tl-wrap">
+<div class="trucks-container">
+    <div class="trucks-wrapper">
 
-    <!-- ── Header ── -->
-    <div class="tl-header">
-        <div class="tl-top">
-            <h1 class="tl-title">
-                <i class="bi bi-truck" style="color:var(--primary);"></i>
-                Truck List
-            </h1>
-            <a href="{% url 'add_truck' %}" class="btn-add">
-                <i class="bi bi-plus-circle"></i> Add Truck
-            </a>
-        </div>
-
-        <!-- Search -->
-        <form method="GET" action="{% url 'trucks_list' %}">
-            <div class="tl-search">
-                <input
-                    type="text"
-                    class="tl-input"
-                    name="q"
-                    value="{{ request.GET.q|default_if_none:'' }}"
-                    placeholder="Search by PO-ID, Make, Model, Location..."
-                    autocomplete="off"
-                >
-                <button type="submit" class="tl-sbtn">
-                    <i class="bi bi-search"></i> Search
-                </button>
-                {% if request.GET.q %}
-                <a href="{% url 'trucks_list' %}" class="tl-cbtn">
-                    <i class="bi bi-x-circle"></i> Clear
+        <!-- Header -->
+        <div class="header-section">
+            <div class="header-top">
+                <h1 class="page-title">
+                    <i class="bi bi-truck" style="color:#2563eb;"></i> Truck List
+                </h1>
+                <a href="{% url 'add_truck' %}" class="btn-add">
+                    <i class="bi bi-plus-circle"></i> Add Truck
                 </a>
-                {% endif %}
             </div>
-        </form>
 
-        <!-- Stats -->
-        <div class="tl-stats">
-            <div class="tl-stat">
-                <div class="tl-stat-icon"><i class="bi bi-truck"></i></div>
-                <div>
-                    <div class="tl-stat-lbl">Total Price</div>
-                    <div class="tl-stat-val">${{ total_price|format_number }}</div>
-                </div>
-            </div>
-            <div class="tl-stat warn">
-                <div class="tl-stat-icon"><i class="bi bi-wallet2"></i></div>
-                <div>
-                    <div class="tl-stat-lbl">Total Expenses</div>
-                    <div class="tl-stat-val">${{ total_xarajat|format_number }}</div>
-                </div>
-            </div>
-            <div class="tl-stat ok">
-                <div class="tl-stat-icon"><i class="bi bi-cash-stack"></i></div>
-                <div>
-                    <div class="tl-stat-lbl">Total Cost</div>
-                    <div class="tl-stat-val">${{ total_umumiy|format_number }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ── Cards ── -->
-    <div class="tl-body">
-        {% if trucks_data %}
-        <div class="tl-grid">
-            {% for data in trucks_data %}
-            <div class="tc">
-
-                <!-- Image -->
-                <div class="tc-img">
-                    {% if data.truck.image %}
-                        <img src="{{ data.truck.image.url }}"
-                             alt="{{ data.truck.make }} {{ data.truck.model }}"
-                             loading="lazy">
-                    {% else %}
-                        <span class="no-img"><i class="bi bi-truck"></i></span>
+            <!-- Search -->
+            <form class="search-form" method="GET" action="{% url 'trucks_list' %}">
+                <div class="search-input-group">
+                    <input
+                        type="text"
+                        class="search-input"
+                        name="q"
+                        placeholder="Search by PO-ID, Make, Model, Location..."
+                        value="{{ request.GET.q|default_if_none:'' }}"
+                        autocomplete="off"
+                    >
+                    <button class="search-btn" type="submit">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                    {% if request.GET.q %}
+                    <a href="{% url 'trucks_list' %}" class="clear-btn">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
                     {% endif %}
-                    <span class="tc-badge {% if data.truck.sotilgan %}sold{% else %}avail{% endif %}">
-                        {% if data.truck.sotilgan %}Sold{% else %}Available{% endif %}
-                    </span>
                 </div>
+            </form>
 
-                <!-- Body -->
-                <div class="tc-body">
-
-                    <!-- Title -->
-                    <div class="tc-title-row">
-                        <h5 class="tc-title"
-                            title="{{ data.truck.make }} {{ data.truck.model }} ({{ data.truck.year }})">
-                            {{ data.truck.make }} {{ data.truck.model }} ({{ data.truck.year }})
-                        </h5>
-                        <p class="tc-sub">
-                            <i class="bi bi-tag-fill"></i> {{ data.truck.po_id }}
-                            {% if data.truck.location %}
-                            <span style="color:#d1d5db;">·</span>
-                            <i class="bi bi-geo-alt"></i> {{ data.truck.location }}
-                            {% endif %}
-                        </p>
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-truck"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-title">Total Truck Price</div>
+                        <div class="stat-value">${{ total_price|format_number }}</div>
                     </div>
-
-                    <!-- Info rows -->
-                    <div class="tc-info">
-                        <div class="tc-row">
-                            <span class="tc-lbl"><i class="bi bi-currency-dollar"></i> Price</span>
-                            <span class="tc-val blue">${{ data.truck.price|format_number }}</span>
-                        </div>
-                        <div class="tc-row">
-                            <span class="tc-lbl"><i class="bi bi-wallet"></i> Expenses</span>
-                            <span class="tc-val yellow">${{ data.xarajat_sum|format_number }}</span>
-                        </div>
-                        <div class="tc-row">
-                            <span class="tc-lbl"><i class="bi bi-calculator"></i> Total Cost</span>
-                            <span class="tc-val green">${{ data.umumiy_narx|format_number }}</span>
-                        </div>
-                        {% if data.truck.seriya %}
-                        <div class="tc-row">
-                            <span class="tc-lbl"><i class="bi bi-upc"></i> Serial</span>
-                            <span class="tc-val mono">{{ data.truck.seriya }}</span>
-                        </div>
-                        {% endif %}
-                        {% if data.truck.company %}
-                        <div class="tc-row">
-                            <span class="tc-lbl"><i class="bi bi-building"></i> Company</span>
-                            <span class="tc-val">{{ data.truck.company }}</span>
-                        </div>
-                        {% endif %}
-                        {% if request.user.is_superuser %}
-                        <div class="tc-row">
-                            <span class="tc-lbl"><i class="bi bi-person"></i> Owner</span>
-                            <span class="tc-val">{{ data.truck.user.username }}</span>
-                        </div>
-                        {% endif %}
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-title">Total Expenses</div>
+                        <div class="stat-value">${{ total_xarajat|format_number }}</div>
                     </div>
-
-                    <!-- Expenses breakdown -->
-                    <div class="tc-exp">
-                        <div class="tc-exp-head">
-                            <span class="tc-exp-title">
-                                <i class="bi bi-receipt"></i> Expenses
-                            </span>
-                            {% if data.expenses %}
-                            <span class="tc-exp-count">{{ data.expenses|length }}</span>
-                            {% endif %}
-                        </div>
-
-                        {% if data.expenses %}
-                        <div class="tc-exp-list">
-                            {% for exp in data.expenses %}
-                            <div class="tc-exp-row">
-                                <span class="tc-exp-name">
-                                    <i class="bi bi-dot" style="color:#f59e0b;"></i>
-                                    {{ exp.get_expense_type_display }}
-                                    <span class="tc-exp-date">{{ exp.date|date:"M d" }}</span>
-                                </span>
-                                <span class="tc-exp-amt">${{ exp.amount|floatformat:"0" }}</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="tc-exp-total">
-                            <span>Total Expenses</span>
-                            <span>${{ data.xarajat_sum|format_number }}</span>
-                        </div>
-                        {% else %}
-                        <div class="tc-exp-empty">No expenses recorded</div>
-                        {% endif %}
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-title">Total Cost</div>
+                        <div class="stat-value">${{ total_umumiy|format_number }}</div>
                     </div>
-
-                    <!-- Footer -->
-                    <div class="tc-footer">
-                        <span class="tc-total">${{ data.umumiy_narx|format_number }}</span>
-                        <span class="tc-total-lbl">Total Cost</span>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="tc-actions">
-                        <a href="{% url 'truck_detail' data.truck.id %}" class="tc-btn view">
-                            <i class="bi bi-eye"></i> View
-                        </a>
-                        <a href="{% url 'edit_truck' data.truck.id %}" class="tc-btn edit">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
-                        <a href="{% url 'delete_truck' data.truck.id %}"
-                           class="tc-btn del"
-                           onclick="return confirm('Delete {{ data.truck.po_id }}: {{ data.truck.make|escapejs }} {{ data.truck.model|escapejs }}?\nThis cannot be undone.')">
-                            <i class="bi bi-trash3"></i> Del
-                        </a>
-                    </div>
-
                 </div>
             </div>
-            {% endfor %}
         </div>
 
-        {% else %}
-        <div class="tl-grid">
-            <div class="tl-empty">
+        <!-- Cards -->
+        <div class="trucks-content">
+            {% if trucks_data %}
+            <div class="trucks-grid">
+                {% for data in trucks_data %}
+                <div class="truck-card">
+
+                    <!-- Image -->
+                    <div class="truck-image-wrapper">
+                        {% if data.truck.image %}
+                            <img
+                                src="{{ data.truck.image.url }}"
+                                alt="{{ data.truck.make }} {{ data.truck.model }}"
+                                class="truck-image"
+                                loading="lazy"
+                            >
+                        {% else %}
+                            <div class="no-img-placeholder">
+                                <i class="bi bi-truck" style="font-size:2rem; color:#9ca3af;"></i>
+                            </div>
+                        {% endif %}
+                        <span class="truck-status-badge {% if data.truck.sotilgan %}sold{% else %}available{% endif %}">
+                            {% if data.truck.sotilgan %}Sold{% else %}Available{% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="truck-body">
+                        <div class="truck-header">
+                            <h5 class="truck-title" title="{{ data.truck.make }} {{ data.truck.model }} ({{ data.truck.year }})">
+                                {{ data.truck.make }} {{ data.truck.model }} ({{ data.truck.year }})
+                            </h5>
+                            <p class="truck-po-id">
+                                <i class="bi bi-tag-fill"></i> {{ data.truck.po_id }}
+                            </p>
+                        </div>
+
+                        <div class="truck-details">
+                            <div class="detail-row">
+                                <span class="detail-label"><i class="bi bi-currency-dollar"></i> Price</span>
+                                <span class="detail-value price">${{ data.truck.price|format_number }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label"><i class="bi bi-wallet"></i> Expenses</span>
+                                <span class="detail-value expense">${{ data.xarajat_sum|format_number }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label"><i class="bi bi-calculator"></i> Total</span>
+                                <span class="detail-value total">${{ data.umumiy_narx|format_number }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="truck-actions">
+                            <a href="{% url 'truck_detail' data.truck.id %}" class="action-btn view">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            <a href="{% url 'edit_truck' data.truck.id %}" class="action-btn edit">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <a href="{% url 'delete_truck' data.truck.id %}"
+                               class="action-btn delete"
+                               onclick="return confirm('Delete {{ data.truck.po_id }}: {{ data.truck.make|escapejs }} {{ data.truck.model|escapejs }}?\nThis cannot be undone.')">
+                                <i class="bi bi-trash3"></i> Del
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <div class="empty-state">
                 <i class="bi bi-inbox"></i>
                 <h4>No trucks found</h4>
                 <p>{% if request.GET.q %}Try adjusting your search criteria{% else %}Add your first truck to get started{% endif %}</p>
                 {% if not request.GET.q %}
-                <a href="{% url 'add_truck' %}" class="btn-add" style="margin-top:1rem; display:inline-flex;">
+                <a href="{% url 'add_truck' %}" class="btn-add" style="margin-top:1.25rem; display:inline-flex;">
                     <i class="bi bi-plus-circle"></i> Add First Truck
                 </a>
                 {% endif %}
             </div>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        {% if trucks.has_other_pages %}
+        <div class="pagination-wrapper">
+            <ul class="pagination">
+                {% if trucks.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ trucks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
+                {% endif %}
+
+                {% for num in trucks.paginator.page_range %}
+                    {% if trucks.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > trucks.number|add:'-3' and num < trucks.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if trucks.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ trucks.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
+                {% endif %}
+            </ul>
         </div>
         {% endif %}
+
     </div>
-
-    <!-- ── Pagination ── -->
-    {% if trucks.has_other_pages %}
-    <div class="tl-pager">
-        <span class="tl-pager-info">
-            Page <strong>{{ trucks.number }}</strong> of <strong>{{ trucks.paginator.num_pages }}</strong>
-            &nbsp;·&nbsp; <strong>{{ trucks.paginator.count }}</strong> total trucks
-        </span>
-        <ul class="pg">
-            {% if trucks.has_previous %}
-            <li>
-                <a href="?page={{ trucks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-                    <i class="bi bi-chevron-left"></i>
-                </a>
-            </li>
-            {% else %}
-            <li class="disabled"><span><i class="bi bi-chevron-left"></i></span></li>
-            {% endif %}
-
-            {% for num in trucks.paginator.page_range %}
-                {% if trucks.number == num %}
-                <li class="active"><span>{{ num }}</span></li>
-                {% elif num > trucks.number|add:'-3' and num < trucks.number|add:'3' %}
-                <li>
-                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
-                </li>
-                {% endif %}
-            {% endfor %}
-
-            {% if trucks.has_next %}
-            <li>
-                <a href="?page={{ trucks.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-                    <i class="bi bi-chevron-right"></i>
-                </a>
-            </li>
-            {% else %}
-            <li class="disabled"><span><i class="bi bi-chevron-right"></i></span></li>
-            {% endif %}
-        </ul>
-    </div>
-    {% endif %}
-
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Smooth scroll to top on pagination
+    document.querySelectorAll('.pagination .page-link').forEach(link => {
+        link.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    });
+});
+</script>
 {% endblock %}

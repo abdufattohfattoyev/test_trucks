@@ -322,7 +322,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-lbl">Down Remaining</span>
-                    <span class="info-val vr" id="initial-remaining">${{ boshlangich_qoldiq|floatformat:2 }}</span>
+                    <span class="info-val" style="color: #dc2626; font-weight: 700;" id="initial-remaining">${{ boshlangich_qoldiq|floatformat:2 }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-lbl">Installment Term</span>

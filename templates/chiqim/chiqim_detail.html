@@ -207,6 +207,21 @@
     }
     .sidebar-overlay.active { display: block; }
 
+    /* ── Down Remaining badge ─────────────────── */
+    .down-remaining-val {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: rgba(220, 38, 38, 0.08);
+        color: #dc2626;
+        font-weight: 700;
+        font-size: 0.88rem;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(220, 38, 38, 0.2);
+        white-space: nowrap;
+    }
+
     /* Responsive */
     @media (max-width: 992px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 768px) {
@@ -320,10 +335,18 @@
                     <span class="info-lbl">Down Payment (Planned)</span>
                     <span class="info-val">${{ chiqim.boshlangich_summa|floatformat:2 }}</span>
                 </div>
+
+                <!-- ✅ TO'G'IRLANGAN: Down Remaining row -->
                 <div class="info-row">
-    <span class="info-lbl">Down Remaining</span>
-    <span class="info-val" style="color: #dc2626; font-weight: 700;" id="initial-remaining">${{ boshlangich_qoldiq|floatformat:2 }}</span>
-</div>
+                    <span class="info-lbl">Down Remaining</span>
+                    <span class="info-val">
+                        <span class="down-remaining-val" id="initial-remaining">
+                            <i class="bi bi-exclamation-circle-fill" style="font-size:0.75rem;"></i>
+                            ${{ boshlangich_qoldiq|floatformat:2 }}
+                        </span>
+                    </span>
+                </div>
+
                 <div class="info-row">
                     <span class="info-lbl">Installment Term</span>
                     <span class="info-val">{{ chiqim.bo_lib_tolov_muddat }} months</span>
@@ -792,8 +815,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ──────────────────────────────────────────── */
 
     /* --- Chiqim (Expense) --- */
-    /* Edit → alohida page ({% url 'chiqim_edit' chiqim.id %} havolasi orqali) */
-
     window.openDeleteChiqimForm = (id) => {
         openSidebar(`/chiqim/delete/${id}/`)
             ?.then(() => setupFormHandler(
@@ -843,10 +864,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 `/chiqim/boshlangich_payment/add/${chiqimId}/`,
                 'Down payment added!',
                 (data) => {
-                    if (initialRemaining)
-                        initialRemaining.textContent = `$${(data.boshlangich_qoldiq || 0).toFixed(2)}`;
+                    const qoldiq = data.boshlangich_qoldiq || 0;
+                    if (initialRemaining) {
+                        initialRemaining.innerHTML = `<i class="bi bi-exclamation-circle-fill" style="font-size:0.75rem;"></i> $${qoldiq.toFixed(2)}`;
+                    }
                     if (addInitialBtn)
-                        addInitialBtn.style.display = (data.boshlangich_qoldiq ?? 0) <= 0 ? 'none' : 'inline-flex';
+                        addInitialBtn.style.display = qoldiq <= 0 ? 'none' : 'inline-flex';
                     setTimeout(() => location.reload(), 1200);
                 }
             ));
@@ -859,10 +882,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 `/chiqim/boshlangich_payment/edit/${tolovId}/`,
                 'Down payment updated!',
                 (data) => {
-                    if (initialRemaining)
-                        initialRemaining.textContent = `$${(data.boshlangich_qoldiq || 0).toFixed(2)}`;
+                    const qoldiq = data.boshlangich_qoldiq || 0;
+                    if (initialRemaining) {
+                        initialRemaining.innerHTML = `<i class="bi bi-exclamation-circle-fill" style="font-size:0.75rem;"></i> $${qoldiq.toFixed(2)}`;
+                    }
                     if (addInitialBtn)
-                        addInitialBtn.style.display = (data.boshlangich_qoldiq ?? 0) > 0 ? 'inline-flex' : 'none';
+                        addInitialBtn.style.display = qoldiq > 0 ? 'inline-flex' : 'none';
                     const cell = document.querySelector(`tr[data-id="${tolovId}"][data-type="boshlangich"] .tolov-summa`);
                     if (cell && data.tolov_summa) cell.textContent = `$${parseFloat(data.tolov_summa).toFixed(2)}`;
                 }
@@ -876,9 +901,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 `/chiqim/boshlangich_payment/delete/${tolovId}/`,
                 'Down payment deleted!',
                 (data) => {
-                    if (initialRemaining)
-                        initialRemaining.textContent = `$${(data.boshlangich_qoldiq || 0).toFixed(2)}`;
-                    if (addInitialBtn && (data.boshlangich_qoldiq ?? 0) > 0)
+                    const qoldiq = data.boshlangich_qoldiq || 0;
+                    if (initialRemaining) {
+                        initialRemaining.innerHTML = `<i class="bi bi-exclamation-circle-fill" style="font-size:0.75rem;"></i> $${qoldiq.toFixed(2)}`;
+                    }
+                    if (addInitialBtn && qoldiq > 0)
                         addInitialBtn.style.display = 'inline-flex';
                     document.querySelector(`tr[data-id="${tolovId}"][data-type="boshlangich"]`)?.remove();
                 }

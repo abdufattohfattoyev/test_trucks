@@ -6,135 +6,145 @@
 {% block extra_css %}
 <style>
     :root {
+        --p: #2563eb;
+        --s: #7c3aed;
+        --ok: #059669;
+        --warn: #d97706;
+        --red: #dc2626;
+        --muted: #64748b;
+        --bd: #e2e8f0;
         --card-radius: 12px;
-        --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-        --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-        --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --primary: #2563eb;
-        --accent: #7c3aed;
+        --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+        --shadow-lg: 0 10px 32px rgba(0,0,0,0.14);
     }
 
-    .trucks-container { max-width: 100%; margin: 0; padding: 0; }
+    /* ── PAGE WRAPPER ── */
+    .page-wrap { max-width: 100%; margin: 0; padding: 0; }
 
-    .trucks-wrapper {
+    /* ── HEADER ── */
+    .list-header {
         background: white;
         border-radius: var(--card-radius);
-        box-shadow: var(--shadow-sm);
-        overflow: hidden;
-    }
-
-    /* ── Header ── */
-    .header-section {
         padding: 1.5rem;
-        background: linear-gradient(135deg, rgba(37,99,235,0.02), rgba(139,92,246,0.02));
-        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(226,232,240,0.8);
     }
 
-    .header-top {
+    .header-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.25rem;
         flex-wrap: wrap;
-        gap: 0.75rem;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
     }
 
     .page-title {
-        font-size: 1.375rem;
-        font-weight: 700;
-        color: #111827;
-        display: flex;
+        font-size: 1.75rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--p), var(--s));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.6rem;
         margin: 0;
     }
 
+    .page-title i {
+        background: none;
+        -webkit-text-fill-color: var(--p);
+    }
+
     .btn-add {
-        padding: 0.625rem 1.25rem;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-        color: white;
+        background: linear-gradient(135deg, var(--ok), #10b981);
         border: none;
-        border-radius: 8px;
+        color: #fff;
+        padding: 0.7rem 1.4rem;
+        border-radius: 10px;
         font-weight: 600;
         font-size: 0.9375rem;
-        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(5,150,105,0.3);
         transition: var(--transition);
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.45rem;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 22px rgba(5,150,105,0.4);
+        color: #fff;
         text-decoration: none;
     }
 
-    .btn-add:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(37,99,235,0.35);
-        color: white;
-    }
-
-    /* ── Search ── */
-    .search-form { margin-bottom: 1.25rem; }
-
-    .search-input-group {
+    /* ── SEARCH ── */
+    .search-bar {
         display: flex;
         gap: 0.5rem;
+        margin-bottom: 1.25rem;
         flex-wrap: wrap;
     }
 
-    .search-input {
+    .search-inp {
         flex: 1;
-        min-width: 0;
+        min-width: 180px;
         padding: 0.7rem 1rem;
-        border: 1.5px solid #e5e7eb;
-        border-radius: 8px;
+        border: 1.5px solid var(--bd);
+        border-radius: 10px;
         font-size: 0.9375rem;
+        outline: none;
         transition: var(--transition);
+        background: #fafafa;
+        color: #111827;
+    }
+    .search-inp:focus {
+        border-color: var(--p);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
         background: white;
     }
 
-    .search-input:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-    }
-
     .search-btn {
-        padding: 0.7rem 1.25rem;
-        background: linear-gradient(135deg, var(--primary), var(--accent));
-        color: white;
+        background: linear-gradient(135deg, var(--p), var(--s));
         border: none;
-        border-radius: 8px;
+        color: white;
+        padding: 0.7rem 1.25rem;
+        border-radius: 10px;
         font-weight: 600;
         cursor: pointer;
-        transition: var(--transition);
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
+        transition: var(--transition);
         white-space: nowrap;
     }
-
-    .search-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    .search-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
 
     .clear-btn {
-        padding: 0.7rem 1.25rem;
-        background: #f3f4f6;
-        color: #374151;
-        border: none;
-        border-radius: 8px;
+        background: #f1f5f9;
+        border: 1.5px solid var(--bd);
+        color: var(--muted);
+        padding: 0.7rem 1.1rem;
+        border-radius: 10px;
         font-weight: 600;
         cursor: pointer;
-        transition: var(--transition);
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
         text-decoration: none;
+        transition: var(--transition);
         white-space: nowrap;
+        font-size: 0.9375rem;
     }
+    .clear-btn:hover { background: #e2e8f0; color: #374151; }
 
-    .clear-btn:hover { background: #e5e7eb; color: #111827; }
-
-    /* ── Stats ── */
-    .stats-grid {
+    /* ── STATS ── */
+    .stats-row {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 1rem;
@@ -143,493 +153,723 @@
     .stat-card {
         display: flex;
         align-items: center;
+        gap: 1rem;
         padding: 1.1rem 1.25rem;
         border-radius: 10px;
-        background: linear-gradient(135deg, var(--primary), var(--accent));
+        background: linear-gradient(135deg, var(--p), var(--s));
         color: white;
         box-shadow: var(--shadow-md);
         transition: var(--transition);
-        overflow: hidden;
     }
-
     .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-    .stat-card.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .stat-card.success { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-card.warn-card { background: linear-gradient(135deg, #f59e0b, var(--warn)); }
+    .stat-card.ok-card   { background: linear-gradient(135deg, #10b981, var(--ok)); }
 
     .stat-icon {
-        font-size: 1.5rem;
-        background: rgba(255,255,255,0.2);
         width: 44px; height: 44px;
         border-radius: 10px;
+        background: rgba(255,255,255,0.2);
         display: flex; align-items: center; justify-content: center;
-        margin-right: 0.875rem;
+        font-size: 1.4rem;
         flex-shrink: 0;
     }
 
-    .stat-content { flex: 1; min-width: 0; }
-    .stat-title { font-size: 0.8rem; font-weight: 500; opacity: 0.9; margin-bottom: 0.15rem; }
-    .stat-value {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+    .stat-lbl { font-size: 0.78rem; font-weight: 500; opacity: 0.9; margin-bottom: 0.1rem; }
+    .stat-val { font-size: 1.2rem; font-weight: 800; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ── Cards Grid ── */
-    .trucks-content { padding: 1.5rem; }
+    /* ── TRUCKS GRID ── */
+    .trucks-section { margin-top: 0; }
 
     .trucks-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 1.25rem;
+        grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+        gap: 1.4rem;
     }
 
-    /* ── Single Card ── */
+    /* ── TRUCK CARD ── */
     .truck-card {
         background: white;
         border-radius: var(--card-radius);
         overflow: hidden;
-        border: 1px solid #e5e7eb;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(226,232,240,0.8);
         transition: var(--transition);
         display: flex;
         flex-direction: column;
     }
-
     .truck-card:hover {
-        transform: translateY(-3px);
+        transform: translateY(-6px);
         box-shadow: var(--shadow-lg);
-        border-color: rgba(37,99,235,0.35);
+        border-color: rgba(37,99,235,0.3);
     }
 
-    /* ── IMAGE (phone-list style) ── */
-    .truck-image-wrapper {
-        height: 120px;
-        background: #f9fafb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    /* IMAGE */
+    .tc-img {
         position: relative;
+        width: 100%;
+        height: 200px;
         overflow: hidden;
-        flex-shrink: 0;
-        cursor: pointer;
-        transition: background 0.2s;
+        background: #f1f5f9;
     }
-
-    .truck-image-wrapper:hover {
-        background: #f3f4f6;
-    }
-
-    .truck-image {
-        max-width: 80%;
-        max-height: 80%;
-        object-fit: contain;
+    .tc-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
         display: block;
-        transition: transform 0.2s ease;
     }
+    .truck-card:hover .tc-img img { transform: scale(1.06); }
 
-    .truck-card:hover .truck-image { transform: scale(1.05); }
-
-    /* placeholder when no image */
-    .no-img-placeholder {
-        color: #9ca3af;
-        font-size: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .tc-img-ph {
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
     }
+    .tc-img-ph i { font-size: 3.5rem; color: #cbd5e1; }
 
-    .truck-status-badge {
+    .badge-status {
         position: absolute;
-        top: 0.625rem;
-        right: 0.625rem;
-        padding: 0.25rem 0.625rem;
+        top: 0.75rem; right: 0.75rem;
+        padding: 0.3rem 0.85rem;
         border-radius: 20px;
-        font-size: 0.68rem;
+        font-size: 0.7rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        backdrop-filter: blur(4px);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     }
+    .bs-active { background: rgba(5,150,105,0.92);  color: white; }
+    .bs-sold   { background: rgba(220,38,38,0.92);  color: white; }
 
-    .truck-status-badge.sold      { background: rgba(220,38,38,0.92);  color: white; }
-    .truck-status-badge.available { background: rgba(16,185,129,0.92); color: white; }
-
-    /* ── Body ── */
-    .truck-body {
-        padding: 0.875rem 1rem;
+    /* BODY */
+    .tc-body {
+        padding: 1.25rem;
         flex: 1;
         display: flex;
         flex-direction: column;
     }
 
-    .truck-header {
-        margin-bottom: 0.625rem;
-        padding-bottom: 0.625rem;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .truck-title {
-        font-size: 0.9375rem;
+    .tc-title {
+        font-size: 1.15rem;
         font-weight: 700;
-        color: #111827;
-        margin-bottom: 0.2rem;
+        color: #1e293b;
+        margin-bottom: 0.3rem;
         line-height: 1.3;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
-    .truck-po-id {
-        font-size: 0.775rem;
-        color: #6b7280;
-        font-weight: 500;
-        margin: 0;
+    .tc-price {
+        font-size: 1.35rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--p), var(--s));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.9rem;
     }
 
-    .truck-po-id i { color: var(--primary); margin-right: 0.2rem; }
+    .tc-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        padding-bottom: 0.9rem;
+        border-bottom: 1px solid var(--bd);
+        margin-bottom: 1rem;
+        flex: 1;
+    }
 
-    .truck-details { flex: 1; margin-bottom: 0.75rem; }
+    .tc-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.82rem;
+        color: var(--muted);
+        font-weight: 500;
+    }
+    .tc-meta-item i { color: var(--p); }
 
-    .detail-row {
+    /* DETAIL ROWS */
+    .tc-details {
+        margin-bottom: 1rem;
+    }
+
+    .tc-detail-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.35rem 0;
-        border-bottom: 1px solid #f3f4f6;
+        padding: 0.32rem 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.84rem;
     }
+    .tc-detail-row:last-child { border-bottom: none; }
 
-    .detail-row:last-child { border-bottom: none; }
+    .td-lbl { color: var(--muted); display: flex; align-items: center; gap: 0.3rem; font-weight: 500; }
+    .td-val { font-weight: 700; }
+    .td-blue   { color: var(--p); }
+    .td-amber  { color: var(--warn); }
+    .td-green  { color: var(--ok); }
 
-    .detail-label {
-        font-size: 0.775rem;
-        color: #6b7280;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-    }
-
-    .detail-value           { font-size: 0.875rem; font-weight: 700; }
-    .detail-value.price     { color: var(--primary); }
-    .detail-value.expense   { color: #f59e0b; }
-    .detail-value.total     { color: #10b981; }
-
-    /* ── Actions ── */
-    .truck-actions {
+    /* ACTIONS */
+    .tc-actions {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 0.375rem;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 0.4rem;
     }
 
-    .action-btn {
-        padding: 0.45rem 0.3rem;
-        border-radius: 7px;
+    .act-btn {
+        padding: 0.55rem 0.4rem;
+        border-radius: 8px;
         font-weight: 600;
-        font-size: 0.75rem;
-        cursor: pointer;
-        border: 1px solid transparent;
-        transition: var(--transition);
-        display: flex;
+        font-size: 0.78rem;
+        border: 2px solid;
+        text-decoration: none;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.25rem;
-        text-decoration: none;
+        background: transparent;
+        cursor: pointer;
+        transition: var(--transition);
         white-space: nowrap;
     }
 
-    .action-btn.view   { background: rgba(37,99,235,0.08);  color: var(--primary); border-color: rgba(37,99,235,0.2); }
-    .action-btn.edit   { background: rgba(245,158,11,0.08); color: #d97706;        border-color: rgba(245,158,11,0.2); }
-    .action-btn.delete { background: rgba(239,68,68,0.08);  color: #dc2626;        border-color: rgba(239,68,68,0.2); }
+    .ab-view   { border-color: var(--p);    color: var(--p); }
+    .ab-edit   { border-color: var(--warn); color: var(--warn); }
+    .ab-del    { border-color: var(--red);  color: var(--red); }
+    .ab-docs   { border-color: #0ea5e9;     color: #0ea5e9; }
 
-    .action-btn.view:hover   { background: rgba(37,99,235,0.15);  border-color: var(--primary); color: var(--primary); }
-    .action-btn.edit:hover   { background: rgba(245,158,11,0.15); border-color: #f59e0b;        color: #d97706; }
-    .action-btn.delete:hover { background: rgba(239,68,68,0.15);  border-color: #ef4444;        color: #dc2626; }
+    .ab-view:hover  { background: var(--p);    color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    .ab-edit:hover  { background: var(--warn); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(217,119,6,0.3); }
+    .ab-del:hover   { background: var(--red);  color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
+    .ab-docs:hover  { background: #0ea5e9;     color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(14,165,233,0.25); }
 
-    /* ── Empty ── */
-    .empty-state { text-align: center; padding: 4rem 2rem; color: #6b7280; }
-    .empty-state i  { font-size: 4rem; color: #d1d5db; margin-bottom: 1rem; display: block; }
-    .empty-state h4 { font-size: 1.25rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; }
-    .empty-state p  { font-size: 0.9375rem; color: #9ca3af; margin: 0; }
+    .act-btn span { display: none; }
+    @media (min-width: 380px) { .act-btn span { display: inline; } }
 
-    /* ── Pagination ── */
-    .pagination-wrapper {
-        padding: 1.5rem;
-        border-top: 1px solid #e5e7eb;
-        background: #f9fafb;
+    /* ── EMPTY ── */
+    .empty-box {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: var(--card-radius);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(226,232,240,0.8);
     }
+    .empty-box i  { font-size: 5rem; color: #cbd5e1; display: block; margin-bottom: 1.5rem; }
+    .empty-box h3 { font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; }
+    .empty-box p  { color: var(--muted); margin-bottom: 2rem; }
 
-    .pagination {
+    /* ── PAGINATION ── */
+    .pager {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.4rem;
+        margin-top: 2rem;
         flex-wrap: wrap;
-        margin: 0; padding: 0; list-style: none;
     }
 
-    .page-item { list-style: none; }
-
-    .page-link {
-        display: flex;
+    .pager a, .pager span {
+        min-width: 40px; height: 40px;
+        padding: 0 0.75rem;
+        border: 1px solid var(--bd);
+        border-radius: 9px;
+        text-decoration: none;
+        color: #0f172a;
+        background: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 40px; height: 40px;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        color: #374151;
-        font-weight: 500;
-        font-size: 0.9375rem;
-        text-decoration: none;
         transition: var(--transition);
     }
 
-    .page-link:hover { background: #f3f4f6; border-color: #d1d5db; }
+    .pager a:hover { background: #f1f5f9; border-color: #c7d2e4; }
+    .pager .cur    { background: linear-gradient(135deg, var(--p), var(--s)); color: white; border-color: transparent; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+    .pager .dis    { opacity: 0.4; pointer-events: none; }
 
-    .page-item.active .page-link {
-        background: linear-gradient(135deg, var(--primary), var(--accent));
-        color: white;
-        border-color: var(--primary);
-        box-shadow: 0 2px 8px rgba(37,99,235,0.3);
-    }
+    /* ── MODALS ── */
+    .modal-content  { border: none !important; border-radius: 16px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.18) !important; }
+    .modal-header   { border-bottom: 1px solid var(--bd) !important; padding: 1.25rem 1.5rem !important; }
+    .modal-body     { padding: 1.5rem !important; }
+    .modal-footer   { border-top: 1px solid var(--bd) !important; padding: 1rem 1.5rem !important; background: #f8fafc; border-radius: 0 0 16px 16px !important; }
+    .modal-spinner  { display: none; position: absolute; inset: 0; background: rgba(255,255,255,0.75); border-radius: 16px; z-index: 10; align-items: center; justify-content: center; }
+    .modal-spinner.show { display: flex; }
 
-    .page-item.disabled .page-link { opacity: 0.5; pointer-events: none; }
+    /* Delete modal */
+    .del-icon { font-size: 4rem; color: #ef4444; display: block; margin-bottom: 1rem; }
+    .del-info { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 1rem 1.25rem; }
+    .del-row  { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid #fecaca; }
+    .del-row:last-child { border-bottom: none; }
+    .del-lbl  { font-size: 0.84rem; color: #9b1c1c; font-weight: 500; }
+    .del-val  { font-size: 0.84rem; color: #7f1d1d; font-weight: 700; }
+    .del-warn { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.84rem; color: #856404; margin-top: 1rem; display: flex; align-items: flex-start; gap: 0.5rem; }
 
-    /* ── Responsive ── */
-    @media (max-width: 1100px) {
-        .trucks-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-    }
+    /* Docs modal */
+    .doc-item  { display: flex; align-items: center; padding: 0.65rem; border-radius: 8px; background: #f8fafc; border: 1px solid var(--bd); margin-bottom: 0.5rem; transition: all 0.2s; }
+    .doc-item:hover { border-color: #93c5fd; background: #eff6ff; }
+    .doc-link  { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #1e293b; font-weight: 500; font-size: 0.875rem; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .doc-link:hover { color: var(--p); }
+    .doc-upload { border: 2px dashed var(--bd); border-radius: 10px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; background: #f8fafc; margin-top: 1rem; }
+    .doc-upload:hover { border-color: var(--p); background: rgba(37,99,235,0.02); }
+    .doc-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .doc-upload i { font-size: 2rem; color: #94a3b8; display: block; margin-bottom: 0.5rem; }
 
-    @media (max-width: 900px) {
-        .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    /* Buttons */
+    .btn-ok     { padding: 0.7rem 1.6rem; border-radius: 9px; font-weight: 600; font-size: 0.9375rem; background: linear-gradient(135deg, var(--p), var(--s)); color: #fff; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.45rem; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    .btn-ok:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.4); }
+    .btn-ok-red { padding: 0.7rem 1.6rem; border-radius: 9px; font-weight: 600; font-size: 0.9375rem; background: linear-gradient(135deg, var(--red), #b91c1c); color: #fff; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.45rem; box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
+    .btn-ok-red:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(220,38,38,0.4); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 992px) {
+        .trucks-grid { grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); }
+        .stats-row   { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 768px) {
-        .header-section { padding: 1rem; }
-        .trucks-content { padding: 1rem; }
-        .header-top     { flex-direction: column; align-items: flex-start; }
-        .stats-grid     { grid-template-columns: 1fr; gap: 0.625rem; }
-        .trucks-grid    { grid-template-columns: repeat(2, 1fr); gap: 0.875rem; }
+        .trucks-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .stats-row   { grid-template-columns: 1fr; gap: 0.75rem; }
+        .tc-img      { height: 160px; }
+        .tc-title    { font-size: 1rem; }
+        .tc-price    { font-size: 1.1rem; margin-bottom: 0.6rem; }
+        .tc-body     { padding: 1rem; }
+        .tc-actions  { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
     }
 
-    @media (max-width: 576px) {
-        .trucks-grid    { grid-template-columns: repeat(2, 1fr); gap: 0.625rem; }
-        .trucks-content { padding: 0.75rem; }
-        .header-section { padding: 0.875rem; }
-        .truck-body     { padding: 0.625rem 0.75rem; }
-        .truck-title    { font-size: 0.8125rem; }
-        .search-input   { width: 100%; flex: none; }
-        .search-btn, .clear-btn { flex: 1; justify-content: center; }
-        .stat-value     { font-size: 1rem; }
-        .stat-title     { font-size: 0.7rem; }
-        .stat-icon      { width: 36px; height: 36px; font-size: 1.1rem; margin-right: 0.5rem; }
-        .action-btn     { font-size: 0.68rem; padding: 0.35rem 0.2rem; }
+    @media (max-width: 540px) {
+        .trucks-grid { grid-template-columns: 1fr; }
+        .tc-img      { height: 200px; }
+        .tc-actions  { grid-template-columns: repeat(4, 1fr); }
     }
 
     @media (max-width: 400px) {
-        .trucks-grid { grid-template-columns: 1fr; }
+        .list-header { padding: 1rem; }
+        .page-title  { font-size: 1.4rem; }
+        .tc-actions  { grid-template-columns: 1fr 1fr; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="trucks-container">
-    <div class="trucks-wrapper">
+<div class="page-wrap">
 
-        <!-- Header -->
-        <div class="header-section">
-            <div class="header-top">
-                <h1 class="page-title">
-                    <i class="bi bi-truck" style="color:#2563eb;"></i> Truck List
-                </h1>
-                <a href="{% url 'add_truck' %}" class="btn-add">
-                    <i class="bi bi-plus-circle"></i> Add Truck
-                </a>
+    <!-- ── HEADER ── -->
+    <div class="list-header">
+        <div class="header-row">
+            <h1 class="page-title">
+                <i class="bi bi-truck"></i> Truck List
+            </h1>
+            <a href="{% url 'add_truck' %}" class="btn-add">
+                <i class="bi bi-plus-lg"></i> Add New Truck
+            </a>
+        </div>
+
+        <!-- Search -->
+        <form class="search-bar" method="GET" action="{% url 'trucks_list' %}">
+            <input
+                type="text"
+                name="q"
+                class="search-inp"
+                placeholder="Search by PO-ID, Make, Model, Location..."
+                value="{{ request.GET.q|default_if_none:'' }}"
+                autocomplete="off"
+            >
+            <button type="submit" class="search-btn">
+                <i class="bi bi-search"></i> Search
+            </button>
+            {% if request.GET.q %}
+            <a href="{% url 'trucks_list' %}" class="clear-btn">
+                <i class="bi bi-x-circle"></i> Clear
+            </a>
+            {% endif %}
+        </form>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-truck"></i></div>
+                <div>
+                    <div class="stat-lbl">Total Truck Price</div>
+                    <div class="stat-val">${{ total_price|format_number }}</div>
+                </div>
             </div>
-
-            <!-- Search -->
-            <form class="search-form" method="GET" action="{% url 'trucks_list' %}">
-                <div class="search-input-group">
-                    <input
-                        type="text"
-                        class="search-input"
-                        name="q"
-                        placeholder="Search by PO-ID, Make, Model, Location..."
-                        value="{{ request.GET.q|default_if_none:'' }}"
-                        autocomplete="off"
-                    >
-                    <button class="search-btn" type="submit">
-                        <i class="bi bi-search"></i> Search
-                    </button>
-                    {% if request.GET.q %}
-                    <a href="{% url 'trucks_list' %}" class="clear-btn">
-                        <i class="bi bi-x-circle"></i> Clear
-                    </a>
-                    {% endif %}
+            <div class="stat-card warn-card">
+                <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+                <div>
+                    <div class="stat-lbl">Total Expenses</div>
+                    <div class="stat-val">${{ total_xarajat|format_number }}</div>
                 </div>
-            </form>
-
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="bi bi-truck"></i></div>
-                    <div class="stat-content">
-                        <div class="stat-title">Total Truck Price</div>
-                        <div class="stat-value">${{ total_price|format_number }}</div>
-                    </div>
-                </div>
-                <div class="stat-card warning">
-                    <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
-                    <div class="stat-content">
-                        <div class="stat-title">Total Expenses</div>
-                        <div class="stat-value">${{ total_xarajat|format_number }}</div>
-                    </div>
-                </div>
-                <div class="stat-card success">
-                    <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
-                    <div class="stat-content">
-                        <div class="stat-title">Total Cost</div>
-                        <div class="stat-value">${{ total_umumiy|format_number }}</div>
-                    </div>
+            </div>
+            <div class="stat-card ok-card">
+                <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
+                <div>
+                    <div class="stat-lbl">Total Cost</div>
+                    <div class="stat-val">${{ total_umumiy|format_number }}</div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Cards -->
-        <div class="trucks-content">
-            {% if trucks_data %}
-            <div class="trucks-grid">
-                {% for data in trucks_data %}
-                <div class="truck-card">
+    <!-- ── TRUCKS GRID ── -->
+    <div class="trucks-section">
+        {% if trucks_data %}
+        <div class="trucks-grid" id="trucksGrid">
+            {% for data in trucks_data %}
+            <div class="truck-card" id="tc-{{ data.truck.id }}">
 
-                    <!-- Image -->
-                    <div class="truck-image-wrapper">
-                        {% if data.truck.image %}
-                            <img
-                                src="{{ data.truck.image.url }}"
-                                alt="{{ data.truck.make }} {{ data.truck.model }}"
-                                class="truck-image"
-                                loading="lazy"
-                            >
-                        {% else %}
-                            <div class="no-img-placeholder">
-                                <i class="bi bi-truck" style="font-size:2rem; color:#9ca3af;"></i>
-                            </div>
-                        {% endif %}
-                        <span class="truck-status-badge {% if data.truck.sotilgan %}sold{% else %}available{% endif %}">
-                            {% if data.truck.sotilgan %}Sold{% else %}Available{% endif %}
-                        </span>
+                <!-- Image -->
+                <div class="tc-img">
+                    {% if data.truck.image %}
+                        <img
+                            src="{{ data.truck.image.url }}"
+                            alt="{{ data.truck.make }} {{ data.truck.model }}"
+                            loading="lazy"
+                        >
+                    {% else %}
+                        <div class="tc-img-ph">
+                            <i class="bi bi-image"></i>
+                        </div>
+                    {% endif %}
+                    <span class="badge-status {% if data.truck.sotilgan %}bs-sold{% else %}bs-active{% endif %}">
+                        {% if data.truck.sotilgan %}Sold{% else %}Active{% endif %}
+                    </span>
+                </div>
+
+                <!-- Body -->
+                <div class="tc-body">
+                    <div class="tc-title" title="{{ data.truck.make }} {{ data.truck.model }} ({{ data.truck.year }})">
+                        {{ data.truck.make }} {{ data.truck.model }}
+                    </div>
+                    <div class="tc-price">${{ data.truck.price|format_number }}</div>
+
+                    <div class="tc-meta">
+                        <div class="tc-meta-item"><i class="bi bi-tag-fill"></i> {{ data.truck.po_id|default:"N/A" }}</div>
+                        <div class="tc-meta-item"><i class="bi bi-calendar3"></i> {{ data.truck.year }}</div>
+                        {% if data.truck.horsepower %}<div class="tc-meta-item"><i class="bi bi-speedometer"></i> {{ data.truck.horsepower }} HP</div>{% endif %}
+                        {% if data.truck.location %}<div class="tc-meta-item"><i class="bi bi-geo-alt-fill"></i> {{ data.truck.location }}</div>{% endif %}
+                        {% if data.truck.seriya %}<div class="tc-meta-item"><i class="bi bi-upc"></i> {{ data.truck.seriya }}</div>{% endif %}
                     </div>
 
-                    <!-- Body -->
-                    <div class="truck-body">
-                        <div class="truck-header">
-                            <h5 class="truck-title" title="{{ data.truck.make }} {{ data.truck.model }} ({{ data.truck.year }})">
-                                {{ data.truck.make }} {{ data.truck.model }} ({{ data.truck.year }})
-                            </h5>
-                            <p class="truck-po-id">
-                                <i class="bi bi-tag-fill"></i> {{ data.truck.po_id }}
-                            </p>
+                    <div class="tc-details">
+                        <div class="tc-detail-row">
+                            <span class="td-lbl"><i class="bi bi-currency-dollar"></i> Expenses</span>
+                            <span class="td-val td-amber">${{ data.xarajat_sum|format_number }}</span>
                         </div>
+                        <div class="tc-detail-row">
+                            <span class="td-lbl"><i class="bi bi-calculator"></i> Total Cost</span>
+                            <span class="td-val td-green">${{ data.umumiy_narx|format_number }}</span>
+                        </div>
+                    </div>
 
-                        <div class="truck-details">
-                            <div class="detail-row">
-                                <span class="detail-label"><i class="bi bi-currency-dollar"></i> Price</span>
-                                <span class="detail-value price">${{ data.truck.price|format_number }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label"><i class="bi bi-wallet"></i> Expenses</span>
-                                <span class="detail-value expense">${{ data.xarajat_sum|format_number }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label"><i class="bi bi-calculator"></i> Total</span>
-                                <span class="detail-value total">${{ data.umumiy_narx|format_number }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Actions -->
-                        <div class="truck-actions">
-                            <a href="{% url 'truck_detail' data.truck.id %}" class="action-btn view">
-                                <i class="bi bi-eye"></i> View
-                            </a>
-                            <a href="{% url 'edit_truck' data.truck.id %}" class="action-btn edit">
-                                <i class="bi bi-pencil"></i> Edit
-                            </a>
-                            <a href="{% url 'delete_truck' data.truck.id %}"
-                               class="action-btn delete"
-                               onclick="return confirm('Delete {{ data.truck.po_id }}: {{ data.truck.make|escapejs }} {{ data.truck.model|escapejs }}?\nThis cannot be undone.')">
-                                <i class="bi bi-trash3"></i> Del
-                            </a>
-                        </div>
+                    <!-- Actions — 4 ta tugma, barchasi ko'rinadi -->
+                    <div class="tc-actions">
+                        <a href="{% url 'truck_detail' data.truck.id %}" class="act-btn ab-view">
+                            <i class="bi bi-eye-fill"></i><span>View</span>
+                        </a>
+                        <a href="{% url 'edit_truck' data.truck.id %}" class="act-btn ab-edit">
+                            <i class="bi bi-pencil-fill"></i><span>Edit</span>
+                        </a>
+                        <button class="act-btn ab-del"
+                            onclick="openDelModal(
+                                {{ data.truck.id }},
+                                '{{ data.truck.make|escapejs }} {{ data.truck.model|escapejs }}',
+                                '{{ data.truck.po_id|escapejs }}',
+                                '{{ data.truck.year }}',
+                                '{{ data.truck.price|format_number }}'
+                            )">
+                            <i class="bi bi-trash-fill"></i><span>Del</span>
+                        </button>
+                        <button class="act-btn ab-docs"
+                            onclick="openDocsModal({{ data.truck.id }}, '{{ data.truck.po_id|escapejs }}')">
+                            <i class="bi bi-file-earmark-text"></i><span>Docs</span>
+                        </button>
                     </div>
                 </div>
-                {% endfor %}
             </div>
-
-            {% else %}
-            <div class="empty-state">
-                <i class="bi bi-inbox"></i>
-                <h4>No trucks found</h4>
-                <p>{% if request.GET.q %}Try adjusting your search criteria{% else %}Add your first truck to get started{% endif %}</p>
-                {% if not request.GET.q %}
-                <a href="{% url 'add_truck' %}" class="btn-add" style="margin-top:1.25rem; display:inline-flex;">
-                    <i class="bi bi-plus-circle"></i> Add First Truck
-                </a>
-                {% endif %}
-            </div>
-            {% endif %}
+            {% endfor %}
         </div>
 
         <!-- Pagination -->
         {% if trucks.has_other_pages %}
-        <div class="pagination-wrapper">
-            <ul class="pagination">
-                {% if trucks.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ trucks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-                        <i class="bi bi-chevron-left"></i>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
-                {% endif %}
+        <div class="pager">
+            {% if trucks.has_previous %}
+                <a href="?page={{ trucks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            {% else %}
+                <span class="dis"><i class="bi bi-chevron-left"></i></span>
+            {% endif %}
 
-                {% for num in trucks.paginator.page_range %}
-                    {% if trucks.number == num %}
-                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                    {% elif num > trucks.number|add:'-3' and num < trucks.number|add:'3' %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
-                    </li>
-                    {% endif %}
-                {% endfor %}
-
-                {% if trucks.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ trucks.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
-                        <i class="bi bi-chevron-right"></i>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
+            {% for num in trucks.paginator.page_range %}
+                {% if trucks.number == num %}
+                    <span class="cur">{{ num }}</span>
+                {% elif num > trucks.number|add:'-3' and num < trucks.number|add:'3' %}
+                    <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
                 {% endif %}
-            </ul>
+            {% endfor %}
+
+            {% if trucks.has_next %}
+                <a href="?page={{ trucks.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            {% else %}
+                <span class="dis"><i class="bi bi-chevron-right"></i></span>
+            {% endif %}
         </div>
         {% endif %}
 
+        {% else %}
+        <!-- Empty state -->
+        <div class="empty-box">
+            <i class="bi bi-truck"></i>
+            <h3>No Trucks Found</h3>
+            <p>{% if request.GET.q %}Try adjusting your search criteria{% else %}Add your first truck to get started{% endif %}</p>
+            {% if not request.GET.q %}
+            <a href="{% url 'add_truck' %}" class="btn-add" style="display:inline-flex; margin: 0 auto;">
+                <i class="bi bi-plus-circle"></i> Add First Truck
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
+
 </div>
+
+
+<!-- ══════════════════════════════════════
+     MODAL: DELETE CONFIRM
+══════════════════════════════════════ -->
+<div class="modal fade" id="delModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+    <div class="modal-content" style="position:relative;">
+      <div class="modal-spinner" id="delSpinner">
+        <div class="spinner-border text-danger" role="status"></div>
+      </div>
+      <div class="modal-header" style="border-top:4px solid var(--red) !important;">
+        <h5 class="modal-title fw-bold text-danger">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Truck
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <i class="bi bi-trash-fill del-icon"></i>
+        <p class="fw-semibold mb-3 fs-6">
+          Are you sure you want to delete this truck?<br>
+          <span class="text-danger fw-bold" id="delTruckName"></span>
+        </p>
+        <div class="del-info text-start">
+          <div class="del-row"><span class="del-lbl">PO-ID</span><span class="del-val" id="delPoId"></span></div>
+          <div class="del-row"><span class="del-lbl">Year</span><span class="del-val"  id="delYear"></span></div>
+          <div class="del-row"><span class="del-lbl">Price</span><span class="del-val" id="delPrice"></span></div>
+        </div>
+        <div class="del-warn text-start mt-3">
+          <i class="bi bi-exclamation-circle-fill flex-shrink-0 mt-1"></i>
+          <span>This action is <strong>irreversible</strong>. All associated documents will also be deleted.</span>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-center gap-3">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+          <i class="bi bi-x-lg me-1"></i>Cancel
+        </button>
+        <button type="button" class="btn-ok-red" id="delConfirmBtn">
+          <i class="bi bi-trash-fill"></i> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     MODAL: DOCUMENTS
+══════════════════════════════════════ -->
+<div class="modal fade" id="docsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:560px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="docsModalTitle">
+          <i class="bi bi-file-earmark-text me-2 text-primary"></i>Documents
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="docsModalBody">
+        <div class="d-flex justify-content-center py-5">
+          <div class="spinner-border text-primary"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
+
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Smooth scroll to top on pagination
-    document.querySelectorAll('.pagination .page-link').forEach(link => {
-        link.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+const CSRF = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+let _currentDelId = null;
+
+/* ── Helpers ── */
+function spin(id, on) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('show', on);
+}
+
+/* ── DELETE MODAL ── */
+function openDelModal(id, name, poId, year, price) {
+    _currentDelId = id;
+    document.getElementById('delTruckName').textContent = name;
+    document.getElementById('delPoId').textContent      = poId  || '—';
+    document.getElementById('delYear').textContent      = year  || '—';
+    document.getElementById('delPrice').textContent     = price ? `$${price}` : '—';
+    new bootstrap.Modal(document.getElementById('delModal')).show();
+}
+
+document.getElementById('delConfirmBtn').addEventListener('click', function () {
+    if (!_currentDelId) return;
+    spin('delSpinner', true);
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Deleting…';
+
+    fetch(`/truck/delete/${_currentDelId}/`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(d => {
+        spin('delSpinner', false);
+        if (d.success) {
+            bootstrap.Modal.getInstance(document.getElementById('delModal')).hide();
+            window.showAlert?.('success', d.message || 'Truck deleted!');
+            const card = document.getElementById(`tc-${_currentDelId}`);
+            if (card) {
+                card.style.transition = 'all .3s';
+                card.style.opacity    = '0';
+                card.style.transform  = 'scale(0.9)';
+                setTimeout(() => card.remove(), 320);
+            }
+        } else {
+            this.disabled = false;
+            this.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
+            spin('delSpinner', false);
+            window.showAlert?.('error', d.message || 'Delete failed!');
+        }
+    })
+    .catch(() => {
+        spin('delSpinner', false);
+        this.disabled = false;
+        this.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
+        window.showAlert?.('error', 'An error occurred.');
     });
+});
+
+/* ── DOCS MODAL ── */
+function openDocsModal(id, poId) {
+    const m     = new bootstrap.Modal(document.getElementById('docsModal'));
+    const title = document.getElementById('docsModalTitle');
+    const body  = document.getElementById('docsModalBody');
+    title.innerHTML = `<i class="bi bi-file-earmark-text me-2 text-primary"></i>Documents — ${poId}`;
+    body.innerHTML  = `<div class="d-flex justify-content-center py-5"><div class="spinner-border text-primary"></div></div>`;
+    m.show();
+
+    fetch(`/truck/detail/${id}/`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(r => r.json())
+    .then(d => renderDocs(body, d.hujjatlar || [], id))
+    .catch(() => { body.innerHTML = '<div class="alert alert-danger">Failed to load documents.</div>'; });
+}
+
+function renderDocs(container, list, truckId) {
+    let html = `<div id="docs-${truckId}">`;
+    if (list.length) {
+        list.forEach(h => {
+            const ext  = (h.original_file_name || '').split('.').pop().toLowerCase();
+            const icon = ext === 'pdf' ? 'bi-file-earmark-pdf text-danger'
+                       : ['jpg','jpeg','png','gif','webp'].includes(ext) ? 'bi-file-earmark-image text-success'
+                       : ['doc','docx'].includes(ext) ? 'bi-file-earmark-word text-primary'
+                       : 'bi-file-earmark text-secondary';
+            html += `
+              <div class="doc-item" id="di-${h.id}">
+                <a href="${h.hujjat_url}" class="doc-link" download target="_blank">
+                  <i class="bi ${icon} fs-5 flex-shrink-0"></i>
+                  <span title="${h.original_file_name}">${h.original_file_name}</span>
+                </a>
+                <button class="btn btn-sm btn-outline-danger ms-2 flex-shrink-0"
+                        onclick="deleteDoc(${h.id}, ${truckId})">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>`;
+        });
+    } else {
+        html += `
+          <div class="text-center py-4 text-muted">
+            <i class="bi bi-inbox fs-1 d-block mb-2" style="color:#cbd5e1;"></i>
+            No documents yet.
+          </div>`;
+    }
+    html += `</div>
+      <div class="doc-upload" id="dup-${truckId}">
+        <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+               onchange="uploadDocs(this, ${truckId})">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <p class="mb-1 fw-semibold">Click or drag files here</p>
+        <small class="text-muted">JPG, PNG, PDF, DOC, DOCX — max 10 MB</small>
+      </div>
+      <div id="dus-${truckId}" class="mt-2"></div>`;
+    container.innerHTML = html;
+}
+
+function uploadDocs(input, id) {
+    if (!input.files.length) return;
+    const st = document.getElementById(`dus-${id}`);
+    st.innerHTML = `<div class="d-flex align-items-center gap-2 text-muted">
+                      <div class="spinner-border spinner-border-sm text-primary"></div> Uploading…
+                    </div>`;
+    const fd = new FormData();
+    fd.append('truck_id', id);
+    Array.from(input.files).forEach(f => fd.append('hujjat', f));
+    fetch('/truck/upload-hujjat/', {
+        method: 'POST', body: fd,
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            renderDocs(document.getElementById('docsModalBody'), d.hujjatlar || [], id);
+            window.showAlert?.('success', d.message);
+        } else {
+            st.innerHTML = `<div class="alert alert-danger py-2 mb-0">${d.message}</div>`;
+        }
+    })
+    .catch(() => { st.innerHTML = '<div class="alert alert-danger py-2 mb-0">Upload failed.</div>'; });
+}
+
+function deleteDoc(docId, truckId) {
+    if (!confirm('Delete this document?')) return;
+    fetch(`/truck/hujjat/delete/${docId}/`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            const item = document.getElementById(`di-${docId}`);
+            if (item) { item.style.opacity = '0'; item.style.transition = '.2s'; setTimeout(() => item.remove(), 200); }
+            window.showAlert?.('success', d.message || 'Deleted!');
+        } else {
+            window.showAlert?.('error', d.message || 'Failed!');
+        }
+    })
+    .catch(() => { window.showAlert?.('error', 'Error occurred.'); });
+}
+
+/* ── Pagination scroll ── */
+document.querySelectorAll('.pager a').forEach(link => {
+    link.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 });
 </script>
 {% endblock %}
