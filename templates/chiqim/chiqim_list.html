@@ -24,12 +24,8 @@
     }
 
     .page-wrapper { max-width: 1400px; margin: 0 auto; padding: 2rem 1.25rem; }
-
-    .page-header {
-        display: flex; justify-content: space-between; align-items: center;
-        margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
-    }
-    .page-title { font-size: 1.5rem; font-weight: 700; color: var(--gray-800); margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .page-title  { font-size: 1.5rem; font-weight: 700; color: var(--gray-800); margin: 0; display: flex; align-items: center; gap: 0.5rem; }
 
     .btn-primary-add {
         background: var(--primary); color: white; border: none;
@@ -42,7 +38,7 @@
 
     /* Stats */
     .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .stat-card { background: white; border-radius: var(--radius-md); padding: 1.125rem 1.25rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--gray-200); }
+    .stat-card  { background: white; border-radius: var(--radius-md); padding: 1.125rem 1.25rem; box-shadow: var(--shadow-sm); border-left: 4px solid var(--gray-200); }
     .stat-card.s-blue   { border-color: var(--primary); }
     .stat-card.s-red    { border-color: var(--danger); }
     .stat-card.s-green  { border-color: var(--success-color); }
@@ -55,38 +51,27 @@
     .stat-lbl { font-size: 0.7rem; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.2rem; }
 
     /* Filter */
-    .filter-card {
-        background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
-        padding: 1rem 1.25rem; margin-bottom: 1.25rem;
-        display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end;
-    }
+    .filter-card { background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-end; }
     .fld { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; min-width: 140px; }
     .fld label { font-size: 0.7rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.04em; }
-    .fld input, .fld select {
-        border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
-        padding: 0.45rem 0.75rem; font-size: 0.875rem; color: var(--gray-800);
-        background: var(--gray-50); height: 38px; transition: border-color 0.15s;
-    }
+    .fld input, .fld select { border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 0.45rem 0.75rem; font-size: 0.875rem; color: var(--gray-800); background: var(--gray-50); height: 38px; transition: border-color 0.15s; }
     .fld input:focus, .fld select:focus { outline: none; border-color: var(--primary); background: white; }
-    .btn-reset {
-        background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200);
-        border-radius: var(--radius-sm); padding: 0 1rem; height: 38px;
-        font-size: 0.8rem; cursor: pointer; white-space: nowrap; transition: var(--transition); align-self: flex-end;
-    }
+    .btn-reset { background: var(--gray-100); color: var(--gray-600); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 0 1rem; height: 38px; font-size: 0.8rem; cursor: pointer; white-space: nowrap; transition: var(--transition); align-self: flex-end; }
     .btn-reset:hover { background: var(--gray-200); color: var(--gray-800); }
 
     /* Table */
     .table-card { background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden; }
     .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    .data-table th {
-        padding: 0.75rem 1rem; text-align: left; background: var(--gray-100);
-        color: var(--gray-600); font-size: 0.7rem; font-weight: 700;
-        text-transform: uppercase; letter-spacing: 0.05em;
-        border-bottom: 2px solid var(--gray-200); white-space: nowrap;
-    }
+    .data-table th { padding: 0.75rem 1rem; text-align: left; background: var(--gray-100); color: var(--gray-600); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--gray-200); white-space: nowrap; }
     .data-table td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--gray-200); color: var(--gray-700); vertical-align: middle; }
     .data-table tr:last-child td { border-bottom: none; }
     .data-table tbody tr:hover { background: var(--gray-50); }
+
+    /* Priority row tints */
+    .data-table tbody tr[data-pay-status="overdue"]          { background: rgba(247,37,133,0.025); }
+    .data-table tbody tr[data-pay-status="upcoming"]         { background: rgba(248,150,30,0.025); }
+    .data-table tbody tr[data-pay-status="overdue"]:hover    { background: rgba(247,37,133,0.055); }
+    .data-table tbody tr[data-pay-status="upcoming"]:hover   { background: rgba(248,150,30,0.055); }
 
     .po-badge { background: rgba(67,97,238,0.1); color: var(--primary); padding: 2px 9px; border-radius: 5px; font-weight: 700; font-size: 0.78rem; }
     .truck-name { font-weight: 600; color: var(--gray-800); }
@@ -105,14 +90,14 @@
 
     .action-buttons { display: flex; gap: 0.375rem; flex-wrap: wrap; }
     .btn-act { border: none; padding: 0.32rem 0.65rem; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem; transition: var(--transition); text-decoration: none; }
-    .btn-edit    { background: rgba(67,97,238,0.1);  color: var(--primary); }
-    .btn-edit:hover    { background: rgba(67,97,238,0.2); color: var(--primary); }
-    .btn-delete  { background: rgba(247,37,133,0.1); color: var(--danger); }
-    .btn-delete:hover  { background: rgba(247,37,133,0.2); color: var(--danger); }
-    .btn-payment { background: rgba(16,185,129,0.1); color: #059669; }
-    .btn-payment:hover { background: rgba(16,185,129,0.2); color: #059669; }
-    .btn-detail  { background: rgba(107,114,128,0.1); color: #374151; }
-    .btn-detail:hover  { background: rgba(107,114,128,0.2); color: #111827; }
+    .btn-edit:not(:hover)    { background: rgba(67,97,238,0.1);  color: var(--primary); }
+    .btn-edit:hover          { background: rgba(67,97,238,0.2);  color: var(--primary); }
+    .btn-delete:not(:hover)  { background: rgba(247,37,133,0.1); color: var(--danger); }
+    .btn-delete:hover        { background: rgba(247,37,133,0.2); color: var(--danger); }
+    .btn-payment:not(:hover) { background: rgba(16,185,129,0.1); color: #059669; }
+    .btn-payment:hover       { background: rgba(16,185,129,0.2); color: #059669; }
+    .btn-detail:not(:hover)  { background: rgba(107,114,128,0.1); color: #374151; }
+    .btn-detail:hover        { background: rgba(107,114,128,0.2); color: #111827; }
 
     .empty-state { padding: 3rem; text-align: center; color: var(--gray-600); }
     .empty-state i { font-size: 2.5rem; color: var(--gray-200); display: block; margin-bottom: 0.75rem; }
@@ -140,17 +125,8 @@
     .spin-icon { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin-modal .7s linear infinite; }
 
     @media (max-width: 992px) { .stats-row { grid-template-columns: repeat(2,1fr); } }
-    @media (max-width: 768px) {
-        .stats-row { grid-template-columns: 1fr 1fr; }
-        .data-table-wrap { overflow-x: auto; }
-        .data-table { min-width: 900px; }
-    }
-    @media (max-width: 480px) {
-        .stats-row { grid-template-columns: 1fr; }
-        .filter-card { flex-direction: column; }
-        .fld { min-width: 100%; }
-        .page-wrapper { padding: 1rem 0.75rem; }
-    }
+    @media (max-width: 768px) { .stats-row { grid-template-columns: 1fr 1fr; } .data-table-wrap { overflow-x: auto; } .data-table { min-width: 900px; } }
+    @media (max-width: 480px) { .stats-row { grid-template-columns: 1fr; } .filter-card { flex-direction: column; } .fld { min-width: 100%; } .page-wrapper { padding: 1rem 0.75rem; } }
 </style>
 {% endblock %}
 
@@ -159,6 +135,7 @@
 
     <div class="page-header">
         <h1 class="page-title"><i class="bi bi-cash-stack"></i> Expenses List</h1>
+        {# ── ADD → alohida page ── #}
         <a href="{% url 'chiqim_add' %}" class="btn-primary-add">
             <i class="bi bi-plus-circle"></i> Add New Expense
         </a>
@@ -203,7 +180,7 @@
         <div class="fld">
             <label>Sort By</label>
             <select id="filterSort">
-                <option value="">Default</option>
+                <option value="">Default (priority)</option>
                 <option value="days_asc">Days Left ↑</option>
                 <option value="days_desc">Days Left ↓</option>
                 <option value="price_asc">Price ↑</option>
@@ -304,18 +281,29 @@
                         </td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn-act btn-edit" onclick="openEditForm({{ chiqim.id }})">
+
+                                {# ── EDIT → alohida page ── #}
+                                <a href="{% url 'chiqim_edit' chiqim.id %}" class="btn-act btn-edit">
                                     <i class="bi bi-pencil"></i> Edit
-                                </button>
-                                <button class="btn-act btn-delete" onclick="showDeleteModal({{ chiqim.id }}, '{{ chiqim.truck.po_id }}')">
+                                </a>
+
+                                {# ── DELETE → modal ── #}
+                                <button class="btn-act btn-delete"
+                                        onclick="showDeleteModal({{ chiqim.id }}, '{{ chiqim.truck.po_id }}')">
                                     <i class="bi bi-trash"></i> Delete
                                 </button>
-                                <button class="btn-act btn-payment" onclick="openPaymentForm({{ chiqim.id }})">
+
+                                {# ── PAYMENT → sidebar ── #}
+                                <button class="btn-act btn-payment"
+                                        onclick="openPaymentForm({{ chiqim.id }})">
                                     <i class="bi bi-cash-coin"></i> Payment
                                 </button>
+
+                                {# ── DETAILS → alohida page ── #}
                                 <a href="{% url 'chiqim_detail' chiqim.id %}" class="btn-act btn-detail">
                                     <i class="bi bi-eye"></i> Details
                                 </a>
+
                             </div>
                         </td>
                     </tr>
@@ -400,12 +388,37 @@
 
 {% block extra_js %}
 <script>
+/* ── Priority auto-sort on page load ── */
+document.addEventListener('DOMContentLoaded', function () {
+    const tbody = document.getElementById('tableBody');
+    if (!tbody) return;
+    const noResults = document.getElementById('noResultsRow');
+    const rows = Array.from(tbody.querySelectorAll('tr:not(#noResultsRow)'));
+
+    function priority(row) {
+        const s = row.dataset.payStatus || '';
+        return s === 'overdue' ? 0 : s === 'upcoming' ? 1 : s === 'ok' ? 2 : 3;
+    }
+
+    rows.sort((a, b) => {
+        const pd = priority(a) - priority(b);
+        if (pd !== 0) return pd;
+        return parseFloat(a.dataset.days) - parseFloat(b.dataset.days);
+    });
+    rows.forEach(r => tbody.insertBefore(r, noResults));
+});
+
 /* ── Filter & Sort ── */
 const filterSearch = document.getElementById('filterSearch');
 const filterStatus = document.getElementById('filterStatus');
 const filterSort   = document.getElementById('filterSort');
 const tableBody    = document.getElementById('tableBody');
 const noResultsRow = document.getElementById('noResultsRow');
+
+function rowPriority(row) {
+    const s = row.dataset.payStatus || '';
+    return s === 'overdue' ? 0 : s === 'upcoming' ? 1 : s === 'ok' ? 2 : 3;
+}
 
 function applyFilters() {
     if (!tableBody) return;
@@ -418,22 +431,22 @@ function applyFilters() {
     rows.forEach(row => {
         const matchSearch = !term   || (row.dataset.search || '').toLowerCase().includes(term);
         const matchStatus = !status || (row.dataset.payStatus || '') === status;
-        row.style.display = matchSearch && matchStatus ? '' : 'none';
+        row.style.display = (matchSearch && matchStatus) ? '' : 'none';
     });
 
     const visible = rows.filter(r => r.style.display !== 'none');
 
-    if (sort) {
-        visible.sort((a, b) => {
-            if (sort === 'days_asc')   return parseFloat(a.dataset.days)  - parseFloat(b.dataset.days);
-            if (sort === 'days_desc')  return parseFloat(b.dataset.days)  - parseFloat(a.dataset.days);
-            if (sort === 'price_asc')  return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
-            if (sort === 'price_desc') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
-            return 0;
-        });
-        visible.forEach(r => tableBody.insertBefore(r, noResultsRow));
-    }
+    visible.sort((a, b) => {
+        if (sort === 'days_asc')   return parseFloat(a.dataset.days)  - parseFloat(b.dataset.days);
+        if (sort === 'days_desc')  return parseFloat(b.dataset.days)  - parseFloat(a.dataset.days);
+        if (sort === 'price_asc')  return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+        if (sort === 'price_desc') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+        const pd = rowPriority(a) - rowPriority(b);
+        if (pd !== 0) return pd;
+        return parseFloat(a.dataset.days) - parseFloat(b.dataset.days);
+    });
 
+    visible.forEach(r => tableBody.insertBefore(r, noResultsRow));
     if (noResultsRow) noResultsRow.style.display = visible.length === 0 ? '' : 'none';
 }
 
@@ -494,10 +507,11 @@ document.getElementById('confirmDeleteBtn')?.addEventListener('click', async () 
     }
 });
 
-/* ── Sidebar forms ── */
-function bindSidebarForm(formId, url, msg) {
+/* ── Payment sidebar ── */
+window.openPaymentForm = id => {
+    window.openFormSidebar?.(`/chiqim/payment/add/${id}/`, 'Add Payment');
     setTimeout(() => {
-        const form = document.getElementById(formId);
+        const form = document.getElementById('tolovForm');
         if (!form || form.dataset.bound) return;
         form.dataset.bound = '1';
         form.addEventListener('submit', async e => {
@@ -506,7 +520,7 @@ function bindSidebarForm(formId, url, msg) {
             const orig = btn?.innerHTML;
             if (btn) { btn.disabled = true; btn.innerHTML = 'Saving...'; }
             try {
-                const resp = await fetch(url, {
+                const resp = await fetch(`/chiqim/payment/add/${id}/`, {
                     method: 'POST',
                     body: new FormData(form),
                     headers: { 'X-CSRFToken': getCookie('csrftoken'), 'X-Requested-With': 'XMLHttpRequest' },
@@ -514,12 +528,12 @@ function bindSidebarForm(formId, url, msg) {
                 });
                 const data = await resp.json();
                 if (data.success) {
-                    window.showAlert?.('success', msg || 'Saved!');
+                    window.showAlert?.('success', 'Payment added!');
                     window.closeFormSidebar?.();
                     setTimeout(() => location.reload(), 1200);
                 } else {
                     if (data.errors) {
-                        Object.entries(data.errors).forEach(([field, msgs]) => {
+                        Object.entries(data.errors).forEach(([field]) => {
                             const input = form.querySelector(`#id_${field}`);
                             if (input) input.style.outline = '2px solid #f72585';
                         });
@@ -530,15 +544,6 @@ function bindSidebarForm(formId, url, msg) {
             finally { if (btn) { btn.disabled = false; btn.innerHTML = orig; } }
         });
     }, 500);
-}
-
-window.openEditForm = id => {
-    window.openFormSidebar?.(`/chiqim/edit/${id}/`, 'Edit Expense');
-    bindSidebarForm('chiqimForm', `/chiqim/edit/${id}/`, 'Expense updated!');
-};
-window.openPaymentForm = id => {
-    window.openFormSidebar?.(`/chiqim/payment/add/${id}/`, 'Add Payment');
-    bindSidebarForm('tolovForm', `/chiqim/payment/add/${id}/`, 'Payment added!');
 };
 </script>
 {% endblock %}

@@ -82,25 +82,42 @@
 
     /* ── Info layout ─────────────────────────── */
     .info-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
-    .info-card { background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .info-card {
+        background: white; border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm); overflow: hidden;
+    }
     .info-card-hdr {
-        padding: 0.75rem 1.125rem; border-bottom: 1px solid var(--gray-100);
+        padding: 0.75rem 1.125rem; border-bottom: 2px solid var(--gray-200);
         font-size: 0.7rem; font-weight: 700; color: var(--gray-600);
         text-transform: uppercase; letter-spacing: 0.05em;
         background: var(--gray-50); display: flex; align-items: center; gap: 0.4rem;
     }
-    .info-card-body { padding: 0.875rem 1.125rem; }
+    .info-card-body { padding: 0; }
+
+    /* Jadval uslubida: 2 ustun — label 45%, val 55% */
     .info-row {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 0.5rem 0; border-bottom: 1px solid var(--gray-100);
-        font-size: 0.875rem; gap: 1rem;
+        display: grid;
+        grid-template-columns: 45% 55%;
+        align-items: center;
+        padding: 0.6rem 1.125rem;
+        border-bottom: 1px solid var(--gray-200);
+        font-size: 0.875rem;
     }
     .info-row:last-child { border-bottom: none; }
-    .info-lbl { color: var(--gray-600); font-size: 0.82rem; flex-shrink: 0; }
-    .info-val { font-weight: 600; color: var(--gray-800); text-align: right; }
-    .vg { color: var(--success-color) !important; }
-    .vr { color: #dc2626 !important; }
+    .info-lbl {
+        color: var(--gray-600); font-size: 0.82rem;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .info-val {
+        font-weight: 600; color: var(--gray-800);
+        text-align: right; white-space: nowrap;
+        overflow: visible; padding-left: 0.5rem;
+    }
+    .vg { color: #059669 !important; }
+    .vr { color: #dc2626 !important; font-weight: 700 !important; }
     .vb { color: var(--primary) !important; }
+    .info-row:hover { background: var(--gray-50); }
+    .info-row:last-child:hover { border-radius: 0 0 var(--radius-md) var(--radius-md); }
 
     /* ── Section card ────────────────────────── */
     .sec-card { background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 1.5rem; }
@@ -220,9 +237,9 @@
             <a href="{% url 'chiqim_list' %}" class="btn-back">
                 <i class="bi bi-arrow-left"></i> Back
             </a>
-            <button class="btn-hdr btn-hdr-edit" onclick="openEditChiqimForm({{ chiqim.id }})">
+            <a href="{% url 'chiqim_edit' chiqim.id %}" class="btn-hdr btn-hdr-edit">
                 <i class="bi bi-pencil"></i> Edit
-            </button>
+            </a>
             <button class="btn-hdr btn-hdr-delete" onclick="openDeleteChiqimForm({{ chiqim.id }})">
                 <i class="bi bi-trash"></i> Delete
             </button>
@@ -304,9 +321,9 @@
                     <span class="info-val">${{ chiqim.boshlangich_summa|floatformat:2 }}</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-lbl">Down Remaining</span>
-                    <span class="info-val vr" id="initial-remaining">${{ boshlangich_qoldiq|floatformat:2 }}</span>
-                </div>
+    <span class="info-lbl">Down Remaining</span>
+    <span class="info-val" style="color: #dc2626; font-weight: 700;" id="initial-remaining">${{ boshlangich_qoldiq|floatformat:2 }}</span>
+</div>
                 <div class="info-row">
                     <span class="info-lbl">Installment Term</span>
                     <span class="info-val">{{ chiqim.bo_lib_tolov_muddat }} months</span>
@@ -775,14 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ──────────────────────────────────────────── */
 
     /* --- Chiqim (Expense) --- */
-    window.openEditChiqimForm = (id) => {
-        openSidebar(`/chiqim/edit/${id}/`)
-            ?.then(() => setupFormHandler(
-                'chiqimForm',
-                `/chiqim/edit/${id}/`,
-                'Expense updated successfully!'
-            ));
-    };
+    /* Edit → alohida page ({% url 'chiqim_edit' chiqim.id %} havolasi orqali) */
 
     window.openDeleteChiqimForm = (id) => {
         openSidebar(`/chiqim/delete/${id}/`)

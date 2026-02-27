@@ -14,12 +14,10 @@ def validate_file_size(value):
     if value.size > limit:
         raise ValidationError("File size must not exceed 50 MB.")
 
-
 def qarz_document_upload_path(instance, filename):
     """Generate path to save file with original name."""
     truck_id = instance.truck.id if instance.truck else 'no_truck'
     return f'qarz_documents/{truck_id}/{filename}'
-
 
 class Qarz(models.Model):
     lender = models.ForeignKey(
@@ -197,7 +195,6 @@ class Qarz(models.Model):
             models.Index(fields=['lender', 'is_paid']),
             models.Index(fields=['given_date']),
         ]
-
 
 class Payment(models.Model):
     qarz = models.ForeignKey(

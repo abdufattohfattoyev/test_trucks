@@ -7,8 +7,6 @@
     --p: #2563eb; --s: #7c3aed; --ok: #059669;
     --warn: #d97706; --red: #dc2626; --muted: #64748b; --bd: #e2e8f0;
 }
-
-/* ── HEADER ─────────────────────────────────── */
 .dash-title {
     font-size:2rem; font-weight:800;
     background:linear-gradient(135deg,var(--p),var(--s));
@@ -21,82 +19,48 @@
     box-shadow:0 4px 14px rgba(5,150,105,.3); transition:all .25s;
     display:inline-flex; align-items:center; gap:.45rem; cursor:pointer;
 }
-.btn-add:hover { transform:translateY(-2px); box-shadow:0 6px 22px rgba(5,150,105,.4); color:#fff; }
+.btn-add:hover { transform:translateY(-2px); box-shadow:0 6px 22px rgba(5,150,105,.4); color:#fff; text-decoration:none; }
 
-/* ── STAT CARDS ──────────────────────────────── */
+/* Stats */
 .stat-card {
     background:#fff; border-radius:12px; padding:1.4rem;
     box-shadow:0 2px 12px rgba(0,0,0,.07); border:1px solid rgba(226,232,240,.8);
     display:flex; align-items:center; gap:1rem; transition:all .25s; height:100%;
 }
 .stat-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,.11); }
-.stat-icon {
-    width:56px; height:56px; border-radius:12px;
-    display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0;
-}
+.stat-icon { width:56px; height:56px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; }
 .si-blue  { background:linear-gradient(135deg,rgba(37,99,235,.1),rgba(139,92,246,.1)); color:var(--p); }
 .si-green { background:linear-gradient(135deg,rgba(5,150,105,.1),rgba(16,185,129,.1)); color:var(--ok); }
 .si-amber { background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(217,119,6,.1)); color:var(--warn); }
 .stat-label { font-size:.8rem; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.2rem; }
 .stat-val { font-size:1.65rem; font-weight:800; color:#1e293b; margin:0; line-height:1.2; }
 
-/* ── SEARCH ──────────────────────────────────── */
-.search-wrap {
-    background:#fff; border-radius:12px; padding:1.4rem;
-    box-shadow:0 2px 12px rgba(0,0,0,.07); border:1px solid rgba(226,232,240,.8);
-    display:flex; align-items:center; height:100%;
-}
-.search-inp {
-    flex:1; border:1.5px solid var(--bd); border-radius:10px 0 0 10px;
-    padding:.7rem 1rem; font-size:.9375rem; border-right:none; outline:none; transition:all .2s;
-}
+/* Search */
+.search-wrap { background:#fff; border-radius:12px; padding:1.4rem; box-shadow:0 2px 12px rgba(0,0,0,.07); border:1px solid rgba(226,232,240,.8); display:flex; align-items:center; height:100%; }
+.search-inp { flex:1; border:1.5px solid var(--bd); border-radius:10px 0 0 10px; padding:.7rem 1rem; font-size:.9375rem; border-right:none; outline:none; transition:all .2s; }
 .search-inp:focus { border-color:var(--p); box-shadow:0 0 0 3px rgba(37,99,235,.1); }
-.search-btn {
-    background:linear-gradient(135deg,var(--p),var(--s)); border:none; color:#fff;
-    padding:.7rem 1.4rem; border-radius:0 10px 10px 0; font-size:1.1rem; cursor:pointer;
-}
+.search-btn { background:linear-gradient(135deg,var(--p),var(--s)); border:none; color:#fff; padding:.7rem 1.4rem; border-radius:0 10px 10px 0; font-size:1.1rem; cursor:pointer; }
 
-/* ── TRUCK GRID ──────────────────────────────── */
-.trucks-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
-    gap:1.4rem;
-}
-.truck-card {
-    background:#fff; border-radius:12px; overflow:hidden;
-    box-shadow:0 2px 12px rgba(0,0,0,.07); border:1px solid rgba(226,232,240,.8);
-    transition:all .3s; display:flex; flex-direction:column;
-}
+/* Truck grid */
+.trucks-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:1.4rem; }
+.truck-card { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.07); border:1px solid rgba(226,232,240,.8); transition:all .3s; display:flex; flex-direction:column; }
 .truck-card:hover { transform:translateY(-7px); box-shadow:0 12px 32px rgba(0,0,0,.14); }
-
 .tc-img { position:relative; width:100%; height:210px; overflow:hidden; background:#f1f5f9; }
 .tc-img img { width:100%; height:100%; object-fit:cover; transition:transform .3s; }
 .truck-card:hover .tc-img img { transform:scale(1.05); }
 .tc-img-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
 .tc-img-ph i { font-size:3.5rem; color:#cbd5e1; }
-
-.badge-status {
-    position:absolute; top:.9rem; right:.9rem;
-    padding:.35rem .85rem; border-radius:20px;
-    font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
-    backdrop-filter:blur(8px); box-shadow:0 3px 10px rgba(0,0,0,.1);
-}
+.badge-status { position:absolute; top:.9rem; right:.9rem; padding:.35rem .85rem; border-radius:20px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; backdrop-filter:blur(8px); box-shadow:0 3px 10px rgba(0,0,0,.1); }
 .bs-active { background:rgba(5,150,105,.9); color:#fff; }
 .bs-sold   { background:rgba(220,38,38,.9);  color:#fff; }
-
 .tc-body { padding:1.4rem; flex:1; display:flex; flex-direction:column; }
 .tc-title { font-size:1.2rem; font-weight:700; color:#1e293b; margin-bottom:.4rem; line-height:1.4; }
-.tc-price {
-    font-size:1.4rem; font-weight:800;
-    background:linear-gradient(135deg,var(--p),var(--s));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-    margin-bottom:.9rem;
-}
+.tc-price { font-size:1.4rem; font-weight:800; background:linear-gradient(135deg,var(--p),var(--s)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:.9rem; }
 .tc-meta { display:flex; flex-wrap:wrap; gap:.6rem; padding-bottom:1rem; border-bottom:1px solid var(--bd); flex:1; margin-bottom:1rem; }
 .tc-meta-item { display:flex; align-items:center; gap:.4rem; font-size:.84rem; color:var(--muted); font-weight:500; }
 .tc-meta-item i { color:var(--p); }
 
-/* ── ACTION BUTTONS ──────────────────────────── */
+/* Action buttons */
 .tc-actions { display:flex; gap:.45rem; }
 .act-btn {
     flex:1; padding:.55rem .4rem; border-radius:8px; font-weight:600;
@@ -106,86 +70,59 @@
 }
 .act-btn span { display:none; }
 @media(min-width:400px){ .act-btn span { display:inline; } }
+.ab-view { border-color:var(--p); color:var(--p); }
+.ab-view:hover { background:var(--p); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(37,99,235,.3); }
+.ab-edit { border-color:var(--warn); color:var(--warn); }
+.ab-edit:hover { background:var(--warn); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(217,119,6,.3); }
+.ab-del { border-color:var(--red); color:var(--red); }
+.ab-del:hover { background:var(--red); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(220,38,38,.3); }
+.ab-docs { border-color:#0ea5e9; color:#0ea5e9; }
+.ab-docs:hover { background:#0ea5e9; color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(14,165,233,.25); }
 
-.ab-view   { border-color:var(--p);    color:var(--p); }
-.ab-view:hover  { background:var(--p);   color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(37,99,235,.3); }
-.ab-edit   { border-color:var(--warn); color:var(--warn); }
-.ab-edit:hover  { background:var(--warn); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(217,119,6,.3); }
-.ab-del    { border-color:var(--red);  color:var(--red); }
-.ab-del:hover   { background:var(--red);  color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(220,38,38,.3); }
-.ab-docs   { border-color:#0ea5e9;     color:#0ea5e9; }
-.ab-docs:hover  { background:#0ea5e9;     color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(14,165,233,.25); }
-
-/* ── EMPTY ───────────────────────────────────── */
-.empty-box {
-    text-align:center; padding:4rem 2rem; background:#fff;
-    border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.07);
-}
+/* Empty */
+.empty-box { text-align:center; padding:4rem 2rem; background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.07); }
 .empty-box i { font-size:5rem; color:#cbd5e1; display:block; margin-bottom:1.5rem; }
 .empty-box h3 { font-size:1.4rem; font-weight:700; color:#1e293b; margin-bottom:.75rem; }
 .empty-box p { color:var(--muted); margin-bottom:2rem; }
 
-/* ── PAGINATION ──────────────────────────────── */
+/* Pagination */
 .pager { display:flex; justify-content:center; margin:2rem 0 1rem; gap:.45rem; flex-wrap:wrap; }
-.pager a,.pager span {
-    padding:.48rem .82rem; border:1px solid var(--bd); border-radius:10px;
-    text-decoration:none; color:#0f172a; background:#fff; font-weight:600; font-size:.9rem;
-}
+.pager a,.pager span { padding:.48rem .82rem; border:1px solid var(--bd); border-radius:10px; text-decoration:none; color:#0f172a; background:#fff; font-weight:600; font-size:.9rem; }
 .pager .cur { background:linear-gradient(135deg,var(--p),var(--s)); color:#fff; border-color:transparent; }
 
-/* ── MODAL COMMON ────────────────────────────── */
+/* Modals */
 .modal-content { border:none !important; border-radius:16px !important; box-shadow:0 20px 60px rgba(0,0,0,.18) !important; }
 .modal-header  { border-bottom:1px solid var(--bd) !important; padding:1.25rem 1.5rem !important; }
 .modal-body    { padding:1.5rem !important; }
 .modal-footer  { border-top:1px solid var(--bd) !important; padding:1rem 1.5rem !important; background:#f8fafc; border-radius:0 0 16px 16px !important; }
+.modal-spinner { display:none; position:absolute; inset:0; background:rgba(255,255,255,.75); border-radius:16px; z-index:10; align-items:center; justify-content:center; }
+.modal-spinner.show { display:flex; }
 
-/* ── FORM INSIDE MODAL ───────────────────────── */
-.mf-section {
-    font-size:.78rem; font-weight:700; color:var(--muted);
-    text-transform:uppercase; letter-spacing:.07em;
-    margin:1.4rem 0 .8rem; padding-bottom:.4rem;
-    border-bottom:2px solid var(--bd); display:flex; align-items:center; gap:.4rem;
-}
+/* Form */
+.mf-section { font-size:.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin:1.4rem 0 .8rem; padding-bottom:.4rem; border-bottom:2px solid var(--bd); display:flex; align-items:center; gap:.4rem; }
 .mf-section:first-child { margin-top:0; }
 .mf-section i { color:var(--p); }
-
 .mf-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
 .mf-group { display:flex; flex-direction:column; gap:.3rem; margin-bottom:.9rem; }
 .mf-group:last-child { margin-bottom:0; }
 .mf-label { font-size:.84rem; font-weight:600; color:#374151; }
 .mf-label .req { color:#ef4444; margin-left:2px; }
-
-.mf-ctrl {
-    width:100%; padding:.6rem .8rem; border:1.5px solid #d1d5db; border-radius:9px;
-    font-size:.9rem; color:#111827; background:#fafafa; transition:all .2s; box-sizing:border-box;
-}
+.mf-ctrl { width:100%; padding:.6rem .8rem; border:1.5px solid #d1d5db; border-radius:9px; font-size:.9rem; color:#111827; background:#fafafa; transition:all .2s; box-sizing:border-box; }
 .mf-ctrl:focus { outline:none; border-color:var(--p); box-shadow:0 0 0 3px rgba(37,99,235,.1); background:#fff; }
-.mf-ctrl.is-invalid { border-color:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,.08); }
 textarea.mf-ctrl { resize:vertical; min-height:90px; }
-.mf-err { font-size:.76rem; color:#ef4444; display:flex; align-items:center; gap:.2rem; }
-
-.mf-check {
-    display:flex; align-items:center; gap:.6rem; padding:.65rem .9rem;
-    border:1.5px solid #d1d5db; border-radius:9px; cursor:pointer; background:#fafafa; transition:all .2s;
-}
+.mf-check { display:flex; align-items:center; gap:.6rem; padding:.65rem .9rem; border:1.5px solid #d1d5db; border-radius:9px; cursor:pointer; background:#fafafa; transition:all .2s; }
 .mf-check:hover { border-color:var(--p); }
 .mf-check input { width:17px; height:17px; accent-color:var(--p); cursor:pointer; }
 .mf-check-lbl { font-size:.9rem; color:#374151; font-weight:500; cursor:pointer; }
-
-/* Upload zone */
-.mf-upload {
-    border:2px dashed #d1d5db; border-radius:10px; padding:1.5rem;
-    text-align:center; cursor:pointer; transition:all .2s; position:relative; background:#fafafa;
-}
+.mf-upload { border:2px dashed #d1d5db; border-radius:10px; padding:1.5rem; text-align:center; cursor:pointer; transition:all .2s; position:relative; background:#fafafa; }
 .mf-upload:hover { border-color:var(--p); background:rgba(37,99,235,.02); }
 .mf-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
 .mf-upload i { font-size:2rem; color:#94a3b8; display:block; margin-bottom:.4rem; }
 .mf-upload .ut { font-size:.875rem; color:#6b7280; font-weight:500; }
 .mf-upload .uh { font-size:.75rem; color:#9ca3af; }
-#addImgPreview,#editImgPreview { display:none; width:100%; max-height:180px; object-fit:cover; border-radius:9px; border:1.5px solid var(--bd); margin-top:.75rem; }
-.cur-img { width:100%; max-height:160px; object-fit:cover; border-radius:9px; border:1.5px solid var(--bd); margin-bottom:.75rem; }
+#addImgPreview { display:none; width:100%; max-height:180px; object-fit:cover; border-radius:9px; border:1.5px solid var(--bd); margin-top:.75rem; }
 
-/* DELETE MODAL */
+/* Delete modal */
 .del-icon { font-size:4rem; color:#ef4444; display:block; margin-bottom:1rem; }
 .del-info { background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:1rem 1.25rem; }
 .del-row { display:flex; justify-content:space-between; align-items:center; padding:.4rem 0; border-bottom:1px solid #fecaca; }
@@ -194,7 +131,7 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
 .del-val { font-size:.84rem; color:#7f1d1d; font-weight:700; }
 .del-warn { background:#fff3cd; border:1px solid #ffc107; border-radius:8px; padding:.75rem 1rem; font-size:.84rem; color:#856404; margin-top:1rem; display:flex; align-items:flex-start; gap:.5rem; }
 
-/* DOCS modal */
+/* Docs modal */
 .doc-item { display:flex; align-items:center; padding:.65rem; border-radius:8px; background:#f8fafc; border:1px solid var(--bd); margin-bottom:.5rem; transition:all .2s; }
 .doc-item:hover { border-color:#93c5fd; background:#eff6ff; }
 .doc-link { display:flex; align-items:center; gap:.5rem; text-decoration:none; color:#1e293b; font-weight:500; font-size:.875rem; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -204,57 +141,21 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
 .doc-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
 .doc-upload i { font-size:2rem; color:#94a3b8; display:block; margin-bottom:.5rem; }
 
-/* SUBMIT BUTTONS */
-.btn-ok {
-    padding:.7rem 1.6rem; border-radius:9px; font-weight:600; font-size:.9375rem;
-    background:linear-gradient(135deg,var(--p),var(--s)); color:#fff; border:none;
-    cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.45rem;
-    box-shadow:0 4px 12px rgba(37,99,235,.3);
-}
+/* Submit buttons */
+.btn-ok { padding:.7rem 1.6rem; border-radius:9px; font-weight:600; font-size:.9375rem; background:linear-gradient(135deg,var(--p),var(--s)); color:#fff; border:none; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.45rem; box-shadow:0 4px 12px rgba(37,99,235,.3); }
 .btn-ok:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(37,99,235,.4); }
-.btn-ok-warn {
-    padding:.7rem 1.6rem; border-radius:9px; font-weight:600; font-size:.9375rem;
-    background:linear-gradient(135deg,var(--warn),#b45309); color:#fff; border:none;
-    cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.45rem;
-    box-shadow:0 4px 12px rgba(217,119,6,.3);
-}
-.btn-ok-warn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(217,119,6,.4); }
-.btn-ok-red {
-    padding:.7rem 1.6rem; border-radius:9px; font-weight:600; font-size:.9375rem;
-    background:linear-gradient(135deg,var(--red),#b91c1c); color:#fff; border:none;
-    cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.45rem;
-    box-shadow:0 4px 12px rgba(220,38,38,.3);
-}
+.btn-ok-red { padding:.7rem 1.6rem; border-radius:9px; font-weight:600; font-size:.9375rem; background:linear-gradient(135deg,var(--red),#b91c1c); color:#fff; border:none; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.45rem; box-shadow:0 4px 12px rgba(220,38,38,.3); }
 .btn-ok-red:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(220,38,38,.4); }
 
-/* SPINNER overlay inside modal */
-.modal-spinner {
-    display:none; position:absolute; inset:0; background:rgba(255,255,255,.75);
-    border-radius:16px; z-index:10; align-items:center; justify-content:center;
-}
-.modal-spinner.show { display:flex; }
-
-/* RESPONSIVE */
-@media(max-width:992px){
-    .dash-title { font-size:1.75rem; }
-    .stat-val   { font-size:1.5rem; }
-    .trucks-grid{ grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1.2rem; }
-}
-@media(max-width:768px){
-    .mf-grid2 { grid-template-columns:1fr; }
-}
-@media(max-width:576px){
-    .trucks-grid { grid-template-columns:1fr; }
-}
+@media(max-width:992px){ .dash-title { font-size:1.75rem; } .trucks-grid { grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); } }
+@media(max-width:768px){ .mf-grid2 { grid-template-columns:1fr; } }
+@media(max-width:576px){ .trucks-grid { grid-template-columns:1fr; } }
 </style>
 {% endblock %}
 
 {% block content %}
-
-<!-- ════════════════════════════════════════════
-     DASHBOARD CONTENT
-════════════════════════════════════════════ -->
 <div>
+
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <h1 class="dash-title"><i class="bi bi-speedometer2"></i> Dashboard</h1>
@@ -329,18 +230,26 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
                     {% if truck.company %}<div class="tc-meta-item"><i class="bi bi-building"></i> {{ truck.company }}</div>{% endif %}
                 </div>
                 <div class="tc-actions">
-                    <button class="act-btn ab-view"
-                            onclick="openViewModal({{ truck.id }}, '{{ truck.make|escapejs }} {{ truck.model|escapejs }}')">
+                    {# ── VIEW → alohida page ── #}
+                    <a href="{% url 'truck_detail' truck.id %}" class="act-btn ab-view">
                         <i class="bi bi-eye-fill"></i><span>View</span>
-                    </button>
-                    <button class="act-btn ab-edit"
-                            onclick="openEditModal({{ truck.id }})">
+                    </a>
+                    {# ── EDIT → alohida page ── #}
+                    <a href="{% url 'edit_truck' truck.id %}" class="act-btn ab-edit">
                         <i class="bi bi-pencil-fill"></i><span>Edit</span>
-                    </button>
+                    </a>
+                    {# ── DELETE → modal ── #}
                     <button class="act-btn ab-del"
-                            onclick="openDelModal({{ truck.id }}, '{{ truck.make|escapejs }} {{ truck.model|escapejs }}', '{{ truck.po_id|escapejs }}', '{{ truck.year }}', '{{ truck.price|floatformat:0 }}')">
+                        onclick="openDelModal(
+                            {{ truck.id }},
+                            '{{ truck.make|escapejs }} {{ truck.model|escapejs }}',
+                            '{{ truck.po_id|escapejs }}',
+                            '{{ truck.year }}',
+                            '{{ truck.price|floatformat:0 }}'
+                        )">
                         <i class="bi bi-trash-fill"></i><span>Delete</span>
                     </button>
+                    {# ── DOCS → modal ── #}
                     <button class="act-btn ab-docs"
                             onclick="openDocsModal({{ truck.id }}, '{{ truck.po_id|escapejs }}')">
                         <i class="bi bi-file-earmark-text"></i><span>Docs</span>
@@ -351,7 +260,6 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
         {% endfor %}
     </div>
 
-    <!-- Pagination -->
     {% if trucks.has_other_pages %}
     <div class="pager">
         {% if trucks.has_previous %}<a href="?page={{ trucks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">‹ Prev</a>{% else %}<span>‹ Prev</span>{% endif %}
@@ -376,9 +284,9 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
 </div>
 
 
-<!-- ════════════════════════════════════════════
-     MODAL 1 — ADD TRUCK
-════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     MODAL: ADD TRUCK
+══════════════════════════════════════ -->
 <div class="modal fade" id="addModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content" style="position:relative;">
@@ -391,18 +299,16 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-
       <form id="addForm" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         <div class="modal-body">
           <div id="addAlerts"></div>
 
-          <!-- Basic Info -->
           <div class="mf-section"><i class="bi bi-info-circle"></i> Basic Information</div>
           <div class="mf-grid2">
             <div class="mf-group">
               <label class="mf-label">PO-ID <span class="req">*</span></label>
-              <input type="text" name="po_id" class="mf-ctrl" placeholder="Enter PO-ID" required>
+              <input type="text" name="po_id" class="mf-ctrl" placeholder="e.g. PO-1001" required>
             </div>
             <div class="mf-group">
               <label class="mf-label">Serial Number</label>
@@ -434,7 +340,6 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
             <input type="number" name="horsepower" class="mf-ctrl" placeholder="Minimum 0 HP" min="0">
           </div>
 
-          <!-- Location -->
           <div class="mf-section"><i class="bi bi-geo-alt"></i> Location & Company</div>
           <div class="mf-grid2">
             <div class="mf-group">
@@ -452,14 +357,11 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
             <label class="mf-label">Assign to User</label>
             <select name="user" class="mf-ctrl">
               <option value="">— Select user —</option>
-              {% for u in users %}
-              <option value="{{ u.id }}">{{ u.username }}</option>
-              {% endfor %}
+              {% for u in users %}<option value="{{ u.id }}">{{ u.username }}</option>{% endfor %}
             </select>
           </div>
           {% endif %}
 
-          <!-- Status -->
           <div class="mf-section"><i class="bi bi-toggle-on"></i> Status</div>
           <div class="mf-group">
             <label class="mf-check">
@@ -468,13 +370,11 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
             </label>
           </div>
 
-          <!-- Description -->
           <div class="mf-section"><i class="bi bi-card-text"></i> Description</div>
           <div class="mf-group">
             <textarea name="description" class="mf-ctrl" placeholder="Additional notes…"></textarea>
           </div>
 
-          <!-- Image -->
           <div class="mf-section"><i class="bi bi-image"></i> Truck Image</div>
           <div class="mf-group">
             <div class="mf-upload">
@@ -486,8 +386,7 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
             </div>
             <img id="addImgPreview" src="#" alt="preview">
           </div>
-        </div><!-- /modal-body -->
-
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             <i class="bi bi-x-lg me-1"></i>Cancel
@@ -502,143 +401,9 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
 </div>
 
 
-<!-- ════════════════════════════════════════════
-     MODAL 2 — EDIT TRUCK
-════════════════════════════════════════════ -->
-<div class="modal fade" id="editModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content" style="position:relative;">
-      <div class="modal-spinner" id="editSpinner">
-        <div class="spinner-border text-warning" role="status"></div>
-      </div>
-      <div class="modal-header" style="border-top:4px solid var(--warn) !important;">
-        <h5 class="modal-title fw-bold">
-          <i class="bi bi-pencil-square me-2 text-warning"></i>Edit Truck
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <form id="editForm" enctype="multipart/form-data" novalidate>
-        {% csrf_token %}
-        <input type="hidden" name="_method" value="POST">
-        <div class="modal-body">
-          <div id="editAlerts"></div>
-
-          <!-- Basic Info -->
-          <div class="mf-section"><i class="bi bi-info-circle"></i> Basic Information</div>
-          <div class="mf-grid2">
-            <div class="mf-group">
-              <label class="mf-label">PO-ID <span class="req">*</span></label>
-              <input type="text" name="po_id" id="e_po_id" class="mf-ctrl" required>
-            </div>
-            <div class="mf-group">
-              <label class="mf-label">Serial Number</label>
-              <input type="text" name="seriya" id="e_seriya" class="mf-ctrl">
-            </div>
-          </div>
-          <div class="mf-grid2">
-            <div class="mf-group">
-              <label class="mf-label">Make <span class="req">*</span></label>
-              <input type="text" name="make" id="e_make" class="mf-ctrl" required>
-            </div>
-            <div class="mf-group">
-              <label class="mf-label">Model <span class="req">*</span></label>
-              <input type="text" name="model" id="e_model" class="mf-ctrl" required>
-            </div>
-          </div>
-          <div class="mf-grid2">
-            <div class="mf-group">
-              <label class="mf-label">Year <span class="req">*</span></label>
-              <input type="number" name="year" id="e_year" class="mf-ctrl" min="1900" max="2100" required>
-            </div>
-            <div class="mf-group">
-              <label class="mf-label">Price ($) <span class="req">*</span></label>
-              <input type="number" name="price" id="e_price" class="mf-ctrl" min="0" step="0.01" required>
-            </div>
-          </div>
-          <div class="mf-group">
-            <label class="mf-label">Horsepower (HP)</label>
-            <input type="number" name="horsepower" id="e_horsepower" class="mf-ctrl" min="0">
-          </div>
-
-          <!-- Location -->
-          <div class="mf-section"><i class="bi bi-geo-alt"></i> Location & Company</div>
-          <div class="mf-grid2">
-            <div class="mf-group">
-              <label class="mf-label">Location</label>
-              <input type="text" name="location" id="e_location" class="mf-ctrl">
-            </div>
-            <div class="mf-group">
-              <label class="mf-label">Company</label>
-              <input type="text" name="company" id="e_company" class="mf-ctrl">
-            </div>
-          </div>
-
-          {% if request.user.is_superuser %}
-          <div class="mf-group">
-            <label class="mf-label">Assign to User</label>
-            <select name="user" id="e_user" class="mf-ctrl">
-              <option value="">— Select user —</option>
-              {% for u in users %}
-              <option value="{{ u.id }}">{{ u.username }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          {% endif %}
-
-          <!-- Status -->
-          <div class="mf-section"><i class="bi bi-toggle-on"></i> Status</div>
-          <div class="mf-group">
-            <label class="mf-check">
-              <input type="checkbox" name="sotilgan" id="e_sotilgan" value="on">
-              <span class="mf-check-lbl">Mark as Sold</span>
-            </label>
-          </div>
-
-          <!-- Description -->
-          <div class="mf-section"><i class="bi bi-card-text"></i> Description</div>
-          <div class="mf-group">
-            <textarea name="description" id="e_description" class="mf-ctrl" placeholder="Additional notes…"></textarea>
-          </div>
-
-          <!-- Image -->
-          <div class="mf-section"><i class="bi bi-image"></i> Truck Image</div>
-          <div class="mf-group">
-            <div id="editCurImgBox" style="display:none; margin-bottom:.75rem;">
-              <img id="editCurImg" src="#" alt="current" class="cur-img">
-              <small class="text-muted d-flex align-items-center gap-1 mt-1">
-                <i class="bi bi-check-circle-fill text-success"></i>
-                Current image — upload to replace
-              </small>
-            </div>
-            <div class="mf-upload">
-              <input type="file" name="image" accept="image/*" id="editImgInput"
-                     onchange="previewImg(this,'editImgPreview','editUploadText')">
-              <i class="bi bi-cloud-arrow-up"></i>
-              <div class="ut" id="editUploadText">Click or drag to upload new image</div>
-              <div class="uh">JPG, PNG, GIF — max 10 MB</div>
-            </div>
-            <img id="editImgPreview" src="#" alt="preview">
-          </div>
-        </div><!-- /modal-body -->
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            <i class="bi bi-x-lg me-1"></i>Cancel
-          </button>
-          <button type="submit" class="btn-ok-warn" id="editSubmitBtn">
-            <i class="bi bi-check-lg"></i> Save Changes
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════════════════════════════════════════
-     MODAL 3 — DELETE CONFIRM
-════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     MODAL: DELETE CONFIRM
+══════════════════════════════════════ -->
 <div class="modal fade" id="delModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
     <div class="modal-content" style="position:relative;">
@@ -653,16 +418,16 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
       </div>
       <div class="modal-body text-center">
         <i class="bi bi-trash-fill del-icon"></i>
-        <p class="fw-semibold mb-3 fs-6">Are you sure you want to delete this truck?<br>
-        <span class="text-danger fw-bold" id="delTruckName"></span></p>
-
+        <p class="fw-semibold mb-3 fs-6">
+          Are you sure you want to delete this truck?<br>
+          <span class="text-danger fw-bold" id="delTruckName"></span>
+        </p>
         <div class="del-info text-start">
           <div class="del-row"><span class="del-lbl">PO-ID</span><span class="del-val" id="delPoId"></span></div>
           <div class="del-row"><span class="del-lbl">Year</span><span class="del-val" id="delYear"></span></div>
           <div class="del-row"><span class="del-lbl">Price</span><span class="del-val" id="delPrice"></span></div>
         </div>
-
-        <div class="del-warn text-start">
+        <div class="del-warn text-start mt-3">
           <i class="bi bi-exclamation-circle-fill flex-shrink-0 mt-1"></i>
           <span>This action is <strong>irreversible</strong>. All associated documents will also be deleted.</span>
         </div>
@@ -680,34 +445,9 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
 </div>
 
 
-<!-- ════════════════════════════════════════════
-     MODAL 4 — VIEW DETAIL
-════════════════════════════════════════════ -->
-<div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="viewModalTitle">
-          <i class="bi bi-truck me-2 text-primary"></i>
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body" id="viewModalBody">
-        <div class="d-flex justify-content-center py-5">
-          <div class="spinner-border text-primary"></div>
-        </div>
-      </div>
-      <div class="modal-footer" id="viewModalFooter">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════════════════════════════════════════
-     MODAL 5 — DOCUMENTS
-════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     MODAL: DOCUMENTS
+══════════════════════════════════════ -->
 <div class="modal fade" id="docsModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:560px;">
     <div class="modal-content">
@@ -733,10 +473,9 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
 <script>
 const CSRF = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
 let _currentDelId = null;
-let _currentEditId = null;
 
-/* ─── HELPERS ──────────────────────────────── */
-function showAlert(container, type, msg) {
+/* ── Helpers ─────────────────────────────── */
+function showAlertBox(container, type, msg) {
     const el = document.getElementById(container);
     if (!el) return;
     el.innerHTML = `
@@ -746,17 +485,14 @@ function showAlert(container, type, msg) {
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
       </div>`;
 }
-
-function clearAlert(container) {
+function clearAlertBox(container) {
     const el = document.getElementById(container);
     if (el) el.innerHTML = '';
 }
-
 function spin(id, on) {
     const el = document.getElementById(id);
     if (el) el.classList.toggle('show', on);
 }
-
 function previewImg(input, previewId, textId) {
     const img  = document.getElementById(previewId);
     const text = document.getElementById(textId);
@@ -771,35 +507,9 @@ function previewImg(input, previewId, textId) {
     }
 }
 
-/* ─── VIEW MODAL ───────────────────────────── */
-function openViewModal(id, name) {
-    const m     = new bootstrap.Modal(document.getElementById('viewModal'));
-    const title = document.getElementById('viewModalTitle');
-    const body  = document.getElementById('viewModalBody');
-    const foot  = document.getElementById('viewModalFooter');
-    title.innerHTML = `<i class="bi bi-truck me-2 text-primary"></i>${name}`;
-    body.innerHTML  = `<div class="d-flex justify-content-center py-5"><div class="spinner-border text-primary"></div></div>`;
-    foot.innerHTML  = `<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
-    m.show();
-    fetch(`/truck/detail/${id}/`, { headers: {'X-Requested-With':'XMLHttpRequest'} })
-    .then(r => r.json())
-    .then(d => {
-        body.innerHTML = d.html || '<div class="alert alert-danger">Failed to load.</div>';
-        foot.innerHTML = `
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button class="btn-ok-warn" onclick="bootstrap.Modal.getInstance(document.getElementById('viewModal')).hide(); setTimeout(()=>openEditModal(${id}),300);">
-            <i class="bi bi-pencil-fill me-1"></i>Edit
-          </button>
-          <button class="btn-ok-red" onclick="bootstrap.Modal.getInstance(document.getElementById('viewModal')).hide(); setTimeout(()=>openDelModal(${id}, '${name}', '', '', ''),300);">
-            <i class="bi bi-trash-fill me-1"></i>Delete
-          </button>`;
-    })
-    .catch(() => { body.innerHTML = '<div class="alert alert-danger">Error loading details.</div>'; });
-}
-
-/* ─── ADD MODAL ────────────────────────────── */
+/* ── ADD TRUCK (modal) ───────────────────── */
 function openAddModal() {
-    clearAlert('addAlerts');
+    clearAlertBox('addAlerts');
     document.getElementById('addForm').reset();
     document.getElementById('addImgPreview').style.display = 'none';
     document.getElementById('addUploadText').textContent = 'Click or drag to upload image';
@@ -808,7 +518,7 @@ function openAddModal() {
 
 document.getElementById('addForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    clearAlert('addAlerts');
+    clearAlertBox('addAlerts');
     spin('addSpinner', true);
     const btn = document.getElementById('addSubmitBtn');
     btn.disabled = true;
@@ -826,103 +536,21 @@ document.getElementById('addForm').addEventListener('submit', function(e) {
         btn.innerHTML = '<i class="bi bi-plus-circle"></i> Add Truck';
         if (d.success) {
             bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
-            if (window.showAlert) window.showAlert('success', d.message || 'Truck added!');
-            setTimeout(() => location.reload(), 600);
+            window.showAlert?.('success', d.message || 'Truck added!');
+            setTimeout(() => location.reload(), 700);
         } else {
-            showAlert('addAlerts', 'danger', d.message || 'Please correct the errors.');
+            showAlertBox('addAlerts', 'danger', d.message || 'Please correct the errors.');
         }
     })
     .catch(() => {
         spin('addSpinner', false);
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-plus-circle"></i> Add Truck';
-        showAlert('addAlerts', 'danger', 'An error occurred. Try again.');
+        showAlertBox('addAlerts', 'danger', 'An error occurred. Try again.');
     });
 });
 
-/* ─── EDIT MODAL ───────────────────────────── */
-function openEditModal(id) {
-    _currentEditId = id;
-    clearAlert('editAlerts');
-    spin('editSpinner', true);
-    document.getElementById('editImgPreview').style.display = 'none';
-    document.getElementById('editUploadText').textContent = 'Click or drag to upload new image';
-    document.getElementById('editCurImgBox').style.display = 'none';
-
-    const m = new bootstrap.Modal(document.getElementById('editModal'));
-    m.show();
-
-    // Truck ma'lumotlarini API orqali olish
-    fetch(`/truck/detail/${id}/`, { headers: {'X-Requested-With':'XMLHttpRequest'} })
-    .then(r => r.json())
-    .then(d => {
-        spin('editSpinner', false);
-        if (!d.truck) return showAlert('editAlerts', 'danger', 'Failed to load truck data.');
-        const t = d.truck;
-        document.getElementById('e_po_id').value       = t.po_id        || '';
-        document.getElementById('e_seriya').value      = t.seriya       || '';
-        document.getElementById('e_make').value        = t.make         || '';
-        document.getElementById('e_model').value       = t.model        || '';
-        document.getElementById('e_year').value        = t.year         || '';
-        document.getElementById('e_price').value       = t.price        || '';
-        document.getElementById('e_horsepower').value  = t.horsepower   || '';
-        document.getElementById('e_location').value    = t.location     || '';
-        document.getElementById('e_company').value     = t.company      || '';
-        document.getElementById('e_description').value = t.description  || '';
-        document.getElementById('e_sotilgan').checked  = t.sotilgan     || false;
-
-        {% if request.user.is_superuser %}
-        const uSel = document.getElementById('e_user');
-        if (uSel && t.user_id) uSel.value = t.user_id;
-        {% endif %}
-
-        if (t.image_url) {
-            document.getElementById('editCurImg').src = t.image_url;
-            document.getElementById('editCurImgBox').style.display = 'block';
-        }
-    })
-    .catch(() => {
-        spin('editSpinner', false);
-        showAlert('editAlerts', 'danger', 'Failed to load truck data.');
-    });
-}
-
-document.getElementById('editForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    if (!_currentEditId) return;
-    clearAlert('editAlerts');
-    spin('editSpinner', true);
-    const btn = document.getElementById('editSubmitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving…';
-
-    fetch(`/truck/edit/${_currentEditId}/`, {
-        method: 'POST',
-        body: new FormData(this),
-        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
-    })
-    .then(r => r.json())
-    .then(d => {
-        spin('editSpinner', false);
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-check-lg"></i> Save Changes';
-        if (d.success) {
-            bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-            if (window.showAlert) window.showAlert('success', d.message || 'Truck updated!');
-            setTimeout(() => location.reload(), 600);
-        } else {
-            showAlert('editAlerts', 'danger', d.message || 'Please correct the errors.');
-        }
-    })
-    .catch(() => {
-        spin('editSpinner', false);
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-check-lg"></i> Save Changes';
-        showAlert('editAlerts', 'danger', 'An error occurred. Try again.');
-    });
-});
-
-/* ─── DELETE MODAL ─────────────────────────── */
+/* ── DELETE (modal) ──────────────────────── */
 function openDelModal(id, name, poId, year, price) {
     _currentDelId = id;
     document.getElementById('delTruckName').textContent = name;
@@ -947,30 +575,30 @@ document.getElementById('delConfirmBtn').addEventListener('click', function() {
         spin('delSpinner', false);
         if (d.success) {
             bootstrap.Modal.getInstance(document.getElementById('delModal')).hide();
-            if (window.showAlert) window.showAlert('success', d.message || 'Truck deleted!');
+            window.showAlert?.('success', d.message || 'Truck deleted!');
             const card = document.getElementById(`tc-${_currentDelId}`);
             if (card) {
                 card.style.transition = 'all .3s';
                 card.style.opacity = '0';
                 card.style.transform = 'scale(0.9)';
-                setTimeout(() => { card.remove(); }, 300);
+                setTimeout(() => card.remove(), 300);
             }
         } else {
             this.disabled = false;
             this.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
             spin('delSpinner', false);
-            if (window.showAlert) window.showAlert('error', d.message || 'Delete failed!');
+            window.showAlert?.('error', d.message || 'Delete failed!');
         }
     })
     .catch(() => {
         spin('delSpinner', false);
         this.disabled = false;
         this.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
-        if (window.showAlert) window.showAlert('error', 'An error occurred.');
+        window.showAlert?.('error', 'An error occurred.');
     });
 });
 
-/* ─── DOCS MODAL ───────────────────────────── */
+/* ── DOCS (modal) ────────────────────────── */
 function openDocsModal(id, poId) {
     const m     = new bootstrap.Modal(document.getElementById('docsModal'));
     const title = document.getElementById('docsModalTitle');
@@ -988,7 +616,7 @@ function renderDocs(container, list, truckId) {
     let html = `<div id="docs-${truckId}">`;
     if (list.length) {
         list.forEach(h => {
-            const ext  = h.original_file_name.split('.').pop().toLowerCase();
+            const ext  = (h.original_file_name || '').split('.').pop().toLowerCase();
             const icon = ext==='pdf' ? 'bi-file-earmark-pdf text-danger'
                        : ['jpg','jpeg','png','gif','webp'].includes(ext) ? 'bi-file-earmark-image text-success'
                        : ['doc','docx'].includes(ext) ? 'bi-file-earmark-word text-primary'
@@ -1000,7 +628,9 @@ function renderDocs(container, list, truckId) {
                   <span title="${h.original_file_name}">${h.original_file_name}</span>
                 </a>
                 <button class="btn btn-sm btn-outline-danger ms-2 flex-shrink-0"
-                        onclick="deleteDoc(${h.id},${truckId})"><i class="bi bi-trash"></i></button>
+                        onclick="deleteDoc(${h.id},${truckId})">
+                  <i class="bi bi-trash"></i>
+                </button>
               </div>`;
         });
     } else {
@@ -1037,9 +667,8 @@ function uploadDocs(input, id) {
     .then(r => r.json())
     .then(d => {
         if (d.success) {
-            const body = document.getElementById('docsModalBody');
-            renderDocs(body, d.hujjatlar||[], id);
-            if (window.showAlert) window.showAlert('success', d.message);
+            renderDocs(document.getElementById('docsModalBody'), d.hujjatlar || [], id);
+            window.showAlert?.('success', d.message);
         } else {
             st.innerHTML = `<div class="alert alert-danger py-2 mb-0">${d.message}</div>`;
         }
@@ -1058,12 +687,12 @@ function deleteDoc(docId, truckId) {
         if (d.success) {
             const item = document.getElementById(`di-${docId}`);
             if (item) { item.style.opacity='0'; item.style.transition='.2s'; setTimeout(()=>item.remove(),200); }
-            if (window.showAlert) window.showAlert('success', d.message || 'Deleted!');
+            window.showAlert?.('success', d.message || 'Deleted!');
         } else {
-            if (window.showAlert) window.showAlert('error', d.message || 'Failed!');
+            window.showAlert?.('error', d.message || 'Failed!');
         }
     })
-    .catch(() => { if (window.showAlert) window.showAlert('error','Error occurred.'); });
+    .catch(() => { window.showAlert?.('error','Error occurred.'); });
 }
 </script>
 {% endblock %}
