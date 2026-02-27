@@ -1,3 +1,4 @@
+# tasks.py
 from __future__ import absolute_import, unicode_literals
 import smtplib
 import logging
@@ -27,7 +28,7 @@ def check_payment_reminders(self):
     """
     current_date = date.today()
     notifications = Bildirishnoma.objects.filter(
-        chiqim__qoldiq_summa__gt=0,  # to'lanmagan
+        chiqim__qoldiq_summa__gt=0,   # to‘lanmagan
         tolov_sana__isnull=False,
         chiqim__isnull=False,
         chiqim__xaridor__isnull=False,
@@ -49,26 +50,17 @@ def _send_single_reminder(notification, current_date):
     Overdue yoki 1-5 kun qolganda har kuni yuboradi.
     """
     days_left = (notification.tolov_sana - current_date).days
-
-    # Qoldiq summa tekshiruvi
-    if notification.chiqim.qoldiq_summa <= 0:
-        logger.info(f"[ID {notification.id}] To'liq to'langan, qoldiq summa 0, skipped.")
-        return
-
-    # Bu oy uchun to'langan summani tekshiramiz
     paid_for_month = notification.chiqim.already_paid_for_month(notification.tolov_sana)
-    monthly_payment = notification.chiqim.oyiga_tolov or 0
 
-    # Agar bu oyga to'liq to'langan bo'lsa — hech narsa qilma
-    if paid_for_month >= monthly_payment:
-        logger.info(
-            f"[ID {notification.id}] Bu oyga to'langan (to'langan: ${paid_for_month}, oylik: ${monthly_payment}), skipped.")
+    # Agar bu oyga to‘liq to‘langan bo‘lsa — hech narsa qilma
+    if paid_for_month:
+        logger.info(f"[ID {notification.id}] Bu oyga to‘langan, skipped.")
         return
 
-    # Agar 5,4,3,2,1 kun qolgan yoki overdue bo'lsa – yuborish zarur
+    # Agar 5,4,3,2,1 kun qolgan yoki overdue bo‘lsa – yuborish zarur
     should_send = (
-            days_left in (5, 4, 3, 2, 1) or
-            days_left <= 0
+        days_left in (5, 4, 3, 2, 1) or
+        days_left <= 0
     )
 
     if not should_send:
@@ -78,7 +70,7 @@ def _send_single_reminder(notification, current_date):
     xaridor = notification.chiqim.xaridor
     email = (xaridor.email or "").strip()
     if not email:
-        logger.warning(f"[ID {notification.id}] Email manzil yo'q, skipped.")
+        logger.warning(f"[ID {notification.id}] Email manzil yo‘q, skipped.")
         return
 
     truck = notification.chiqim.truck
@@ -86,7 +78,7 @@ def _send_single_reminder(notification, current_date):
     subject = f"Payment Reminder for {truck_info}"
     full_name = xaridor.ism_familiya or "Valued Customer"
 
-    # Overdue bo'lsa matnni boshqacha qilamiz
+    # Overdue bo‘lsa matnni boshqacha qilamiz
     if days_left <= 0:
         overdue_days = abs(days_left)
         message = (

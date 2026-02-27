@@ -1,6 +1,6 @@
 from _decimal import Decimal
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -188,67 +188,127 @@ def chiqim_list(request):
         xaridorlar = Xaridor.objects.filter(user=request.user)
 
     current_date = timezone.now().date()
+    notification_days = 30
     tolov_forms = {}
-    overdue_count = 0
 
-    # ✅ TRANSACTION.ATOMIC() O'CHIRILDI
-    # Process chiqimlar WITHOUT transaction to avoid database locks
-    for chiqim in chiqimlar:
-        # Update totals without immediate save
-        chiqim.update_totals(save=False)
+    # Process chiqimlar in a single transaction to reduce database contention
+    with transaction.atomic():
+        for chiqim in chiqimlar:
+            # Update totals without immediate save to defer database writes
+            chiqim.update_totals(save=False)
 
-        # Get overdue notifications
-        chiqim.overdue_notifications = list(
-            chiqim.bildirishnomalar.filter(status='overdue').order_by('tolov_sana')
-        )
+            # Calculate payment totals
+            total_boshlangich_paid = chiqim.get_total_boshlangich_paid()
+            total_monthly_paid = chiqim.get_total_monthly_paid()
+            remaining_debt = chiqim.qoldiq_summa
 
-        # Count overdue payments
-        if chiqim.overdue_notifications:
-            overdue_count += len(chiqim.overdue_notifications)
+            # Build payment schedule
+            payment_schedule = []
+            start_date = chiqim.tolov_sana
+            target_day = start_date.day
+            monthly_payment = chiqim.oyiga_tolov
+            total_months = chiqim.bo_lib_tolov_muddat
+            paid_months = int(total_monthly_paid // monthly_payment) if monthly_payment > 0 else 0
+            remaining_months = max(0, total_months - paid_months)
 
-        # Get next unpaid payment
-        unpaid_notifications = chiqim.bildirishnomalar.filter(
-            status__in=['pending', 'warning', 'urgent', 'overdue']
-        ).order_by('tolov_sana')
+            for month in range(paid_months, total_months):
+                next_month = start_date.month + month
+                next_year = start_date.year + (next_month - 1) // 12
+                next_month = (next_month - 1) % 12 + 1
+                last_day_of_month = calendar.monthrange(next_year, next_month)[1]
+                payment_day = min(target_day, last_day_of_month)
+                payment_date = start_date.replace(year=next_year, month=next_month, day=payment_day)
 
-        if unpaid_notifications.exists():
-            next_unpaid = unpaid_notifications.first()
-            days_left = (next_unpaid.tolov_sana - current_date).days
-            chiqim.next_payment_date = next_unpaid.tolov_sana
-            chiqim.days_until_payment = days_left
-        else:
-            chiqim.next_payment_date = None
-            chiqim.days_until_payment = None
+                paid_amount = sum(
+                    t.summa for t in chiqim.tolovlar.filter(
+                        sana__year=payment_date.year,
+                        sana__month=payment_date.month
+                    )
+                )
+                is_paid = paid_amount >= monthly_payment
+                days_left = (payment_date - current_date).days
+                carryover = max(0, monthly_payment - paid_amount) if not is_paid else 0
+                progress_percentage = ((chiqim.narx - remaining_debt) / chiqim.narx) * 100 if chiqim.narx > 0 else 0
+                pending_debt = carryover if not is_paid and days_left >= 0 else 0
 
-        chiqim.boshlangich_qoldiq = chiqim.get_boshlangich_qoldiq()
+                payment_schedule.append({
+                    'month': payment_date.strftime('%B %Y'),
+                    'date': payment_date,
+                    'amount': monthly_payment,
+                    'paid_amount': paid_amount,
+                    'is_paid': is_paid,
+                    'days_left': days_left,
+                    'carryover': carryover,
+                    'progress_percentage': progress_percentage,
+                    'pending_debt': pending_debt,
+                    'debt_percentage': (remaining_debt / chiqim.narx) * 100 if chiqim.narx > 0 else 0
+                })
 
-        # Initialize tolov form
-        tolov_forms[chiqim.id] = TolovForm(initial={'chiqim': chiqim})
+            # Get next unpaid payment
+            unpaid_notifications = chiqim.bildirishnomalar.filter(
+                status__in=['pending', 'warning', 'urgent', 'overdue']
+            ).order_by('tolov_sana')
+            next_unpaid_payment = None
+            if unpaid_notifications.exists():
+                next_unpaid_notification = unpaid_notifications.first()
+                days_left = (next_unpaid_notification.tolov_sana - current_date).days
+                next_unpaid_payment = {
+                    'date': next_unpaid_notification.tolov_sana,
+                    'days_left': days_left,
+                    'pending_debt': getattr(next_unpaid_notification, 'pending_debt', remaining_debt)
+                }
+            elif remaining_debt > 0 and payment_schedule:
+                last_payment_date = payment_schedule[-1]['date']
+                next_payment_month = last_payment_date.month + 1
+                next_payment_year = last_payment_date.year + (next_payment_month - 1) // 12
+                next_payment_month = (next_payment_month - 1) % 12 + 1
+                last_day_of_month = calendar.monthrange(next_payment_year, next_payment_month)[1]
+                next_payment_day = min(target_day, last_day_of_month)
+                next_payment_date = last_payment_date.replace(
+                    year=next_payment_year, month=next_payment_month, day=next_payment_day
+                )
+                days_left = (next_payment_date - current_date).days
+                next_unpaid_payment = {
+                    'date': next_payment_date,
+                    'days_left': days_left,
+                    'pending_debt': remaining_debt
+                }
 
-    # ✅ PAGINATION QO'SHILDI
-    paginator = Paginator(chiqimlar, 10)  # 10 items per page
-    page = request.GET.get('page', 1)
+            # Set overdue notifications
+            chiqim.overdue_notifications = list(
+                chiqim.bildirishnomalar.filter(status='overdue').order_by('tolov_sana')
+            )
 
-    try:
-        chiqimlar_page = paginator.page(page)
-    except PageNotAnInteger:
-        chiqimlar_page = paginator.page(1)
-    except EmptyPage:
-        chiqimlar_page = paginator.page(paginator.num_pages)
+            # Update chiqim attributes
+            if next_unpaid_payment:
+                days_until_payment = next_unpaid_payment['days_left']
+                chiqim.next_payment_date = next_unpaid_payment['date']
+                chiqim.days_until_payment = days_until_payment
+                chiqim.days_overdue_display = abs(days_until_payment) if days_until_payment < 0 else 0
+                chiqim.has_warning = days_until_payment <= notification_days
+            else:
+                chiqim.has_warning = False
+                chiqim.next_payment_date = None
+                chiqim.days_until_payment = None
+                chiqim.days_overdue_display = 0
+
+            chiqim.boshlangich_qoldiq = chiqim.get_boshlangich_qoldiq()
+
+            # Save chiqim once after all updates
+            chiqim.save()
+
+            # Initialize tolov form
+            tolov_forms[chiqim.id] = TolovForm(initial={'chiqim': chiqim})
 
     context = {
-        'chiqimlar': chiqimlar_page,  # ✅ Paginated data
-        'page_obj': chiqimlar_page,
-        'is_paginated': chiqimlar_page.has_other_pages(),
+        'chiqimlar': chiqimlar,
         'trucks': trucks,
         'xaridorlar': xaridorlar,
         'now': timezone.now(),
         'tolov_forms': tolov_forms,
         'today': timezone.now().date(),
-        'overdue_count': overdue_count,  # ✅ Statistics uchun
     }
-
-    logger.debug('Rendering chiqim_list template with %d chiqimlar', len(chiqimlar_page))
+    logger.debug('Rendering chiqim_list template with %d chiqimlar', len(chiqimlar))
     return render(request, 'chiqim/chiqim_list.html', context)
 
 
@@ -256,12 +316,10 @@ def chiqim_list(request):
 def chiqim_detail(request, id):
     logger.debug(f'Accessing chiqim_detail view for Chiqim ID {id} by user {request.user}')
     chiqim = get_object_or_404(
-        Chiqim.objects.select_related('truck', 'xaridor').prefetch_related('tolovlar', 'boshlangich_tolovlar',
-                                                                           'bildirishnomalar'),
+        Chiqim.objects.select_related('truck', 'xaridor').prefetch_related('tolovlar', 'boshlangich_tolovlar', 'bildirishnomalar'),
         id=id
     )
 
-    # Permission check
     if not request.user.is_superuser and (chiqim.truck.user != request.user or chiqim.xaridor.user != request.user):
         logger.warning(f'Unauthorized access attempt by user {request.user} for Chiqim ID {id}')
         return JsonResponse(
@@ -276,20 +334,16 @@ def chiqim_detail(request, id):
     boshlangich_qoldiq = chiqim.get_boshlangich_qoldiq()
     current_date = timezone.now().date()
 
-    # Handle completed payments
     if chiqim.qoldiq_summa <= 0:
         chiqim.bo_lib_tolov_muddat = 0
         chiqim.oyiga_tolov = Decimal('0')
         chiqim.bildirishnomalar.all().delete()
-        chiqim.save(skip_telegram=True)  # ✅ skip_telegram qo'shildi
+        chiqim.save()
         cache.delete(f'notifications_chiqim_{chiqim.id}')
-
     elif chiqim.bo_lib_tolov_muddat > 0:
-        # ✅ XATO TUZATILDI: oyiga_tolov None bo'lishi mumkin
-        monthly_payment = chiqim.oyiga_tolov or Decimal('0')
+        monthly_payment = chiqim.oyiga_tolov or Decimal('0')  # Fallback to 0 if None
         start_date = chiqim.tolov_sana or current_date
 
-        # Adjust start date if it's today
         if start_date == current_date:
             next_month = start_date.month + 1
             next_year = start_date.year + (next_month - 1) // 12
@@ -303,7 +357,6 @@ def chiqim_detail(request, id):
         accumulated_paid = total_boshlangich_paid
         carryover_amount = Decimal('0')
 
-        # Build payment schedule
         for month in range(chiqim.bo_lib_tolov_muddat):
             next_month = start_date.month + month
             next_year = start_date.year + (next_month - 1) // 12
@@ -315,7 +368,6 @@ def chiqim_detail(request, id):
             paid_amount_for_month = Decimal('0')
             is_paid = False
 
-            # Calculate payment distribution
             if monthly_payment > 0 and remaining_to_distribute >= monthly_payment:
                 paid_amount_for_month = monthly_payment
                 remaining_to_distribute -= monthly_payment
@@ -333,8 +385,7 @@ def chiqim_detail(request, id):
 
             accumulated_paid += paid_amount_for_month
             remaining_debt = max(Decimal('0'), chiqim.narx - accumulated_paid)
-            progress_percentage = (paid_amount_for_month / monthly_payment * 100) if monthly_payment > 0 else Decimal(
-                '0')
+            progress_percentage = (paid_amount_for_month / monthly_payment * 100) if monthly_payment > 0 else Decimal('0')
 
             payment_schedule.append({
                 'month': f"{next_month:02d}/{next_year}",
@@ -360,7 +411,6 @@ def chiqim_detail(request, id):
         'current_date': current_date,
     }
 
-    # Handle AJAX requests
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         try:
             html = render_to_string('chiqim/chiqim_detail.html', context, request=request)
@@ -378,23 +428,21 @@ def chiqim_create(request):
         form = ChiqimForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             try:
-                with transaction.atomic():  # ✅ Bu yerda KERAK
+                with transaction.atomic():
                     chiqim = form.save(commit=False)
-                    chiqim.tolov_sana = form.cleaned_data['tolov_sana']
+                    chiqim.tolov_sana = form.cleaned_data['tolov_sana']  # Sana aniq o'rnatiladi
                     if request.FILES.get('hujjatlar'):
                         chiqim.hujjatlar = request.FILES['hujjatlar']
                         chiqim.original_file_name = request.FILES['hujjatlar'].name
                     chiqim.save()
-                    logger.info(
-                        f"New expense created: ID={chiqim.id}, User={request.user.username}, Tolov_sana={chiqim.tolov_sana}")
-
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return JsonResponse({
-                        'success': True,
-                        'message': "Chiqim muvaffaqiyatli qo'shildi!",
-                        'redirect_url': None
-                    })
-                return redirect('chiqim_list')
+                    logger.info(f"New expense created: ID={chiqim.id}, User={request.user.username}, Tolov_sana={chiqim.tolov_sana}")
+                    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                        return JsonResponse({
+                            'success': True,
+                            'message': "Chiqim muvaffaqiyatli qo'shildi!",
+                            'redirect_url': None
+                        })
+                    return redirect('chiqim_list')
             except Exception as e:
                 logger.error(f"Error saving expense: {str(e)}")
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -406,15 +454,13 @@ def chiqim_create(request):
         else:
             logger.warning(f"Form validation failed: {form.errors.as_json()}")
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                errors = {field: [str(error) for error in error_list] for field, error_list in
-                          form.errors.as_data().items()}
+                errors = {field: [str(error) for error in error_list] for field, error_list in form.errors.as_data().items()}
                 return JsonResponse({
                     'success': False,
                     'errors': errors,
                 }, status=400)
     else:
         form = ChiqimForm(user=request.user)
-
     context = {
         'form': form,
         'today': timezone.now().date(),
@@ -425,8 +471,6 @@ def chiqim_create(request):
 @login_required
 def chiqim_update(request, id):
     chiqim = get_object_or_404(Chiqim, id=id)
-
-    # Permission check
     if not request.user.is_superuser and (chiqim.truck.user != request.user or chiqim.xaridor.user != request.user):
         return JsonResponse({'success': False, 'error': 'Sizga bu chiqimni tahrirlashga ruxsat yo\'q!'}, status=403)
 
@@ -434,9 +478,9 @@ def chiqim_update(request, id):
         form = ChiqimForm(request.POST, request.FILES, instance=chiqim, user=request.user)
         if form.is_valid():
             try:
-                with transaction.atomic():  # ✅ Bu yerda KERAK
+                with transaction.atomic():
                     chiqim = form.save(commit=False)
-                    chiqim.tolov_sana = form.cleaned_data['tolov_sana']
+                    chiqim.tolov_sana = form.cleaned_data['tolov_sana']  # Sana aniq o'rnatiladi
                     if request.FILES.get('hujjatlar'):
                         chiqim.hujjatlar = request.FILES['hujjatlar']
                         chiqim.original_file_name = request.FILES['hujjatlar'].name
@@ -444,15 +488,13 @@ def chiqim_update(request, id):
                     chiqim.bildirishnomalar.all().delete()
                     cache.delete(f'notifications_chiqim_{chiqim.id}')
                     update_notifications(chiqim)
-                    logger.info(
-                        f"Expense updated: ID={chiqim.id}, User={request.user.username}, Tolov_sana={chiqim.tolov_sana}")
-
-                return JsonResponse({'success': True, 'message': 'Chiqim muvaffaqiyatli yangilandi!', 'reload': True})
+                    logger.info(f"Expense updated: ID={chiqim.id}, User={request.user.username}, Tolov_sana={chiqim.tolov_sana}")
+                    return JsonResponse({'success': True, 'message': 'Chiqim muvaffaqiyatli yangilandi!', 'reload': True})
             except Exception as e:
                 logger.error(f"Error updating expense: {str(e)}")
                 return JsonResponse({'success': False, 'error': 'Chiqimni yangilashda xatolik yuz berdi!'}, status=500)
         else:
-            errors = {field: [str(error) for error in error_list] for field, error_list in form.errors.items()}
+            errors = {field: [str(error) for error in errors] for field, errors in form.errors.items()}
             logger.warning(f'Form errors: {errors}')
             return JsonResponse({'success': False, 'errors': errors}, status=400)
     else:
@@ -460,11 +502,8 @@ def chiqim_update(request, id):
         context = {
             'form': form,
             'chiqim': chiqim,
-            'trucks': Truck.objects.filter(user=request.user,
-                                           sotilgan=False) if not request.user.is_superuser else Truck.objects.filter(
-                sotilgan=False),
-            'xaridorlar': Xaridor.objects.filter(
-                user=request.user) if not request.user.is_superuser else Xaridor.objects.all(),
+            'trucks': Truck.objects.filter(user=request.user, sotilgan=False) if not request.user.is_superuser else Truck.objects.filter(sotilgan=False),
+            'xaridorlar': Xaridor.objects.filter(user=request.user) if not request.user.is_superuser else Xaridor.objects.all(),
         }
         return render(request, 'chiqim/chiqim_form.html', context)
 
@@ -472,14 +511,12 @@ def chiqim_update(request, id):
 @login_required
 def chiqim_delete(request, id):
     chiqim = get_object_or_404(Chiqim, id=id)
-
-    # Permission check
     if not request.user.is_superuser and (chiqim.truck.user != request.user or chiqim.xaridor.user != request.user):
         return JsonResponse({'success': False, 'error': "Sizga bu chiqimni o'chirishga ruxsat yo'q!"}, status=403)
 
     if request.method in ['POST', 'DELETE']:
         try:
-            with transaction.atomic():  # ✅ Bu yerda KERAK
+            with transaction.atomic():
                 old_truck = chiqim.truck
                 chiqim.bildirishnomalar.all().delete()
                 cache.delete(f'notifications_chiqim_{chiqim.id}')
@@ -487,8 +524,7 @@ def chiqim_delete(request, id):
                 old_truck.sotilgan = False
                 old_truck.save()
                 logger.info(f'Chiqim deleted: ID {id}, truck {old_truck.id} marked unsold')
-
-            return JsonResponse({'success': True, 'message': "Chiqim muvaffaqiyatli o'chirildi!", 'reload': True})
+                return JsonResponse({'success': True, 'message': "Chiqim muvaffaqiyatli o'chirildi!", 'reload': True})
         except Exception as e:
             logger.error(f'Error deleting Chiqim ID {id}: {str(e)}')
             return JsonResponse({'success': False, 'error': "Chiqimni o'chirishda xatolik yuz berdi!"}, status=500)

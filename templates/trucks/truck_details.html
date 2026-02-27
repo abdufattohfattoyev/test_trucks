@@ -1,303 +1,1118 @@
 {% load static %}
-<div class="modal-body" id="truckDetailContent">
-    <div class="truck-details-container">
-        <!-- Truck Image -->
-        <div class="detail-section">
-            <h5 class="section-title"><i class="bi bi-image me-2"></i>Image</h5>
-            {% if truck.image %}
-                <img src="{{ truck.image.url }}" alt="{{ truck.make }} {{ truck.model }}" class="truck-image img-fluid rounded">
-            {% else %}
-                <div class="no-image-placeholder text-center text-muted p-3 rounded bg-light">
-                    <i class="bi bi-image fs-2 d-block mb-2"></i>
-                    <p>No image available</p>
-                </div>
-            {% endif %}
+<div class="truck-details-wrapper">
+    <!-- Truck Image Section -->
+    <div class="detail-section image-section">
+        {% if truck.image %}
+            <div class="truck-image-container">
+                <img src="{{ truck.image.url }}" alt="{{ truck.make }} {{ truck.model }}" class="truck-detail-image">
+            </div>
+        {% else %}
+            <div class="no-image-placeholder">
+                <i class="bi bi-image-fill"></i>
+                <p>No image available</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Truck Info Card -->
+    <div class="detail-card info-card">
+        <div class="card-header">
+            <div class="truck-header-info">
+                <h4 class="truck-name">{{ truck.make }} {{ truck.model }}</h4>
+                <span class="truck-year">{{ truck.year }}</span>
+            </div>
+            <div class="truck-price-badge">
+                <span class="price-label">Price</span>
+                <span class="price-value">${{ truck.price|floatformat:"2"|default:"0.00" }}</span>
+            </div>
         </div>
 
-        <!-- Truck Info -->
-        <div class="detail-card bg-white rounded shadow-sm p-3 mb-3">
-            <div class="detail-header border-bottom pb-2 mb-3 d-flex flex-column flex-md-row justify-content-between">
-                <h4 class="truck-title mb-2 mb-md-0">{{ truck.make }} {{ truck.model }} ({{ truck.year }})</h4>
-                <div class="price text-primary fs-4 fw-bold">${{ truck.price|floatformat:"2"|default:"0.00" }}</div>
-            </div>
-            <div class="detail-section info-grid row g-2">
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">PO Number:</span>
-                        <strong>{{ truck.po_id|default:"-" }}</strong>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-tag-fill"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">PO Number</span>
+                        <span class="info-value">{{ truck.po_id|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Make:</span>
-                        <strong>{{ truck.make|default:"-" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">Make</span>
+                        <span class="info-value">{{ truck.make|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Model:</span>
-                        <strong>{{ truck.model|default:"-" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-car-front-fill"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">Model</span>
+                        <span class="info-value">{{ truck.model|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Year:</span>
-                        <strong>{{ truck.year|default:"-" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">Year</span>
+                        <span class="info-value">{{ truck.year|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Horsepower:</span>
-                        <strong>{{ truck.horsepower|default:"-" }} HP</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">Horsepower</span>
+                        <span class="info-value">{{ truck.horsepower|default:"-" }} HP</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Price:</span>
-                        <strong>${{ truck.price|floatformat:"2"|default:"0.00" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">Company</span>
+                        <span class="info-value">{{ truck.company|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Company:</span>
-                        <strong>{{ truck.company|default:"-" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">Location</span>
+                        <span class="info-value">{{ truck.location|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Location:</span>
-                        <strong>{{ truck.location|default:"-" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-hash"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">Serial Number</span>
+                        <span class="info-value">{{ truck.seriya|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Serial Number:</span>
-                        <strong>{{ truck.seriya|default:"-" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">User</span>
+                        <span class="info-value">{{ truck.user.username|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">User:</span>
-                        <strong>{{ truck.user.username|default:"-" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">Purchase Date</span>
+                        <span class="info-value">{{ truck.purchase_date|date:"Y-m-d"|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Purchase Date:</span>
-                        <strong>{{ truck.purchase_date|date:"Y-m-d"|default:"-" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="info-label">Created Date</span>
+                        <span class="info-value">{{ truck.created_date|date:"Y-m-d H:i"|default:"-" }}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Created Date:</span>
-                        <strong>{{ truck.created_date|date:"Y-m-d H:i"|default:"-" }}</strong>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="bi {% if truck.sotilgan %}bi-x-circle-fill{% else %}bi-check-circle-fill{% endif %}"></i>
                     </div>
-                </div>
-                <div class="col-12">
-                    <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                        <span class="text-muted">Status:</span>
-                        <strong class="badge {% if truck.sotilgan %}bg-danger{% else %}bg-success{% endif %}">
+                    <div class="info-content">
+                        <span class="info-label">Status</span>
+                        <span class="status-badge {% if truck.sotilgan %}sold{% else %}active{% endif %}">
                             {{ truck.sotilgan|yesno:"Sold,Active" }}
-                        </strong>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Expenses -->
-        <div class="detail-card bg-white rounded shadow-sm p-3 mb-3">
-            <h5 class="section-title d-flex align-items-center mb-3">
-                <i class="bi bi-wallet2 me-2"></i>Expenses
+    <!-- Expenses Card -->
+    <div class="detail-card expenses-card">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="bi bi-wallet2"></i>
+                Expenses
             </h5>
+        </div>
+
+        <div class="card-body">
             {% if xarajatlar %}
-                <div class="xarajat-list mb-3" style="max-height: 200px; overflow-y: auto;">
+                <div class="expenses-list">
                     {% for xarajat in xarajatlar %}
-                        <div class="xarajat-item d-flex justify-content-between py-2 border-bottom">
-                            <div class="text-truncate pe-2">
-                                <strong>{{ xarajat.expense_type|title }}</strong>
+                        <div class="expense-item">
+                            <div class="expense-info">
+                                <div class="expense-type">{{ xarajat.expense_type|title }}</div>
                                 {% if xarajat.description %}
-                                    <br><small>{{ xarajat.description|truncatewords:10 }}</small>
+                                    <div class="expense-desc">{{ xarajat.description|truncatewords:15 }}</div>
                                 {% endif %}
-                                {% if xarajat.document %}
-                                    <br><a href="{{ xarajat.document.url }}" target="_blank" class="text-muted"><small>View Document</small></a>
-                                {% endif %}
+                                <div class="expense-date">
+                                    <i class="bi bi-calendar3"></i> {{ xarajat.date|date:"M d, Y" }}
+                                </div>
                             </div>
-                            <div class="text-nowrap">
-                                <span>${{ xarajat.amount|floatformat:"2"|default:"0.00" }}</span>
-                                <br><small>{{ xarajat.date|date:"Y-m-d" }}</small>
+                            <div class="expense-amount">
+                                <span class="amount">${{ xarajat.amount|floatformat:"2"|default:"0.00" }}</span>
+                                {% if xarajat.document %}
+                                    <a href="{{ xarajat.document.url }}" target="_blank" class="doc-btn" title="View Document">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                     {% endfor %}
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted">Total Expenses:</span>
-                            <strong class="text-warning">${{ xarajat_sum|floatformat:"2"|default:"0.00" }}</strong>
-                        </div>
+
+                <div class="expenses-summary">
+                    <div class="summary-item">
+                        <span class="summary-label">Total Expenses:</span>
+                        <span class="summary-value expense-total">${{ xarajat_sum|floatformat:"2"|default:"0.00" }}</span>
                     </div>
-                    <div class="col-md-6">
-                        <div class="detail-row d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted">Total Cost:</span>
-                            <strong class="text-success">${{ umumiy_narx|floatformat:"2"|default:"0.00" }}</strong>
-                        </div>
+                    <div class="summary-item total">
+                        <span class="summary-label">Total Cost:</span>
+                        <span class="summary-value cost-total">${{ umumiy_narx|floatformat:"2"|default:"0.00" }}</span>
                     </div>
                 </div>
             {% else %}
-                <p class="text-muted text-center py-2">No expenses available.</p>
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>No expenses available</p>
+                </div>
             {% endif %}
         </div>
+    </div>
 
-        <!-- Description -->
-        {% if truck.description %}
-            <div class="detail-card bg-white rounded shadow-sm p-3 mb-3">
-                <h5 class="section-title d-flex align-items-center mb-3">
-                    <i class="bi bi-card-text me-2"></i>Description
+    <!-- Description Card -->
+    {% if truck.description %}
+        <div class="detail-card description-card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="bi bi-card-text"></i>
+                    Description
                 </h5>
-                <div class="description bg-light p-3 rounded">{{ truck.description }}</div>
             </div>
-        {% endif %}
-
-        <!-- Documents -->
-        <div class="detail-card bg-white rounded shadow-sm p-3 mb-3">
-    <h5 class="section-title d-flex align-items-center mb-3">
-        <i class="bi bi-files me-2"></i>Hujjatlar
-    </h5>
-    {% if hujjatlar %}
-        <div class="hujjat-list" style="max-height: 200px; overflow-y: auto;">
-            {% for hujjat in hujjatlar %}
-                <div class="hujjat-item d-flex justify-content-between align-items-center py-2 border-bottom">
-                    <a href="{% url 'download_hujjat' hujjat.id %}" class="doc-link text-truncate pe-2">
-                        <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
-                        {{ hujjat.original_file_name }}
-                    </a>
-
-                    <button onclick="deleteHujjat({{ hujjat.id }}, {{ truck.id }})" class="btn btn-sm btn-outline-danger">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            {% endfor %}
+            <div class="card-body">
+                <div class="description-content">{{ truck.description }}</div>
+            </div>
         </div>
-    {% else %}
-        <p class="text-muted text-center py-2">Hujjatlar mavjud emas.</p>
     {% endif %}
-</div>
 
-        <!-- Actions -->
-        <div class="detail-actions d-flex flex-wrap gap-2 justify-content-center mt-4">
-            <button class="btn btn-primary" onclick="openEditTruckForm({{ truck.id }})">
-                <i class="bi bi-pencil me-1"></i> Edit
-            </button>
-            <button class="btn btn-danger" onclick="showDeleteConfirmation({{ truck.id }})">
-                <i class="bi bi-trash me-1"></i> Delete
-            </button>
+    <!-- Documents Card -->
+    <div class="detail-card documents-card">
+        <div class="card-header">
+            <h5 class="card-title">
+                <i class="bi bi-files"></i>
+                Documents
+            </h5>
         </div>
+
+        <div class="card-body">
+            {% if hujjatlar %}
+                <div class="hujjat-list">
+                    {% for hujjat in hujjatlar %}
+                        <div class="document-item">
+                            <a href="{% url 'download_hujjat' hujjat.id %}" class="doc-link" target="_blank">
+                                <div class="doc-icon">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </div>
+                                <div class="doc-info">
+                                    <span class="doc-name">{{ hujjat.original_file_name }}</span>
+                                </div>
+                            </a>
+                            <button onclick="deleteHujjat({{ hujjat.id }}, {{ truck.id }})" class="delete-doc-btn" title="Delete document">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>No documents available</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="action-btn edit-btn" onclick="openEditTruckForm({{ truck.id }})">
+            <i class="bi bi-pencil-square"></i>
+            <span>Edit Truck</span>
+        </button>
+        <button class="action-btn delete-btn" onclick="showDeleteConfirmation({{ truck.id }})">
+            <i class="bi bi-trash3"></i>
+            <span>Delete Truck</span>
+        </button>
     </div>
 </div>
 
 <style>
-/* Main container */
-.truck-details-container {
-    padding: 0.5rem;
+/* ===== ROOT VARIABLES ===== */
+:root {
+    --detail-primary: #2563eb;
+    --detail-accent: #7c3aed;
+    --detail-success: #10b981;
+    --detail-warning: #f59e0b;
+    --detail-danger: #ef4444;
+    --detail-gray-50: #f8fafc;
+    --detail-gray-100: #f1f5f9;
+    --detail-gray-200: #e2e8f0;
+    --detail-gray-300: #cbd5e1;
+    --detail-gray-600: #475569;
+    --detail-gray-700: #334155;
+    --detail-gray-800: #1e293b;
+    --detail-radius: 12px;
+    --detail-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --detail-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Section styles */
-.section-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 1rem;
-}
-
-/* Truck image */
-.truck-image {
+/* ===== MAIN WRAPPER ===== */
+.truck-details-wrapper {
+    padding: 0;
     max-width: 100%;
+}
+
+/* ===== IMAGE SECTION ===== */
+.image-section {
+    margin-bottom: 1.5rem;
+}
+
+.truck-image-container {
+    position: relative;
+    width: 100%;
+    max-height: 400px;
+    overflow: hidden;
+    border-radius: var(--detail-radius);
+    background: var(--detail-gray-50);
+}
+
+.truck-detail-image {
+    width: 100%;
     height: auto;
-    max-height: 300px;
+    max-height: 400px;
     object-fit: contain;
-    margin: 0 auto;
     display: block;
 }
 
 .no-image-placeholder {
-    padding: 2rem;
-    border: 1px dashed #ddd;
-    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    background: var(--detail-gray-50);
+    border: 2px dashed var(--detail-gray-300);
+    border-radius: var(--detail-radius);
+    color: var(--detail-gray-600);
 }
 
-/* Card styles */
+.no-image-placeholder i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.no-image-placeholder p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* ===== DETAIL CARDS ===== */
 .detail-card {
-    margin-bottom: 1.5rem;
+    background: white;
+    border-radius: var(--detail-radius);
+    border: 1px solid var(--detail-gray-200);
+    margin-bottom: 1.25rem;
+    overflow: hidden;
 }
 
-/* Price display */
-.price {
-    font-size: 1.5rem;
+.card-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--detail-gray-200);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%);
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.125rem;
     font-weight: 700;
+    color: var(--detail-gray-800);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* Detail rows */
-.detail-row {
-    padding: 0.5rem 0;
+.card-title i {
+    font-size: 1.25rem;
+    color: var(--detail-primary);
 }
 
-/* Document and expense lists */
-.hujjat-list, .xarajat-list {
-    border: 1px solid #eee;
+.card-body {
+    padding: 1.25rem;
+}
+
+/* ===== INFO CARD HEADER ===== */
+.info-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.truck-header-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.truck-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--detail-gray-800);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+}
+
+.truck-year {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    background: var(--detail-gray-100);
+    color: var(--detail-gray-700);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.truck-price-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, var(--detail-primary) 0%, var(--detail-accent) 100%);
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.price-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.price-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-top: 0.25rem;
+}
+
+/* ===== INFO GRID ===== */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding: 0.875rem;
+    background: var(--detail-gray-50);
+    border-radius: 8px;
+    border: 1px solid var(--detail-gray-200);
+    transition: var(--detail-transition);
+}
+
+.info-item:hover {
+    background: white;
+    border-color: var(--detail-primary);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.info-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border-radius: 8px;
+    color: var(--detail-primary);
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+
+.info-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--detail-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--detail-gray-800);
+    word-break: break-word;
+}
+
+/* ===== STATUS BADGE ===== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--detail-success);
+}
+
+.status-badge.sold {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--detail-danger);
+}
+
+/* ===== EXPENSES LIST ===== */
+.expenses-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--detail-gray-50);
+    border-radius: 8px;
+    border: 1px solid var(--detail-gray-200);
+    margin-bottom: 0.75rem;
+    transition: var(--detail-transition);
+}
+
+.expense-item:hover {
+    background: white;
+    border-color: var(--detail-warning);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+.expense-item:last-child {
+    margin-bottom: 0;
+}
+
+.expense-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.expense-type {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--detail-gray-800);
+    margin-bottom: 0.375rem;
+}
+
+.expense-desc {
+    font-size: 0.8125rem;
+    color: var(--detail-gray-600);
+    margin-bottom: 0.375rem;
+    line-height: 1.4;
+}
+
+.expense-date {
+    font-size: 0.75rem;
+    color: var(--detail-gray-600);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.expense-amount {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.expense-amount .amount {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: var(--detail-warning);
+    white-space: nowrap;
+}
+
+.doc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--detail-danger);
     border-radius: 6px;
-    padding: 0.5rem;
+    transition: var(--detail-transition);
+    text-decoration: none;
 }
 
-/* Description section */
-.description {
+.doc-btn:hover {
+    background: var(--detail-danger);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* ===== EXPENSES SUMMARY ===== */
+.expenses-summary {
+    padding: 1rem;
+    background: var(--detail-gray-50);
+    border-radius: 8px;
+    border: 1px solid var(--detail-gray-200);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.625rem 0;
+}
+
+.summary-item:not(:last-child) {
+    border-bottom: 1px solid var(--detail-gray-200);
+}
+
+.summary-item.total {
+    padding-top: 1rem;
+    border-top: 2px solid var(--detail-gray-300);
+}
+
+.summary-label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--detail-gray-700);
+}
+
+.summary-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.expense-total {
+    color: var(--detail-warning);
+}
+
+.cost-total {
+    color: var(--detail-success);
+}
+
+/* ===== DESCRIPTION ===== */
+.description-content {
+    padding: 1rem;
+    background: var(--detail-gray-50);
+    border-radius: 8px;
+    border: 1px solid var(--detail-gray-200);
     white-space: pre-line;
     line-height: 1.6;
+    color: var(--detail-gray-700);
+    font-size: 0.9375rem;
 }
 
-/* Action buttons */
-.detail-actions .btn {
-    min-width: 120px;
+/* ===== DOCUMENTS LIST ===== */
+.hujjat-list {
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-/* Responsive design */
+.document-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    background: var(--detail-gray-50);
+    border-radius: 8px;
+    border: 1px solid var(--detail-gray-200);
+    margin-bottom: 0.75rem;
+    transition: var(--detail-transition);
+}
+
+.document-item:hover {
+    background: white;
+    border-color: var(--detail-danger);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+}
+
+.document-item:last-child {
+    margin-bottom: 0;
+}
+
+.doc-link {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--detail-gray-800);
+    min-width: 0;
+}
+
+.doc-link:hover {
+    color: var(--detail-danger);
+}
+
+.doc-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 8px;
+    color: var(--detail-danger);
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.doc-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.doc-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.delete-doc-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--detail-gray-300);
+    border-radius: 6px;
+    color: var(--detail-gray-600);
+    cursor: pointer;
+    transition: var(--detail-transition);
+    flex-shrink: 0;
+}
+
+.delete-doc-btn:hover {
+    background: var(--detail-danger);
+    border-color: var(--detail-danger);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    color: var(--detail-gray-600);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--detail-transition);
+}
+
+.edit-btn {
+    background: linear-gradient(135deg, var(--detail-primary) 0%, var(--detail-accent) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.edit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, var(--detail-danger) 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.delete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.action-btn i {
+    font-size: 1.125rem;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.expenses-list::-webkit-scrollbar,
+.hujjat-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.expenses-list::-webkit-scrollbar-track,
+.hujjat-list::-webkit-scrollbar-track {
+    background: var(--detail-gray-100);
+    border-radius: 10px;
+}
+
+.expenses-list::-webkit-scrollbar-thumb,
+.hujjat-list::-webkit-scrollbar-thumb {
+    background: var(--detail-gray-300);
+    border-radius: 10px;
+}
+
+.expenses-list::-webkit-scrollbar-thumb:hover,
+.hujjat-list::-webkit-scrollbar-thumb:hover {
+    background: var(--detail-gray-600);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablets (768px - 992px) */
+@media (max-width: 992px) {
+    .info-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 0.875rem;
+    }
+
+    .truck-image-container {
+        max-height: 350px;
+    }
+
+    .truck-detail-image {
+        max-height: 350px;
+    }
+
+    .card-header,
+    .card-body {
+        padding: 1rem;
+    }
+
+    .truck-name {
+        font-size: 1.375rem;
+    }
+
+    .price-value {
+        font-size: 1.375rem;
+    }
+}
+
+/* Mobile landscape and small tablets (576px - 768px) */
 @media (max-width: 768px) {
-    .truck-details-container {
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .truck-image-container {
+        max-height: 300px;
+    }
+
+    .truck-detail-image {
+        max-height: 300px;
+    }
+
+    .info-card .card-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .truck-price-badge {
+        align-items: center;
+        text-align: center;
+    }
+
+    .truck-name {
+        font-size: 1.25rem;
+    }
+
+    .price-value {
+        font-size: 1.25rem;
+    }
+
+    .expense-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .expense-amount {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .expenses-list,
+    .hujjat-list {
+        max-height: 300px;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+}
+
+/* Mobile portrait (< 576px) */
+@media (max-width: 576px) {
+    .truck-details-wrapper {
         padding: 0;
     }
 
-    .truck-image {
-        max-height: 200px;
+    .detail-card {
+        border-radius: 10px;
+        margin-bottom: 1rem;
     }
 
-    .price {
-        font-size: 1.3rem;
+    .card-header,
+    .card-body {
+        padding: 0.875rem;
     }
 
-    .section-title {
+    .truck-image-container {
+        max-height: 250px;
+        border-radius: 10px;
+    }
+
+    .truck-detail-image {
+        max-height: 250px;
+    }
+
+    .truck-name {
+        font-size: 1.125rem;
+    }
+
+    .truck-year {
+        font-size: 0.8125rem;
+        padding: 0.25rem 0.625rem;
+    }
+
+    .price-label {
+        font-size: 0.6875rem;
+    }
+
+    .price-value {
+        font-size: 1.125rem;
+    }
+
+    .info-icon {
+        width: 32px;
+        height: 32px;
         font-size: 1rem;
     }
 
-    .detail-actions .btn {
-        flex: 1;
-        min-width: auto;
+    .info-label {
+        font-size: 0.6875rem;
+    }
+
+    .info-value {
+        font-size: 0.875rem;
+    }
+
+    .card-title {
+        font-size: 0.9375rem;
+    }
+
+    .card-title i {
+        font-size: 1rem;
+    }
+
+    .expense-type {
+        font-size: 0.875rem;
+    }
+
+    .expense-desc {
+        font-size: 0.75rem;
+    }
+
+    .expense-date {
+        font-size: 0.6875rem;
+    }
+
+    .expense-amount .amount {
+        font-size: 1rem;
+    }
+
+    .summary-label {
+        font-size: 0.875rem;
+    }
+
+    .summary-value {
+        font-size: 1.125rem;
+    }
+
+    .doc-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.125rem;
+    }
+
+    .doc-name {
+        font-size: 0.875rem;
+    }
+
+    .delete-doc-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.625rem;
+    }
+
+    .action-btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+    }
+
+    .action-btn i {
+        font-size: 1rem;
+    }
+
+    .expenses-list,
+    .hujjat-list {
+        max-height: 250px;
+    }
+
+    .description-content {
+        font-size: 0.875rem;
+        padding: 0.875rem;
     }
 }
 
-@media (max-width: 576px) {
-    .info-grid .col-md-6 {
-        width: 100%;
+/* Extra small devices (< 400px) */
+@media (max-width: 400px) {
+    .truck-image-container {
+        max-height: 200px;
     }
 
-    .truck-title {
-        font-size: 1.2rem;
+    .truck-detail-image {
+        max-height: 200px;
     }
 
-    .detail-actions {
-        flex-direction: column;
+    .truck-name {
+        font-size: 1rem;
     }
 
-    .detail-actions .btn {
-        width: 100%;
+    .price-value {
+        font-size: 1rem;
+    }
+
+    .info-value {
+        font-size: 0.8125rem;
+    }
+
+    .expense-amount .amount {
+        font-size: 0.9375rem;
+    }
+
+    .summary-value {
+        font-size: 1rem;
+    }
+
+    .action-btn {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .action-buttons,
+    .delete-doc-btn {
+        display: none;
+    }
+
+    .detail-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    .expenses-list,
+    .hujjat-list {
+        max-height: none;
     }
 }
 </style>

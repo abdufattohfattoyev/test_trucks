@@ -1,28 +1,568 @@
 <!-- templates/xarajat/xarajat_delete.html -->
-<div class="delete-xarajat-form">
-    <h4>Delete Expense</h4>
-    <div class="alert alert-warning mt-3">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        Are you sure you want to delete the following expense?
+<div class="delete-expense-wrapper">
+    <!-- Warning Header -->
+    <div class="delete-warning">
+        <div class="warning-icon">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <div class="warning-content">
+            <h3 class="warning-title">Delete Expense</h3>
+            <p class="warning-message">Are you sure you want to delete this expense? This action cannot be undone.</p>
+        </div>
     </div>
 
-    <div class="card mt-3 mb-4">
-        <div class="card-body">
-            <h5>{{ xarajat.get_expense_type_display }}</h5>
-            <p class="mb-1"><strong>Truck:</strong> {{ xarajat.truck.make }} {{ xarajat.truck.model }} ({{ xarajat.truck.po_id }})</p>
-            <p class="mb-1"><strong>Amount:</strong> ${{ xarajat.amount|floatformat:"2" }}</p>
-            <p class="mb-1"><strong>Date:</strong> {{ xarajat.date|date:"Y-m-d" }}</p>
+    <!-- Expense Details Card -->
+    <div class="expense-details-card">
+        <div class="detail-header">
+            <div class="expense-type-badge {{ xarajat.expense_type }}">
+                <i class="bi {% if xarajat.expense_type == 'repair' %}bi-wrench{% elif xarajat.expense_type == 'fuel' %}bi-fuel-pump{% elif xarajat.expense_type == 'insurance' %}bi-shield-check{% elif xarajat.expense_type == 'parts' %}bi-gear{% else %}bi-three-dots{% endif %}"></i>
+                <span>{{ xarajat.get_expense_type_display }}</span>
+            </div>
+            <div class="expense-amount">${{ xarajat.amount|floatformat:"2" }}</div>
+        </div>
+
+        <div class="detail-body">
+            <div class="detail-item">
+                <div class="detail-icon">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div class="detail-content">
+                    <span class="detail-label">Truck</span>
+                    <span class="detail-value">{{ xarajat.truck.make }} {{ xarajat.truck.model }}</span>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-icon">
+                    <i class="bi bi-tag"></i>
+                </div>
+                <div class="detail-content">
+                    <span class="detail-label">PO-ID</span>
+                    <span class="detail-value">{{ xarajat.truck.po_id }}</span>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-icon">
+                    <i class="bi bi-calendar3"></i>
+                </div>
+                <div class="detail-content">
+                    <span class="detail-label">Date</span>
+                    <span class="detail-value">{{ xarajat.date|date:"F d, Y" }}</span>
+                </div>
+            </div>
+
             {% if xarajat.description %}
-            <p class="mb-0"><strong>Description:</strong> {{ xarajat.description }}</p>
+            <div class="detail-item full-width">
+                <div class="detail-icon">
+                    <i class="bi bi-card-text"></i>
+                </div>
+                <div class="detail-content">
+                    <span class="detail-label">Description</span>
+                    <span class="detail-value description">{{ xarajat.description }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if xarajat.document %}
+            <div class="detail-item full-width">
+                <div class="detail-icon">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                </div>
+                <div class="detail-content">
+                    <span class="detail-label">Document</span>
+                    <a href="{{ xarajat.document.url }}" target="_blank" class="document-link">
+                        <i class="bi bi-download"></i>
+                        <span>{{ xarajat.original_file_name|default:"Download Document" }}</span>
+                    </a>
+                </div>
+            </div>
             {% endif %}
         </div>
     </div>
 
-    <form method="post" action="{% url 'xarajat_delete' xarajat.id %}" class="ajax-form">
+    <!-- Delete Form -->
+    <form method="post" action="{% url 'xarajat_delete' xarajat.id %}" class="ajax-form delete-form">
         {% csrf_token %}
-        <div class="d-flex justify-content-end gap-2">
-            <button type="button" onclick="closeDetailSidebar()" class="btn btn-outline-secondary">Cancel</button>
-            <button type="submit" class="btn btn-danger">Delete</button>
+        <div class="form-actions">
+            <button type="button"
+                    onclick="closeDetailSidebar()"
+                    class="btn-cancel">
+                <i class="bi bi-x-lg"></i>
+                <span>Cancel</span>
+            </button>
+            <button type="submit" class="btn-delete">
+                <i class="bi bi-trash3"></i>
+                <span>Delete Expense</span>
+            </button>
         </div>
     </form>
 </div>
+
+<style>
+/* ===== ROOT VARIABLES ===== */
+:root {
+    --delete-danger: #ef4444;
+    --delete-warning: #f59e0b;
+    --delete-gray-50: #f8fafc;
+    --delete-gray-100: #f1f5f9;
+    --delete-gray-200: #e2e8f0;
+    --delete-gray-600: #475569;
+    --delete-gray-700: #334155;
+    --delete-gray-800: #1e293b;
+    --delete-radius: 12px;
+    --delete-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== MAIN WRAPPER ===== */
+.delete-expense-wrapper {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ===== WARNING SECTION ===== */
+.delete-warning {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.08) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--delete-radius);
+}
+
+.warning-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--delete-danger);
+    color: white;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.warning-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.warning-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--delete-danger);
+    margin: 0 0 0.5rem 0;
+}
+
+.warning-message {
+    font-size: 0.9375rem;
+    color: var(--delete-gray-700);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ===== EXPENSE DETAILS CARD ===== */
+.expense-details-card {
+    background: white;
+    border: 1px solid var(--delete-gray-200);
+    border-radius: var(--delete-radius);
+    overflow: hidden;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem;
+    background: var(--delete-gray-50);
+    border-bottom: 1px solid var(--delete-gray-200);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.expense-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.expense-type-badge.repair {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--delete-danger);
+}
+
+.expense-type-badge.fuel {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--delete-warning);
+}
+
+.expense-type-badge.insurance {
+    background: rgba(37, 99, 235, 0.15);
+    color: #2563eb;
+}
+
+.expense-type-badge.parts {
+    background: rgba(139, 92, 246, 0.15);
+    color: #7c3aed;
+}
+
+.expense-type-badge.other {
+    background: rgba(100, 116, 139, 0.15);
+    color: var(--delete-gray-700);
+}
+
+.expense-type-badge i {
+    font-size: 1.125rem;
+}
+
+.expense-amount {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--delete-danger);
+}
+
+/* ===== DETAIL BODY ===== */
+.detail-body {
+    padding: 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    gap: 0.875rem;
+    padding: 0.875rem;
+    background: var(--delete-gray-50);
+    border-radius: 8px;
+    border: 1px solid var(--delete-gray-200);
+}
+
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 8px;
+    color: var(--delete-gray-600);
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+
+.detail-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--delete-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--delete-gray-800);
+    word-break: break-word;
+}
+
+.detail-value.description {
+    font-weight: 500;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+/* ===== DOCUMENT LINK ===== */
+.document-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 6px;
+    color: var(--delete-danger);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: var(--delete-transition);
+}
+
+.document-link:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: var(--delete-danger);
+    transform: translateY(-1px);
+}
+
+.document-link i {
+    font-size: 1rem;
+}
+
+/* ===== FORM ACTIONS ===== */
+.delete-form {
+    margin-top: 0.5rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-cancel,
+.btn-delete {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--delete-transition);
+}
+
+.btn-cancel {
+    background: var(--delete-gray-100);
+    color: var(--delete-gray-700);
+}
+
+.btn-cancel:hover:not(:disabled) {
+    background: var(--delete-gray-200);
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, var(--delete-danger) 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.btn-delete:disabled,
+.btn-cancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-delete i,
+.btn-cancel i {
+    font-size: 1.125rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablets (768px - 992px) */
+@media (max-width: 992px) {
+    .delete-expense-wrapper {
+        gap: 1.25rem;
+    }
+
+    .detail-body {
+        padding: 1rem;
+        gap: 0.875rem;
+    }
+
+    .warning-title {
+        font-size: 1.125rem;
+    }
+
+    .warning-message {
+        font-size: 0.875rem;
+    }
+
+    .expense-amount {
+        font-size: 1.375rem;
+    }
+}
+
+/* Mobile landscape and small tablets (576px - 768px) */
+@media (max-width: 768px) {
+    .delete-warning {
+        padding: 1rem;
+        gap: 0.875rem;
+    }
+
+    .warning-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.375rem;
+    }
+
+    .warning-title {
+        font-size: 1.0625rem;
+    }
+
+    .detail-header {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .expense-amount {
+        font-size: 1.25rem;
+    }
+
+    .detail-body {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    .btn-cancel,
+    .btn-delete {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Mobile portrait (< 576px) */
+@media (max-width: 576px) {
+    .delete-expense-wrapper {
+        gap: 1rem;
+    }
+
+    .delete-warning {
+        padding: 0.875rem;
+        gap: 0.75rem;
+    }
+
+    .warning-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+
+    .warning-title {
+        font-size: 1rem;
+    }
+
+    .warning-message {
+        font-size: 0.8125rem;
+    }
+
+    .detail-header {
+        padding: 0.875rem;
+    }
+
+    .expense-type-badge {
+        font-size: 0.8125rem;
+        padding: 0.375rem 0.875rem;
+    }
+
+    .expense-type-badge i {
+        font-size: 1rem;
+    }
+
+    .expense-amount {
+        font-size: 1.125rem;
+    }
+
+    .detail-body {
+        padding: 0.875rem;
+        gap: 0.75rem;
+    }
+
+    .detail-item {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .detail-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9375rem;
+    }
+
+    .detail-label {
+        font-size: 0.6875rem;
+    }
+
+    .detail-value {
+        font-size: 0.875rem;
+    }
+
+    .document-link {
+        font-size: 0.8125rem;
+        padding: 0.375rem 0.75rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 0.625rem;
+    }
+
+    .btn-cancel,
+    .btn-delete {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+    }
+
+    .btn-delete i,
+    .btn-cancel i {
+        font-size: 1rem;
+    }
+}
+
+/* Extra small devices (< 400px) */
+@media (max-width: 400px) {
+    .warning-title {
+        font-size: 0.9375rem;
+    }
+
+    .warning-message {
+        font-size: 0.75rem;
+    }
+
+    .expense-amount {
+        font-size: 1rem;
+    }
+
+    .detail-value {
+        font-size: 0.8125rem;
+    }
+
+    .btn-cancel,
+    .btn-delete {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.875rem;
+    }
+}
+</style>

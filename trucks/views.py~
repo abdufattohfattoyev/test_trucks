@@ -475,12 +475,12 @@ def delete_hujjat(request, hujjat_id):
 
 @login_required
 def trucks_list(request):
-    query = request.GET.get('q', '').strip()
+    query = request.GET.get('q', '')
 
     if request.user.is_superuser:
-        trucks = Truck.objects.all().select_related('user').order_by('-id')
+        trucks = Truck.objects.filter(sotilgan=False).select_related('user').order_by('-id')
     else:
-        trucks = Truck.objects.filter(user=request.user).order_by('-id')
+        trucks = Truck.objects.filter(user=request.user, sotilgan=False).order_by('-id')
 
     if query:
         trucks = trucks.filter(
@@ -488,51 +488,42 @@ def trucks_list(request):
             Q(model__icontains=query) |
             Q(location__icontains=query) |
             Q(company__icontains=query) |
-            Q(description__icontains=query) |
             Q(seriya__icontains=query) |
             Q(po_id__icontains=query)
         )
 
-    # Barcha xarajatlarni bitta DB so'rovda hisoblash
-    xarajatlar = (
-        Xarajat.objects
-        .filter(truck__in=trucks)
-        .values('truck_id')
-        .annotate(total_xarajat=Sum('amount'))
+    # Per-truck expense totals
+    xarajatlar = Xarajat.objects.filter(truck__in=trucks).values('truck_id').annotate(
+        total=Sum('amount')
     )
-    xarajat_dict = {
-        x['truck_id']: x['total_xarajat'] or Decimal('0')
-        for x in xarajatlar
-    }
+    xarajat_dict = {x['truck_id']: x['total'] or 0 for x in xarajatlar}
 
-    # Umumiy summalar (paginatsiyadan OLDIN, butun queryset bo'yicha)
-    total_price = trucks.aggregate(total=Sum('price'))['total'] or Decimal('0')
-    total_xarajat_all = sum(xarajat_dict.values(), Decimal('0'))
-    total_umumiy_all = total_price + total_xarajat_all
+    # Aggregate totals
+    total_price   = trucks.aggregate(t=Sum('price'))['t'] or 0
+    total_xarajat = sum(xarajat_dict.values())
+    total_umumiy  = float(total_price) + float(total_xarajat)
 
-    paginator = Paginator(trucks, 10)
+    paginator   = Paginator(trucks, 12)
     page_number = request.GET.get('page')
     trucks_page = paginator.get_page(page_number)
 
-    # Har bir truck uchun xarajat va umumiy narxni hisoblash
     trucks_data = []
     for truck in trucks_page:
-        xarajat_sum = xarajat_dict.get(truck.id, Decimal('0'))
-        umumiy_narx = (truck.price or Decimal('0')) + xarajat_sum
+        xarajat_sum = float(xarajat_dict.get(truck.id, 0))
         trucks_data.append({
-            'truck': truck,
-            'xarajat_sum': float(xarajat_sum),
-            'umumiy_narx': float(umumiy_narx),
+            'truck':       truck,
+            'xarajat_sum': xarajat_sum,
+            'umumiy_narx': float(truck.price) + xarajat_sum,
         })
 
-    context = {
-        'trucks_data': trucks_data,
-        'trucks': trucks_page,
-        'total_price': float(total_price),
-        'total_xarajat': float(total_xarajat_all),
-        'total_umumiy': float(total_umumiy_all),
-    }
-    return render(request, 'trucks/trucks_list.html', context)
+    return render(request, 'trucks/trucks_list.html', {
+        'trucks':       trucks_page,
+        'trucks_data':  trucks_data,
+        'query':        query,
+        'total_price':   float(total_price),
+        'total_xarajat': float(total_xarajat),
+        'total_umumiy':  total_umumiy,
+    })
 
 
 @login_required

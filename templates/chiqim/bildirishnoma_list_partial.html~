@@ -28,7 +28,7 @@
                         {% endif %}
                     </div>
                     <div class="payment-amount">
-                        <i class="fas fa-money-bill-wave"></i> {{ bildirishnoma.chiqim.oyiga_tolov|floatformat:2 }} $
+                        <i class="fas fa-money-bill-wave"></i> {{ bildirishnoma.chiqim.oyiga_tolov|floatformat:2 }} so'm
                     </div>
                 </div>
             </div>

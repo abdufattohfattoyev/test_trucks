@@ -1,172 +1,316 @@
 {% extends 'base.html' %}
 
-{% block title %}Buyers List{% endblock %}
+{% block title %}Customers - Truck Trade{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Main style */
-    .card {
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        overflow: hidden;
-        margin-bottom: 20px;
+    /* ===== ROOT VARIABLES ===== */
+    :root {
+        --buyer-primary: #2563eb;
+        --buyer-accent: #7c3aed;
+        --buyer-success: #10b981;
+        --buyer-warning: #f59e0b;
+        --buyer-danger: #ef4444;
+        --buyer-info: #06b6d4;
+        --buyer-gray-50: #f8fafc;
+        --buyer-gray-100: #f1f5f9;
+        --buyer-gray-200: #e2e8f0;
+        --buyer-gray-600: #475569;
+        --buyer-gray-700: #334155;
+        --buyer-gray-800: #1e293b;
+        --buyer-radius: 12px;
+        --buyer-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --buyer-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Table styles */
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+    /* ===== MAIN CONTAINER ===== */
+    .buyers-container {
+        max-width: 100%;
+        padding: 0;
     }
 
-    .table {
-        width: 100%;
-        margin-bottom: 1rem;
-        color: #212529;
-        border-collapse: collapse;
+    /* ===== HEADER ===== */
+    .buyers-header {
+        background: white;
+        border-radius: var(--buyer-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--buyer-shadow);
     }
 
-    .table th {
-        background-color: #343a40;
-        color: white;
-        vertical-align: middle;
-        padding: 12px 8px;
-        font-weight: 500;
-    }
-
-    .table td {
-        vertical-align: middle;
-        padding: 10px 8px;
-        border-top: 1px solid #dee2e6;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 0, 0, 0.03);
-    }
-
-    /* Mobile view specific styles */
-    @media (max-width: 767.98px) {
-        .table thead {
-            display: none;
-        }
-
-        .table, .table tbody, .table tr, .table td {
-            display: block;
-            width: 100%;
-        }
-
-        .table tr {
-            margin-bottom: 15px;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 10px;
-            position: relative;
-        }
-
-        .table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-align: right;
-        }
-
-        .table td:before {
-            content: attr(data-label);
-            font-weight: bold;
-            flex: 1;
-            padding-right: 10px;
-            text-align: left;
-        }
-
-        .table td:last-child {
-            border-bottom: 0;
-        }
-
-        /* Documents section mobile view */
-        .hujjatlar-section td {
-            padding: 0;
-        }
-
-        .hujjat-card {
-            padding: 10px;
-            margin-top: 10px;
-        }
-
-        /* Actions buttons mobile view */
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-            justify-content: flex-end;
-        }
-
-        .action-buttons .btn {
-            padding: 5px 8px;
-            font-size: 12px;
-        }
-
-        /* Document addition section mobile view */
-        .hujjat-input-group {
-            margin-bottom: 10px;
-        }
-
-        .hujjat-input-group .input-group {
-            flex-direction: column;
-        }
-
-        .hujjat-input-group .input-group .form-control {
-            margin-bottom: 5px;
-            width: 100%;
-        }
-
-        .hujjat-input-group .input-group .btn {
-            flex: 1;
-            margin-bottom: 5px;
-            width: 100%;
-        }
-    }
-
-    /* Buttons */
-    .btn {
-        font-size: 0.85rem;
-        padding: 0.375rem 0.75rem;
-        border-radius: 4px;
-        transition: all 0.2s;
-        display: inline-flex;
+    .header-top {
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        gap Confrontation: A New Hope
-        gap: 5px;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .buyers-title {
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: var(--buyer-gray-800);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0;
+    }
+
+    .buyers-title i {
+        font-size: 2rem;
+        color: var(--buyer-primary);
+    }
+
+    .btn-add-buyer {
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, var(--buyer-success) 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: var(--buyer-transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-add-buyer:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    /* ===== SEARCH & FILTERS ===== */
+    .search-filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .filter-input {
+        flex: 1;
+        padding: 0.625rem 1rem;
+        border: 1px solid var(--buyer-gray-200);
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        transition: var(--buyer-transition);
+    }
+
+    .filter-input:focus {
+        outline: none;
+        border-color: var(--buyer-primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .filter-btn {
+        padding: 0.625rem 1rem;
+        background: linear-gradient(135deg, var(--buyer-primary) 0%, var(--buyer-accent) 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--buyer-transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
         white-space: nowrap;
     }
 
-    .btn-sm {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
+    .filter-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
 
-    .btn-accent {
-        background-color: #4e73df;
-        color: white;
+    /* ===== TABLE CONTAINER ===== */
+    .table-container {
+        background: white;
+        border-radius: var(--buyer-radius);
+        box-shadow: var(--buyer-shadow);
+        overflow: hidden;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .buyers-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .buyers-table thead {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+    }
+
+    .buyers-table thead th {
+        padding: 1rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--buyer-gray-800);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        border-bottom: 2px solid var(--buyer-gray-200);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+    }
+
+    .buyers-table tbody tr {
+        transition: var(--buyer-transition);
+        border-bottom: 1px solid var(--buyer-gray-200);
+    }
+
+    .buyers-table tbody tr:hover {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%);
+    }
+
+    .buyers-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .buyers-table td {
+        padding: 1rem 1.25rem;
+        font-size: 0.9375rem;
+        color: var(--buyer-gray-700);
+        vertical-align: middle;
+    }
+
+    .serial-number {
+        font-weight: 700;
+        color: var(--buyer-primary);
+    }
+
+    .buyer-name {
+        font-weight: 600;
+        color: var(--buyer-gray-800);
+    }
+
+    .balance-cell {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--buyer-success);
+    }
+
+    .date-cell {
+        font-size: 0.875rem;
+        color: var(--buyer-gray-600);
+    }
+
+    /* ===== DOCUMENT BUTTONS ===== */
+    .doc-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn-view-docs,
+    .btn-add-docs {
+        padding: 0.5rem 1rem;
         border: none;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--buyer-transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+        width: 100%;
     }
 
-    .btn-accent:hover {
-        background-color: #3a5ccc;
+    .btn-view-docs {
+        background: rgba(6, 182, 212, 0.1);
+        color: var(--buyer-info);
+        border: 1px solid rgba(6, 182, 212, 0.2);
+    }
+
+    .btn-view-docs:hover {
+        background: var(--buyer-info);
         color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
     }
 
-    /* Form elements */
-    .form-control {
-        font-size: 0.9rem;
-        border-radius: 4px;
-        padding: 0.375rem 0.75rem;
-        border: 1px solid #ced4da;
+    .btn-add-docs {
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--buyer-primary);
+        border: 1px solid rgba(37, 99, 235, 0.2);
     }
 
-    /* Documents section */
+    .btn-add-docs:hover {
+        background: var(--buyer-primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .no-docs-text {
+        font-size: 0.8125rem;
+        color: var(--buyer-gray-600);
+        font-style: italic;
+        margin-bottom: 0.5rem;
+    }
+
+    /* ===== ACTION BUTTONS ===== */
+    .actions-cell {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: 1px solid;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: var(--buyer-transition);
+        background: transparent;
+    }
+
+    .action-btn.edit {
+        border-color: var(--buyer-warning);
+        color: var(--buyer-warning);
+    }
+
+    .action-btn.edit:hover {
+        background: var(--buyer-warning);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .action-btn.delete {
+        border-color: var(--buyer-danger);
+        color: var(--buyer-danger);
+    }
+
+    .action-btn.delete:hover {
+        background: var(--buyer-danger);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    /* ===== DOCUMENT UPLOAD SECTION ===== */
     .hujjatlar-section {
         display: none;
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%);
     }
 
     .hujjatlar-section.active {
@@ -174,235 +318,601 @@
     }
 
     .hujjat-card {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 10px 0;
+        padding: 1.5rem;
+        background: white;
+        border-radius: var(--buyer-radius);
+        margin: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 2px solid var(--buyer-gray-200);
     }
 
-    /* Upload animation */
+    .hujjat-card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--buyer-gray-800);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .hujjat-card-title i {
+        color: var(--buyer-primary);
+    }
+
+    .hujjat-input-group {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: var(--buyer-gray-50);
+        border-radius: 8px;
+        border: 1px solid var(--buyer-gray-200);
+    }
+
+    .hujjat-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--buyer-gray-700);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .hujjat-input-row {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .hujjat-file-input {
+        flex: 1;
+        padding: 0.625rem 1rem;
+        border: 1px solid var(--buyer-gray-200);
+        border-radius: 6px;
+        font-size: 0.875rem;
+        background: white;
+        transition: var(--buyer-transition);
+    }
+
+    .hujjat-file-input:focus {
+        outline: none;
+        border-color: var(--buyer-primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .btn-upload-doc,
+    .btn-remove-input {
+        padding: 0.625rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--buyer-transition);
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        white-space: nowrap;
+    }
+
+    .btn-upload-doc {
+        background: linear-gradient(135deg, var(--buyer-primary) 0%, var(--buyer-accent) 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-upload-doc:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-upload-doc:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-remove-input {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--buyer-danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-remove-input:hover {
+        background: var(--buyer-danger);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .hujjat-hint {
+        font-size: 0.75rem;
+        color: var(--buyer-gray-600);
+        margin-top: 0.375rem;
+        display: block;
+    }
+
+    .hujjat-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--buyer-gray-200);
+    }
+
+    .btn-add-more,
+    .btn-finish {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--buyer-transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-add-more {
+        background: var(--buyer-gray-200);
+        color: var(--buyer-gray-700);
+    }
+
+    .btn-add-more:hover {
+        background: var(--buyer-gray-300);
+        transform: translateY(-2px);
+    }
+
+    .btn-finish {
+        background: linear-gradient(135deg, var(--buyer-success) 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-finish:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--buyer-gray-600);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state h4 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--buyer-gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        font-size: 0.9375rem;
+        color: var(--buyer-gray-500);
+        margin: 0;
+    }
+
+    /* ===== PAGINATION ===== */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+        padding: 1rem;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-item {
+        display: flex;
+    }
+
+    .page-link {
+        padding: 0.5rem 0.875rem;
+        border: 1px solid var(--buyer-gray-200);
+        border-radius: 6px;
+        color: var(--buyer-gray-700);
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--buyer-transition);
+    }
+
+    .page-link:hover {
+        background: var(--buyer-primary);
+        border-color: var(--buyer-primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--buyer-primary) 0%, var(--buyer-accent) 100%);
+        border-color: var(--buyer-primary);
+        color: white;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    /* ===== SPINNER ===== */
     .spinner-border {
         width: 1rem;
         height: 1rem;
+        border-width: 2px;
     }
 
-    /* Alert messages */
-    .custom-alert {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        max-width: 400px;
-        width: calc(100% - 40px);
+    /* ===== RESPONSIVE DESIGN ===== */
+
+    /* Tablets (768px - 992px) */
+    @media (max-width: 992px) {
+        .buyers-title {
+            font-size: 1.625rem;
+        }
+
+        .search-filters-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
-    /* Mobile specific adjustments */
-    @media (max-width: 575.98px) {
-        .d-flex.flex-column.flex-md-row {
-            flex-direction: column !important;
+    /* Mobile landscape (576px - 768px) */
+    @media (max-width: 768px) {
+        .buyers-header {
+            padding: 1.25rem;
         }
 
-        .mb-3.mb-md-0 {
-            margin-bottom: 1rem !important;
+        .header-top {
+            flex-direction: column;
+            align-items: stretch;
         }
 
-        .input-group {
-            flex-wrap: wrap;
+        .buyers-title {
+            font-size: 1.5rem;
+            justify-content: center;
         }
 
-        .input-group .form-control {
-            margin-bottom: 5px;
-        }
-
-        .input-group .btn {
+        .btn-add-buyer {
             width: 100%;
+            justify-content: center;
+        }
+
+        /* Hide some columns on mobile */
+        .buyers-table th:nth-child(4),
+        .buyers-table td:nth-child(4),
+        .buyers-table th:nth-child(7),
+        .buyers-table td:nth-child(7) {
+            display: none;
+        }
+
+        .buyers-table thead th {
+            padding: 0.875rem 1rem;
+            font-size: 0.8125rem;
+        }
+
+        .buyers-table td {
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+        }
+
+        .hujjat-input-row {
+            flex-direction: column;
+        }
+
+        .hujjat-actions {
+            flex-direction: column;
+        }
+    }
+
+    /* Mobile portrait (< 576px) */
+    @media (max-width: 576px) {
+        .buyers-container {
+            padding: 0;
+        }
+
+        .buyers-header {
+            border-radius: 0;
+            padding: 1rem;
+        }
+
+        .buyers-title {
+            font-size: 1.375rem;
+        }
+
+        .buyers-title i {
+            font-size: 1.5rem;
+        }
+
+        .btn-add-buyer {
+            font-size: 0.875rem;
+            padding: 0.625rem 1.25rem;
+        }
+
+        .filter-input,
+        .filter-btn {
+            font-size: 0.875rem;
+            padding: 0.5rem 0.875rem;
+        }
+
+        .table-container {
+            border-radius: 0;
+        }
+
+        .buyers-table thead th {
+            padding: 0.75rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .buyers-table td {
+            padding: 0.75rem 0.75rem;
+            font-size: 0.8125rem;
+        }
+
+        .action-btn {
+            width: 28px;
+            height: 28px;
+            font-size: 0.875rem;
+        }
+
+        .hujjat-card {
+            margin: 0.5rem;
+            padding: 1rem;
+        }
+
+        /* Additional hidden columns */
+        .buyers-table th:nth-child(3),
+        .buyers-table td:nth-child(3) {
+            display: none;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-3">
-    <div class="card">
-        <div class="card-body">
-            <!-- Header and Add Button -->
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-                <h2 class="mb-3 mb-md-0">
-                    <i class="bi bi-people-fill text-primary me-2"></i>
-                    Buyers List
-                </h2>
-                <button class="btn btn-accent form-open-btn" data-url="{% url 'xaridor_add' %}" data-title="Add New Buyer">
-                    <i class="bi bi-plus-circle me-1"></i> New Buyer
+<div class="buyers-container">
+    <!-- Header Section -->
+    <div class="buyers-header">
+        <div class="header-top">
+            <h1 class="buyers-title">
+                <i class="bi bi-people-fill"></i>
+                <span>Customers</span>
+            </h1>
+            <button class="btn-add-buyer form-open-btn"
+                    data-url="{% url 'xaridor_add' %}"
+                    data-title="Add New Customer">
+                <i class="bi bi-plus-lg"></i>
+                <span>Add Customer</span>
+            </button>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="search-filters-grid">
+            <!-- Search Form -->
+            <form method="GET" class="filter-form">
+                <input type="text"
+                       name="q"
+                       class="filter-input"
+                       placeholder="Search by name, phone or email..."
+                       value="{{ query|default:'' }}">
+                <button type="submit" class="filter-btn">
+                    <i class="bi bi-search"></i>
+                    <span>Search</span>
                 </button>
-            </div>
+            </form>
 
-            <!-- Search and Filter Forms -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <form method="GET" class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Name, surname, phone or email..." value="{{ query|default:'' }}">
-                        <button type="submit" class="btn btn-accent">
-                            <i class="bi bi-search"></i> Search
-                        </button>
-                    </form>
-                </div>
-                <div class="col-md-6">
-                    <form method="GET" class="input-group">
-                        <input type="date" name="sana" class="form-control" value="{{ sana|default:'' }}">
-                        <button type="submit" class="btn btn-accent">
-                            <i class="bi bi-calendar"></i> Filter
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Table -->
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name Surname</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Documents</th>
-                            <th>Balance</th>
-                            <th>Date</th>
-                            {% if is_superuser %}<th>User</th>{% endif %}
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for xaridor in page_obj %}
-                        <tr>
-                            <td data-label="#">{{ forloop.counter|add:page_obj.start_index|add:-1 }}</td>
-                            <td data-label="Name Surname">{{ xaridor.ism_familiya }}</td>
-                            <td data-label="Phone">{{ xaridor.telefon_raqam|default:"-" }}</td>
-                            <td data-label="Email">{{ xaridor.email|default:"-" }}</td>
-                            <td data-label="Documents" data-xaridor-id="{{ xaridor.id }}">
-                                <div class="d-flex flex-column">
-                                    {% if xaridor.hujjatlar.exists %}
-                                    <button class="btn btn-sm btn-info detail-open-btn mb-1" data-url="{% url 'view_passport' xaridor.id %}" data-title="{{ xaridor.ism_familiya }} - Documents">
-                                        <i class="bi bi-eye"></i> View
-                                    </button>
-                                    {% else %}
-                                    <span class="text-muted mb-1">No Document</span>
-                                    {% endif %}
-                                    <button class="btn btn-sm btn-primary toggle-hujjat-btn" data-xaridor-id="{{ xaridor.id }}">
-                                        <i class="bi bi-file-earmark-plus"></i> Add
-                                    </button>
-                                </div>
-                            </td>
-                            <td data-label="Balance">{{ xaridor.hozirgi_balans|floatformat:2 }} $</td>
-                            <td data-label="Date">{{ xaridor.sana|date:"d.m.Y" }}</td>
-                            {% if is_superuser %}
-                            <td data-label="User">{{ xaridor.user.username }}</td>
-                            {% endif %}
-                            <td data-label="Actions">
-                                <div class="action-buttons">
-                                    <button class="btn btn-sm btn-warning form-open-btn" data-url="{% url 'edit_xaridor' xaridor.id %}" data-title="Edit Buyer">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger form-open-btn" data-url="{% url 'xaridor_delete' xaridor.id %}" data-title="Delete Buyer">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="hujjatlar-section" id="hujjatlar-section-{{ xaridor.id }}">
-                            <td colspan="{% if is_superuser %}9{% else %}8{% endif %}">
-                                <div class="hujjat-card">
-                                    <h5 class="mb-3">
-                                        <i class="bi bi-file-earmark-text me-2"></i>
-                                        Documents for {{ xaridor.ism_familiya }}
-                                    </h5>
-
-                                    <div id="hujjat-inputs-{{ xaridor.id }}">
-                                        <div class="mb-3 hujjat-input-group" id="hujjat-group-{{ xaridor.id }}-1">
-                                            <label for="hujjat-{{ xaridor.id }}-1" class="form-label">Document File</label>
-                                            <div class="input-group">
-                                                <input type="file" name="hujjat" class="form-control hujjat-input" id="hujjat-{{ xaridor.id }}-1" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
-                                                <button type="button" class="btn btn-primary upload-hujjat-btn" data-input-id="hujjat-{{ xaridor.id }}-1" data-xaridor-id="{{ xaridor.id }}">
-                                                    <i class="bi bi-upload me-1"></i> Upload
-                                                </button>
-                                                <button type="button" class="btn btn-outline-danger remove-hujjat-btn" onclick="removeHujjatInput('hujjat-group-{{ xaridor.id }}-1')">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
-                                            <small class="text-muted">Supported formats: JPG, PNG, PDF, DOC, DOCX (max. 10MB)</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
-                                        <button type="button" class="btn btn-secondary add-hujjat-btn" data-xaridor-id="{{ xaridor.id }}">
-                                            <i class="bi bi-plus-circle me-1"></i> Add More Document
-                                        </button>
-                                        <button type="button" class="btn btn-success yakunlash-btn" data-xaridor-id="{{ xaridor.id }}">
-                                            <i class="bi bi-check-circle me-1"></i> Finish
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="{% if is_superuser %}9{% else %}8{% endif %}" class="text-center py-4">
-                                <div class="alert alert-info mb-0">
-                                    <i class="bi bi-info-circle me-2"></i>
-                                    No buyers found.
-                                    {% if query or sana %}
-                                    <a href="?" class="alert-link">Clear filters</a>
-                                    {% else %}
-                                    <button class="btn btn-sm btn-link form-open-btn p-0" data-url="{% url 'xaridor_add' %}" data-title="Add New Buyer">
-                                        Add new buyer
-                                    </button>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            {% if page_obj.has_other_pages %}
-            <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sana %}&sana={{ sana }}{% endif %}" aria-label="Previous">
-                            <span aria-hidden="true">«</span>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if sana %}&sana={{ sana }}{% endif %}">{{ num }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sana %}&sana={{ sana }}{% endif %}" aria-label="Next">
-                            <span aria-hidden="true">»</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
+            <!-- Date Filter -->
+            <form method="GET" class="filter-form">
+                <input type="date"
+                       name="sana"
+                       class="filter-input"
+                       value="{{ sana|default:'' }}">
+                <button type="submit" class="filter-btn">
+                    <i class="bi bi-funnel"></i>
+                    <span>Filter</span>
+                </button>
+            </form>
         </div>
     </div>
+
+    <!-- Table Section -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="buyers-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name Surname</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Documents</th>
+                        <th>Balance</th>
+                        <th>Date</th>
+                        {% if is_superuser %}<th>User</th>{% endif %}
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for xaridor in page_obj %}
+                    <tr>
+                        <td class="serial-number">{{ forloop.counter|add:page_obj.start_index|add:-1 }}</td>
+                        <td class="buyer-name">{{ xaridor.ism_familiya }}</td>
+                        <td>{{ xaridor.telefon_raqam|default:"-" }}</td>
+                        <td>{{ xaridor.email|default:"-" }}</td>
+                        <td data-xaridor-id="{{ xaridor.id }}">
+                            <div class="doc-buttons">
+                                {% if xaridor.hujjatlar.exists %}
+                                <button class="btn-view-docs detail-open-btn"
+                                        data-url="{% url 'view_passport' xaridor.id %}"
+                                        data-title="{{ xaridor.ism_familiya }} - Documents">
+                                    <i class="bi bi-eye"></i>
+                                    <span>View</span>
+                                </button>
+                                {% else %}
+                                <span class="no-docs-text">No documents</span>
+                                {% endif %}
+                                <button class="btn-add-docs toggle-hujjat-btn"
+                                        data-xaridor-id="{{ xaridor.id }}">
+                                    <i class="bi bi-file-earmark-plus"></i>
+                                    <span>Add</span>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="balance-cell">${{ xaridor.hozirgi_balans|floatformat:2 }}</td>
+                        <td class="date-cell">{{ xaridor.sana|date:"M d, Y" }}</td>
+                        {% if is_superuser %}
+                        <td>{{ xaridor.user.username }}</td>
+                        {% endif %}
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn edit form-open-btn"
+                                        data-url="{% url 'edit_xaridor' xaridor.id %}"
+                                        data-title="Edit Customer"
+                                        title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="action-btn delete form-open-btn"
+                                        data-url="{% url 'xaridor_delete' xaridor.id %}"
+                                        data-title="Delete Customer"
+                                        title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Document Upload Section -->
+                    <tr class="hujjatlar-section" id="hujjatlar-section-{{ xaridor.id }}">
+                        <td colspan="{% if is_superuser %}9{% else %}8{% endif %}">
+                            <div class="hujjat-card">
+                                <h5 class="hujjat-card-title">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                    Documents for {{ xaridor.ism_familiya }}
+                                </h5>
+
+                                <div id="hujjat-inputs-{{ xaridor.id }}">
+                                    <div class="hujjat-input-group" id="hujjat-group-{{ xaridor.id }}-1">
+                                        <label for="hujjat-{{ xaridor.id }}-1" class="hujjat-label">Document File</label>
+                                        <div class="hujjat-input-row">
+                                            <input type="file"
+                                                   name="hujjat"
+                                                   class="hujjat-file-input hujjat-input"
+                                                   id="hujjat-{{ xaridor.id }}-1"
+                                                   accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                                            <button type="button"
+                                                    class="btn-upload-doc upload-hujjat-btn"
+                                                    data-input-id="hujjat-{{ xaridor.id }}-1"
+                                                    data-xaridor-id="{{ xaridor.id }}">
+                                                <i class="bi bi-upload"></i>
+                                                <span>Upload</span>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn-remove-input remove-hujjat-btn"
+                                                    onclick="removeHujjatInput('hujjat-group-{{ xaridor.id }}-1')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        <small class="hujjat-hint">Supported: JPG, PNG, PDF, DOC, DOCX (max 10MB)</small>
+                                    </div>
+                                </div>
+
+                                <div class="hujjat-actions">
+                                    <button type="button"
+                                            class="btn-add-more add-hujjat-btn"
+                                            data-xaridor-id="{{ xaridor.id }}">
+                                        <i class="bi bi-plus-circle"></i>
+                                        <span>Add More</span>
+                                    </button>
+                                    <button type="button"
+                                            class="btn-finish yakunlash-btn"
+                                            data-xaridor-id="{{ xaridor.id }}">
+                                        <i class="bi bi-check-circle"></i>
+                                        <span>Finish</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{% if is_superuser %}9{% else %}8{% endif %}">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <h4>No customers found</h4>
+                                <p>
+                                    {% if query or sana %}
+                                        No results for your search. <a href="?" class="text-primary">Clear filters</a>
+                                    {% else %}
+                                        Add your first customer to get started
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination-container">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sana %}&sana={{ sana }}{% endif %}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <a class="page-link" href="#">{{ num }}</a>
+                    </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if sana %}&sana={{ sana }}{% endif %}">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sana %}&sana={{ sana }}{% endif %}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
 </div>
 
-<!-- xaridorlar_list.html script section -->
 <script>
+console.log('═══════════════════════════════════════');
+console.log('📋 BUYERS PAGE INITIALIZING');
+console.log('═══════════════════════════════════════');
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Initially hide all document sections
+    // Hide all document sections initially
     document.querySelectorAll('.hujjatlar-section').forEach(section => {
         section.classList.remove('active');
     });
@@ -416,17 +926,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const xaridorId = this.getAttribute('data-xaridor-id');
             const section = document.getElementById(`hujjatlar-section-${xaridorId}`);
 
-            if (section.classList.contains('active')) {
-                section.classList.remove('active');
-                return;
-            }
-
+            // Close other sections
             document.querySelectorAll('.hujjatlar-section').forEach(sec => {
-                sec.classList.remove('active');
+                if (sec !== section) {
+                    sec.classList.remove('active');
+                }
             });
 
-            section.classList.add('active');
+            // Toggle current section
+            section.classList.toggle('active');
 
+            // Scroll into view
             if (section.classList.contains('active')) {
                 setTimeout(() => {
                     section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -443,20 +953,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const count = container.querySelectorAll('.hujjat-input-group').length + 1;
 
             const newInputGroup = document.createElement('div');
-            newInputGroup.className = 'mb-3 hujjat-input-group';
+            newInputGroup.className = 'hujjat-input-group';
             newInputGroup.id = `hujjat-group-${xaridorId}-${count}`;
             newInputGroup.innerHTML = `
-                <label for="hujjat-${xaridorId}-${count}" class="form-label">Document File</label>
-                <div class="input-group">
-                    <input type="file" name="hujjat" class="form-control hujjat-input" id="hujjat-${xaridorId}-${count}" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
-                    <button type="button" class="btn btn-primary upload-hujjat-btn" data-input-id="hujjat-${xaridorId}-${count}" data-xaridor-id="${xaridorId}">
-                        <i class="bi bi-upload me-1"></i> Upload
+                <label for="hujjat-${xaridorId}-${count}" class="hujjat-label">Document File</label>
+                <div class="hujjat-input-row">
+                    <input type="file"
+                           name="hujjat"
+                           class="hujjat-file-input hujjat-input"
+                           id="hujjat-${xaridorId}-${count}"
+                           accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                    <button type="button"
+                            class="btn-upload-doc upload-hujjat-btn"
+                            data-input-id="hujjat-${xaridorId}-${count}"
+                            data-xaridor-id="${xaridorId}">
+                        <i class="bi bi-upload"></i>
+                        <span>Upload</span>
                     </button>
-                    <button type="button" class="btn btn-outline-danger remove-hujjat-btn" onclick="removeHujjatInput('hujjat-group-${xaridorId}-${count}')">
+                    <button type="button"
+                            class="btn-remove-input remove-hujjat-btn"
+                            onclick="removeHujjatInput('hujjat-group-${xaridorId}-${count}')">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
-                <small class="text-muted">Supported formats: JPG, PNG, PDF, DOC, DOCX (max. 10MB)</small>
+                <small class="hujjat-hint">Supported: JPG, PNG, PDF, DOC, DOCX (max 10MB)</small>
             `;
 
             container.appendChild(newInputGroup);
@@ -474,8 +994,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const group = document.getElementById(groupId);
         if (group && document.querySelectorAll('.hujjat-input-group').length > 1) {
             group.remove();
-        } else if (group) {
-            showAlert('warning', "At least one document field is required!");
+        } else if (group && window.showAlert) {
+            window.showAlert('warning', 'At least one document field is required!');
         }
     }
 
@@ -488,19 +1008,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 cookie = cookie.trim();
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    console.log(`CSRF token found: ${cookieValue}`);
                     break;
                 }
             }
         }
-        if (!cookieValue) {
-            console.error(`CSRF token not found: ${name}`);
-        }
         return cookieValue;
     }
 
-    // File upload
+    // Bind upload events
     function bindUploadEvents() {
+        // File validation
         document.querySelectorAll('.hujjat-input').forEach(input => {
             input.addEventListener('change', function() {
                 const file = this.files[0];
@@ -511,19 +1028,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 const sizeMB = file.size / (1024 * 1024);
 
                 if (!validExtensions.includes(ext)) {
-                    showAlert('error', `Invalid file format: ${file.name}\nOnly ${validExtensions.join(', ')} formats are supported.`);
+                    if (window.showAlert) {
+                        window.showAlert('error', `Invalid file format: ${file.name}`);
+                    }
                     this.value = '';
                     return;
                 }
 
                 if (sizeMB > 10) {
-                    showAlert('error', `File size exceeds 10MB: ${file.name}\nSize: ${sizeMB.toFixed(2)}MB`);
+                    if (window.showAlert) {
+                        window.showAlert('error', `File size exceeds 10MB: ${sizeMB.toFixed(2)}MB`);
+                    }
                     this.value = '';
                     return;
                 }
             });
         });
 
+        // Upload button
         document.querySelectorAll('.upload-hujjat-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const inputId = this.getAttribute('data-input-id');
@@ -531,7 +1053,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const input = document.getElementById(inputId);
 
                 if (!input.files || !input.files[0]) {
-                    showAlert('error', 'Please select a file first!');
+                    if (window.showAlert) {
+                        window.showAlert('error', 'Please select a file first!');
+                    }
                     return;
                 }
 
@@ -540,53 +1064,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('xaridor_id', xaridorId);
                 formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
-                const originalText = this.innerHTML;
-                this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Uploading...';
+                const originalHTML = this.innerHTML;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Uploading...';
                 this.disabled = true;
 
                 fetch('{% url "upload_hujjat" %}', {
                     method: 'POST',
                     body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showAlert('success', data.message);
+                        if (window.showAlert) {
+                            window.showAlert('success', data.message);
+                        }
                         input.value = '';
 
-                        const cell = document.querySelector(`td[data-xaridor-id="${xaridorId}"]`);
-                        if (cell) {
-                            cell.innerHTML = `
-                                <div class="d-flex flex-column">
-                                    {% if xaridor.hujjatlar.exists %}
-                                    <button class="btn btn-sm btn-info detail-open-btn mb-1" data-url="{% url 'view_passport' xaridor.id %}" data-title="{{ xaridor.ism_familiya }} - Documents">
-                                        <i class="bi bi-eye"></i> View
-                                    </button>
-                                    {% endif %}
-                                    <button class="btn btn-sm btn-primary toggle-hujjat-btn" data-xaridor-id="${xaridorId}">
-                                        <i class="bi bi-file-earmark-plus"></i> Add
-                                    </button>
-                                </div>
-                            `;
-
-                            cell.querySelector('.toggle-hujjat-btn').addEventListener('click', function() {
-                                const section = document.getElementById(`hujjatlar-section-${xaridorId}`);
-                                section.classList.toggle('active');
-                            });
-                        }
+                        // Update UI to show document exists
+                        setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        showAlert('error', data.message || 'An error occurred while uploading the document!');
+                        if (window.showAlert) {
+                            window.showAlert('error', data.message || 'Upload failed!');
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showAlert('error', 'Connection error with the server');
+                    if (window.showAlert) {
+                        window.showAlert('error', 'Connection error');
+                    }
                 })
                 .finally(() => {
-                    this.innerHTML = originalText;
+                    this.innerHTML = originalHTML;
                     this.disabled = false;
                 });
             });
@@ -599,37 +1109,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const xaridorId = this.getAttribute('data-xaridor-id');
             const section = document.getElementById(`hujjatlar-section-${xaridorId}`);
             section.classList.remove('active');
-            showAlert('success', 'Document addition process completed!');
+            if (window.showAlert) {
+                window.showAlert('success', 'Document upload completed!');
+            }
         });
     });
 
-    // Initial event binding
+    // Initial bind
     bindUploadEvents();
 
-    // Alert function
-    function showAlert(type, message) {
-        document.querySelectorAll('.custom-alert').forEach(el => el.remove());
-
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `custom-alert alert alert-${type} alert-dismissible fade show`;
-        alertDiv.style.top = '20px';
-        alertDiv.style.right = '20px';
-        alertDiv.style.zIndex = '9999';
-        alertDiv.style.maxWidth = '400px';
-        alertDiv.style.width = 'calc(100% - 40px)';
-        alertDiv.role = 'alert';
-        alertDiv.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-
-        document.body.appendChild(alertDiv);
-
-        setTimeout(() => {
-            alertDiv.classList.remove('show');
-            setTimeout(() => alertDiv.remove(), 150);
-        }, 5000);
-    }
+    console.log('✅ BUYERS PAGE READY');
 });
 </script>
 {% endblock %}

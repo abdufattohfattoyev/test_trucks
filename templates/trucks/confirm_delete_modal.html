@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Truck - {{ truck.po_id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --card-radius: 12px;
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .delete-container {
+        max-width: 560px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+    }
+
+    .delete-card {
+        background: white;
+        border-radius: var(--card-radius);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        border-top: 4px solid #ef4444;
+    }
+
+    .delete-card-body {
+        padding: 2.5rem 2rem;
+        text-align: center;
+    }
+
+    .delete-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+
+    .delete-icon-wrapper i {
+        font-size: 2.5rem;
+        color: #ef4444;
+    }
+
+    .delete-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.75rem;
+    }
+
+    .delete-subtitle {
+        font-size: 0.9375rem;
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    /* Truck info box */
+    .truck-info-box {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .truck-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .truck-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .truck-info-label {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .truck-info-value {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    /* Warning box */
+    .warning-box {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 8px;
+        padding: 0.875rem 1rem;
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.625rem;
+        text-align: left;
+    }
+
+    .warning-box i {
+        color: #d97706;
+        font-size: 1.125rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .warning-text {
+        font-size: 0.875rem;
+        color: #92400e;
+        line-height: 1.5;
+    }
+
+    /* Buttons */
+    .btn-group {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 1.75rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        border: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-secondary:hover {
+        background: #d1d5db;
+    }
+
+    @media (max-width: 480px) {
+        .truck-info-grid {
+            grid-template-columns: 1fr;
+        }
+        .btn-group {
+            flex-direction: column;
+        }
+        .btn {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <div class="delete-card">
+        <div class="delete-card-body">
+            <!-- Icon -->
+            <div class="delete-icon-wrapper">
+                <i class="bi bi-trash3-fill"></i>
+            </div>
+
+            <h2 class="delete-title">Delete Truck</h2>
+            <p class="delete-subtitle">
+                Are you sure you want to delete this truck? This action cannot be undone.
+            </p>
+
+            <!-- Truck Info -->
+            <div class="truck-info-box">
+                <div class="truck-info-grid">
+                    <div class="truck-info-item">
+                        <span class="truck-info-label">PO-ID</span>
+                        <span class="truck-info-value">{{ truck.po_id }}</span>
+                    </div>
+                    <div class="truck-info-item">
+                        <span class="truck-info-label">Make / Model</span>
+                        <span class="truck-info-value">{{ truck.make }} {{ truck.model }}</span>
+                    </div>
+                    <div class="truck-info-item">
+                        <span class="truck-info-label">Year</span>
+                        <span class="truck-info-value">{{ truck.year }}</span>
+                    </div>
+                    <div class="truck-info-item">
+                        <span class="truck-info-label">Price</span>
+                        <span class="truck-info-value">${{ truck.price }}</span>
+                    </div>
+                    {% if truck.location %}
+                    <div class="truck-info-item">
+                        <span class="truck-info-label">Location</span>
+                        <span class="truck-info-value">{{ truck.location }}</span>
+                    </div>
+                    {% endif %}
+                    {% if truck.company %}
+                    <div class="truck-info-item">
+                        <span class="truck-info-label">Company</span>
+                        <span class="truck-info-value">{{ truck.company }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Warning -->
+            <div class="warning-box">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span class="warning-text">
+                    Deleting this truck will also remove all associated documents. Related expense records will be kept but unlinked from this truck.
+                </span>
+            </div>
+
+            <!-- Actions -->
+            <div class="btn-group">
+                <a href="{% url 'trucks_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                <form method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash3"></i> Yes, Delete Truck
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

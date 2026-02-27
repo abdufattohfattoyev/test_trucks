@@ -1,0 +1,28 @@
+<!-- templates/xarajat/xarajat_delete.html -->
+<div class="delete-xarajat-form">
+    <h4>Delete Expense</h4>
+    <div class="alert alert-warning mt-3">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Are you sure you want to delete the following expense?
+    </div>
+
+    <div class="card mt-3 mb-4">
+        <div class="card-body">
+            <h5>{{ xarajat.get_expense_type_display }}</h5>
+            <p class="mb-1"><strong>Truck:</strong> {{ xarajat.truck.make }} {{ xarajat.truck.model }} ({{ xarajat.truck.po_id }})</p>
+            <p class="mb-1"><strong>Amount:</strong> ${{ xarajat.amount|floatformat:"2" }}</p>
+            <p class="mb-1"><strong>Date:</strong> {{ xarajat.date|date:"Y-m-d" }}</p>
+            {% if xarajat.description %}
+            <p class="mb-0"><strong>Description:</strong> {{ xarajat.description }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'xarajat_delete' xarajat.id %}" class="ajax-form">
+        {% csrf_token %}
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button" onclick="closeDetailSidebar()" class="btn btn-outline-secondary">Cancel</button>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+    </form>
+</div>

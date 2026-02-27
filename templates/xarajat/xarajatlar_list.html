@@ -2,351 +2,840 @@
 
 {% block title %}Expenses - Truck Trade{% endblock %}
 
-{% block content %}
-<div class="xarajatlar-container">
-    <div class="xarajatlar-header">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="xarajatlar-title">
-                <i class="bi bi-wallet2 me-2"></i>Expenses
-            </h1>
-            <button onclick="openFormSidebar('{% url 'xarajat_add' %}', 'Add New Expense')"
-                    class="btn btn-success btn-add-xarajat">
-                <i class="bi bi-plus-lg me-1"></i>Add Expense
-            </button>
-        </div>
-
-        <div class="stats-filter-row mb-4">
-            <div class="row g-3 align-items-center">
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <i class="bi bi-wallet2 stat-icon"></i>
-                            <div>
-                                <h6 class="stat-title">Total Expenses</h6>
-                                <h3 class="stat-value">{{ xarajatlar.count }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <i class="bi bi-cash-stack stat-icon"></i>
-                            <div>
-                                <h6 class="stat-title">Total Amount</h6>
-                                <h3 class="stat-value">${{ total_xarajat|floatformat:"2" }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <form method="GET" action="{% url 'xarajatlar_list' %}" class="search-form">
-                        <div class="input-group">
-                            <input type="text" name="search" class="form-control search-input"
-                                   placeholder="PO-ID, Brand, Model or Expense Type..."
-                                   value="{{ search_query|default:'' }}">
-                            <button class="btn btn-primary search-btn" type="submit">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                <div class="col-md-3">
-                    <form method="GET" action="{% url 'xarajatlar_list' %}" class="date-filter-form">
-                        <div class="input-group">
-                            <input type="date" name="start_date" class="form-control date-input"
-                                   placeholder="Start Date" value="{{ start_date|default:'' }}">
-                            <input type="date" name="end_date" class="form-control date-input"
-                                   placeholder="End Date" value="{{ end_date|default:'' }}">
-                            <button class="btn btn-primary date-filter-btn" type="submit">
-                                <i class="bi bi-calendar-check"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="xarajatlar-table">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light sticky-header">
-                            <tr>
-                                <th>#</th>
-                                <th>Truck</th>
-                                <th>PO-ID</th>
-                                <th>Expense Type</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Document</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for xarajat in xarajatlar %}
-                            <tr class="xarajat-row">
-                                <td>{{ xarajat.serial_number }}</td>
-                                <td>{{ xarajat.truck.make }} {{ xarajat.truck.model }}</td>
-                                <td>{{ xarajat.truck.po_id }}</td>
-                                <td>{{ xarajat.get_expense_type_display }}</td>
-                                <td>${{ xarajat.amount|floatformat:"2" }}</td>
-                                <td>{{ xarajat.date|date:"Y-m-d" }}</td>
-                                <td>{{ xarajat.description|default:"-"|truncatechars:20 }}</td>
-                                <td>
-                                    {% if xarajat.document %}
-                                    <a href="{{ xarajat.document.url }}" target="_blank" class="btn btn-sm btn-outline-info">
-                                        <i class="bi bi-file-earmark-text"></i>
-                                    </a>
-                                    {% else %}
-                                    <span class="text-muted">-</span>
-                                    {% endif %}
-                                </td>
-                                <td class="text-end">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <button onclick="openFormSidebar('{% url 'xarajat_edit' xarajat.id %}', 'Edit Expense')"
-                                                class="btn btn-outline-primary btn-sm action-btn">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button onclick="openDetailSidebar('{% url 'xarajat_delete' xarajat.id %}', 'Delete Expense')"
-                                                class="btn btn-outline-danger btn-sm action-btn">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="9" class="text-center py-4 text-muted">
-                                    <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
-                                    {% if search_query %}
-                                    No results found for "{{ search_query }}"
-                                    {% elif start_date or end_date %}
-                                    No expenses found for the selected date range
-                                    {% else %}
-                                    No expenses available yet
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
 {% block extra_css %}
 <style>
+    /* ===== ROOT VARIABLES ===== */
+    :root {
+        --expense-primary: #2563eb;
+        --expense-accent: #7c3aed;
+        --expense-success: #10b981;
+        --expense-warning: #f59e0b;
+        --expense-danger: #ef4444;
+        --expense-gray-50: #f8fafc;
+        --expense-gray-100: #f1f5f9;
+        --expense-gray-200: #e2e8f0;
+        --expense-gray-600: #475569;
+        --expense-gray-700: #334155;
+        --expense-gray-800: #1e293b;
+        --expense-radius: 12px;
+        --expense-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --expense-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===== MAIN CONTAINER ===== */
     .xarajatlar-container {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    /* ===== HEADER ===== */
+    .xarajatlar-header {
+        background: white;
+        border-radius: var(--expense-radius);
         padding: 1.5rem;
-        max-width: 1400px;
-        margin: 0 auto;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--expense-shadow);
     }
+
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
     .xarajatlar-title {
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: var(--expense-gray-800);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0;
+    }
+
+    .xarajatlar-title i {
+        font-size: 2rem;
+        color: var(--expense-primary);
+    }
+
+    .btn-add-expense {
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, var(--expense-success) 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
         font-weight: 600;
-        color: var(--primary-color);
-        font-size: 1.75rem;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        transition: var(--expense-transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
-    .btn-add-xarajat {
-        padding: 0.5rem 1.25rem;
-        border-radius: var(--border-radius);
-        font-weight: 500;
-        transition: all var(--transition-speed) ease;
-    }
-    .btn-add-xarajat:hover {
+
+    .btn-add-expense:hover:not(.btn-disabled) {
         transform: translateY(-2px);
-        box-shadow: var(--shadow);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
     }
-    .stats-filter-row {
-        background-color: var(--bg-color);
-        border-radius: var(--border-radius);
-        padding: 1rem;
+
+    .btn-add-expense.btn-disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
+
+    /* ===== STATS & FILTERS ===== */
+    .stats-filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+    }
+
     .stat-card {
-        background-color: var(--secondary-bg);
-        border-radius: var(--border-radius);
-        padding: 1rem;
-        box-shadow: var(--shadow);
-        height: 100%;
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        border-radius: 10px;
+        padding: 1.25rem;
+        border: 1px solid var(--expense-gray-200);
+        transition: var(--expense-transition);
     }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--expense-shadow);
+    }
+
     .stat-content {
         display: flex;
         align-items: center;
         gap: 1rem;
     }
+
     .stat-icon {
-        font-size: 1.5rem;
-        color: var(--accent-color);
-        background-color: rgba(26, 188, 156, 0.1);
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
+        width: 56px;
+        height: 56px;
         display: flex;
         align-items: center;
         justify-content: center;
+        background: linear-gradient(135deg, var(--expense-primary) 0%, var(--expense-accent) 100%);
+        border-radius: 12px;
+        color: white;
+        font-size: 1.5rem;
+        flex-shrink: 0;
     }
+
+    .stat-card:nth-child(2) .stat-icon {
+        background: linear-gradient(135deg, var(--expense-warning) 0%, #d97706 100%);
+    }
+
+    .stat-info {
+        flex: 1;
+        min-width: 0;
+    }
+
     .stat-title {
-        font-size: 0.9rem;
-        color: var(--text-color);
-        font-weight: 500;
-        margin-bottom: 0.25rem;
-    }
-    .stat-value {
+        font-size: 0.875rem;
         font-weight: 600;
-        color: var(--primary-color);
-        margin-bottom: 0;
-        font-size: 1.25rem;
+        color: var(--expense-gray-600);
+        margin-bottom: 0.375rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
-    .search-form, .date-filter-form {
-        height: 100%;
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--expense-gray-800);
+        margin: 0;
     }
-    .search-input, .date-input {
-        border-radius: var(--border-radius) 0 0 var(--border-radius) !important;
-        border-right: none;
-        height: 50px;
+
+    /* ===== SEARCH & FILTER FORMS ===== */
+    .filter-card {
+        background: var(--expense-gray-50);
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid var(--expense-gray-200);
     }
-    .search-btn, .date-filter-btn {
-        border-radius: 0 var(--border-radius) var(--border-radius) 0 !important;
-        height: 50px;
-        width: 50px;
+
+    .search-form,
+    .date-filter-form {
+        display: flex;
+        gap: 0.5rem;
     }
-    .table {
-        margin-bottom: 0;
+
+    .filter-input {
+        flex: 1;
+        min-width: 0;
+        padding: 0.625rem 1rem;
+        border: 1px solid var(--expense-gray-200);
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        transition: var(--expense-transition);
     }
-    .sticky-header {
+
+    .filter-input:focus {
+        outline: none;
+        border-color: var(--expense-primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .filter-btn {
+        padding: 0.625rem 1rem;
+        background: linear-gradient(135deg, var(--expense-primary) 0%, var(--expense-accent) 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--expense-transition);
+        font-size: 1.125rem;
+        flex-shrink: 0;
+    }
+
+    .filter-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .date-inputs-wrapper {
+        display: flex;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    /* ===== TABLE CONTAINER ===== */
+    .table-container {
+        background: white;
+        border-radius: var(--expense-radius);
+        box-shadow: var(--expense-shadow);
+        overflow: hidden;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .expenses-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .expenses-table thead {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+    }
+
+    .expenses-table thead th {
+        padding: 1rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--expense-gray-800);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        border-bottom: 2px solid var(--expense-gray-200);
         position: sticky;
         top: 0;
         z-index: 10;
-        background-color: var(--bg-color);
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
     }
-    .table th {
-        font-weight: 600;
-        color: var(--primary-color);
-        white-space: nowrap;
-        padding: 1rem;
+
+    .expenses-table tbody tr {
+        transition: var(--expense-transition);
+        border-bottom: 1px solid var(--expense-gray-200);
     }
-    .table td {
-        padding: 1rem;
+
+    .expenses-table tbody tr:hover {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%);
+        transform: translateX(2px);
+    }
+
+    .expenses-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .expenses-table td {
+        padding: 1rem 1.25rem;
+        font-size: 0.9375rem;
+        color: var(--expense-gray-700);
         vertical-align: middle;
-        background-color: var(--secondary-bg);
     }
-    .xarajat-row:hover {
-        background-color: rgba(26, 188, 156, 0.05);
+
+    .serial-number {
+        font-weight: 700;
+        color: var(--expense-primary);
     }
-    .action-btn {
-        padding: 0.35rem 0.75rem;
-        border-radius: var(--border-radius);
-        font-weight: 500;
-        transition: all var(--transition-speed) ease;
+
+    .truck-info {
+        font-weight: 600;
+        color: var(--expense-gray-800);
+    }
+
+    .po-id {
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        color: var(--expense-gray-700);
+        background: var(--expense-gray-100);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+    }
+
+    .expense-type-badge {
+        display: inline-flex;
+        padding: 0.375rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .expense-type-badge.repair {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--expense-danger);
+    }
+
+    .expense-type-badge.fuel {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--expense-warning);
+    }
+
+    .expense-type-badge.insurance {
+        background: rgba(37, 99, 235, 0.15);
+        color: var(--expense-primary);
+    }
+
+    .expense-type-badge.parts {
+        background: rgba(139, 92, 246, 0.15);
+        color: var(--expense-accent);
+    }
+
+    .expense-type-badge.other {
+        background: rgba(100, 116, 139, 0.15);
+        color: var(--expense-gray-700);
+    }
+
+    .amount-cell {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--expense-success);
+    }
+
+    .date-cell {
+        font-size: 0.875rem;
+        color: var(--expense-gray-600);
+    }
+
+    .description-cell {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
         white-space: nowrap;
     }
-    .action-btn i {
-        margin-right: 0;
+
+    .document-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--expense-danger);
+        border-radius: 6px;
+        transition: var(--expense-transition);
+        text-decoration: none;
     }
-    .action-btn:hover {
-        transform: translateY(-1px);
+
+    .document-btn:hover {
+        background: var(--expense-danger);
+        color: white;
+        transform: scale(1.1);
     }
-    .btn-disabled {
-        pointer-events: none;
-        opacity: 0.6;
+
+    /* ===== ACTION BUTTONS ===== */
+    .actions-cell {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
     }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: 1px solid;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: var(--expense-transition);
+        background: transparent;
+    }
+
+    .action-btn.edit {
+        border-color: var(--expense-primary);
+        color: var(--expense-primary);
+    }
+
+    .action-btn.edit:hover {
+        background: var(--expense-primary);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .action-btn.delete {
+        border-color: var(--expense-danger);
+        color: var(--expense-danger);
+    }
+
+    .action-btn.delete:hover {
+        background: var(--expense-danger);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--expense-gray-600);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state h4 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--expense-gray-700);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        font-size: 0.9375rem;
+        color: var(--expense-gray-500);
+        margin: 0;
+    }
+
+    /* ===== RESPONSIVE DESIGN ===== */
+
+    /* Tablets (768px - 992px) */
     @media (max-width: 992px) {
-        .stats-filter-row .row {
-            flex-direction: column;
+        .stats-filters-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         }
-        .stat-card, .search-form, .date-filter-form {
-            margin-bottom: 1rem;
+
+        .xarajatlar-title {
+            font-size: 1.625rem;
+        }
+
+        .stat-value {
+            font-size: 1.375rem;
         }
     }
+
+    /* Mobile landscape and small tablets (576px - 768px) */
     @media (max-width: 768px) {
-        .xarajatlar-container {
-            padding: 1rem;
+        .xarajatlar-header {
+            padding: 1.25rem;
         }
+
+        .header-top {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
         .xarajatlar-title {
             font-size: 1.5rem;
+            justify-content: center;
         }
+
+        .btn-add-expense {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .stats-filters-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            font-size: 1.375rem;
+        }
+
         .stat-value {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
         }
-        .table th, .table td {
+
+        .date-inputs-wrapper {
+            flex-direction: column;
+        }
+
+        .expenses-table thead th {
+            padding: 0.875rem 1rem;
+            font-size: 0.8125rem;
+        }
+
+        .expenses-table td {
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    /* Mobile portrait (< 576px) */
+    @media (max-width: 576px) {
+        .xarajatlar-container {
+            padding: 0;
+        }
+
+        .xarajatlar-header {
+            border-radius: 0;
+            padding: 1rem;
+        }
+
+        .xarajatlar-title {
+            font-size: 1.375rem;
+        }
+
+        .xarajatlar-title i {
+            font-size: 1.5rem;
+        }
+
+        .btn-add-expense {
+            font-size: 0.875rem;
+            padding: 0.625rem 1.25rem;
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 1.25rem;
+        }
+
+        .stat-title {
+            font-size: 0.75rem;
+        }
+
+        .stat-value {
+            font-size: 1.125rem;
+        }
+
+        .filter-card {
             padding: 0.75rem;
         }
-        .action-btn {
+
+        .filter-input {
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 0.875rem;
+            font-size: 1rem;
+        }
+
+        .table-container {
+            border-radius: 0;
+        }
+
+        .expenses-table thead th {
+            padding: 0.75rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .expenses-table td {
+            padding: 0.75rem 0.75rem;
+            font-size: 0.8125rem;
+        }
+
+        .expense-type-badge {
+            font-size: 0.75rem;
             padding: 0.25rem 0.5rem;
-            font-size: 0.8rem;
+        }
+
+        .amount-cell {
+            font-size: 0.9375rem;
+        }
+
+        .action-btn {
+            width: 28px;
+            height: 28px;
+            font-size: 0.875rem;
+        }
+
+        .document-btn {
+            width: 28px;
+            height: 28px;
+            font-size: 0.875rem;
+        }
+    }
+
+    /* Extra small devices (< 400px) */
+    @media (max-width: 400px) {
+        .xarajatlar-title {
+            font-size: 1.25rem;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+        }
+
+        .expenses-table thead th,
+        .expenses-table td {
+            padding: 0.625rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+
+    /* Hide columns on mobile */
+    @media (max-width: 768px) {
+        .expenses-table th:nth-child(7),
+        .expenses-table td:nth-child(7) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .expenses-table th:nth-child(2),
+        .expenses-table td:nth-child(2),
+        .expenses-table th:nth-child(8),
+        .expenses-table td:nth-child(8) {
+            display: none;
         }
     }
 </style>
 {% endblock %}
 
+{% block content %}
+<div class="xarajatlar-container">
+    <!-- Header Section -->
+    <div class="xarajatlar-header">
+        <div class="header-top">
+            <h1 class="xarajatlar-title">
+                <i class="bi bi-wallet2"></i>
+                <span>Expenses</span>
+            </h1>
+            <button onclick="openFormSidebar('{% url 'xarajat_add' %}', 'Add New Expense')"
+                    class="btn-add-expense">
+                <i class="bi bi-plus-lg"></i>
+                <span>Add Expense</span>
+            </button>
+        </div>
+
+        <!-- Stats and Filters Grid -->
+        <div class="stats-filters-grid">
+            <!-- Total Count Stat -->
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-icon">
+                        <i class="bi bi-list-ol"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">Total Expenses</div>
+                        <div class="stat-value">{{ xarajatlar.count }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Amount Stat -->
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div class="stat-icon">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">Total Amount</div>
+                        <div class="stat-value">${{ total_xarajat|floatformat:"2" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Filter -->
+            <div class="filter-card">
+                <form method="GET" action="{% url 'xarajatlar_list' %}" class="search-form">
+                    <input type="text"
+                           name="search"
+                           class="filter-input"
+                           placeholder="Search PO-ID, Make, Model..."
+                           value="{{ search_query|default:'' }}">
+                    <button class="filter-btn" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Date Filter -->
+            <div class="filter-card">
+                <form method="GET" action="{% url 'xarajatlar_list' %}" class="date-filter-form">
+                    <div class="date-inputs-wrapper">
+                        <input type="date"
+                               name="start_date"
+                               class="filter-input"
+                               placeholder="Start Date"
+                               value="{{ start_date|default:'' }}">
+                        <input type="date"
+                               name="end_date"
+                               class="filter-input"
+                               placeholder="End Date"
+                               value="{{ end_date|default:'' }}">
+                    </div>
+                    <button class="filter-btn" type="submit">
+                        <i class="bi bi-funnel"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="expenses-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Truck</th>
+                        <th>PO-ID</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Document</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for xarajat in xarajatlar %}
+                    <tr class="expense-row">
+                        <td class="serial-number">{{ xarajat.serial_number }}</td>
+                        <td class="truck-info">{{ xarajat.truck.make }} {{ xarajat.truck.model }}</td>
+                        <td><span class="po-id">{{ xarajat.truck.po_id }}</span></td>
+                        <td>
+                            <span class="expense-type-badge {{ xarajat.expense_type }}">
+                                {{ xarajat.get_expense_type_display }}
+                            </span>
+                        </td>
+                        <td class="amount-cell">${{ xarajat.amount|floatformat:"2" }}</td>
+                        <td class="date-cell">{{ xarajat.date|date:"M d, Y" }}</td>
+                        <td class="description-cell" title="{{ xarajat.description }}">
+                            {{ xarajat.description|default:"-"|truncatechars:30 }}
+                        </td>
+                        <td>
+                            {% if xarajat.document %}
+                            <a href="{{ xarajat.document.url }}"
+                               target="_blank"
+                               class="document-btn"
+                               title="View Document">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </a>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <button onclick="openFormSidebar('{% url 'xarajat_edit' xarajat.id %}', 'Edit Expense')"
+                                        class="action-btn edit"
+                                        title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button onclick="openDetailSidebar('{% url 'xarajat_delete' xarajat.id %}', 'Delete Expense')"
+                                        class="action-btn delete"
+                                        title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <h4>No expenses found</h4>
+                                <p>
+                                    {% if search_query %}
+                                        No results for "{{ search_query }}"
+                                    {% elif start_date or end_date %}
+                                        No expenses in selected date range
+                                    {% else %}
+                                        Add your first expense to get started
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 {% block extra_js %}
 <script>
-// Function to get CSRF token from the form
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+document.addEventListener('DOMContentLoaded', function() {
+    // CSRF Token utility
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 
-document.addEventListener('DOMContentLoaded', function() {
-    const actionButtons = document.querySelectorAll('.action-btn');
-    actionButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    });
-
-    const rows = document.querySelectorAll('.xarajat-row');
-    rows.forEach(row => {
-        row.addEventListener('mouseenter', () => {
-            row.style.transform = 'translateX(2px)';
-        });
-        row.addEventListener('mouseleave', () => {
-            row.style.transform = '';
-        });
-    });
-
-    // Disable add button after click to prevent multiple openings
-    const addXarajatButton = document.querySelector('.btn-add-xarajat');
-    if (addXarajatButton) {
-        addXarajatButton.addEventListener('click', function() {
+    // Disable add button temporarily after click
+    const addButton = document.querySelector('.btn-add-expense');
+    if (addButton) {
+        addButton.addEventListener('click', function() {
             this.classList.add('btn-disabled');
             setTimeout(() => {
                 this.classList.remove('btn-disabled');
-            }, 2000); // Re-enable after 2 seconds
+            }, 2000);
         });
     }
 
-    // Handle form submission for ajax-form
+    // Handle AJAX form submissions
     document.addEventListener('submit', function(e) {
         if (e.target.matches('.ajax-form')) {
             e.preventDefault();
             const form = e.target;
             const submitButton = form.querySelector('button[type="submit"]');
+
             if (submitButton) {
                 submitButton.disabled = true;
                 submitButton.classList.add('btn-disabled');
             }
 
-            // Clear previous error messages
+            // Clear previous errors
             form.querySelectorAll('.invalid-feedback').forEach(error => {
                 error.classList.add('d-none');
                 error.textContent = '';
+            });
+
+            form.querySelectorAll('.is-invalid').forEach(input => {
+                input.classList.remove('is-invalid');
             });
 
             const formData = new FormData(form);
@@ -363,24 +852,46 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    if (data.closeSidebar && data.reload) {
-                        if (typeof closeFormSidebar === 'function') {
-                            closeFormSidebar();
+                    if (window.showAlert) {
+                        window.showAlert('success', data.message || 'Operation completed successfully');
+                    }
+                    if (data.closeSidebar) {
+                        if (typeof window.closeFormSidebar === 'function') {
+                            window.closeFormSidebar();
                         }
-                        window.location.reload();
+                        if (typeof window.closeDetailSidebar === 'function') {
+                            window.closeDetailSidebar();
+                        }
+                    }
+                    if (data.reload) {
+                        setTimeout(() => window.location.reload(), 500);
                     }
                 } else {
                     if (data.errors) {
                         Object.keys(data.errors).forEach(field => {
-                            const errorDiv = document.getElementId(`${field}_error`);
+                            const input = form.querySelector(`[name="${field}"]`);
+                            const errorDiv = form.querySelector(`#id_${field}_error`) ||
+                                           form.querySelector(`[id$="${field}_error"]`);
+
+                            if (input) {
+                                input.classList.add('is-invalid');
+                            }
+
                             if (errorDiv) {
-                                errorDiv.textContent = data.errors[field][0].message;
+                                const errorMessages = data.errors[field];
+                                const errorText = Array.isArray(errorMessages)
+                                    ? errorMessages.map(e => e.message || e).join(', ')
+                                    : errorMessages;
+                                errorDiv.textContent = errorText;
                                 errorDiv.classList.remove('d-none');
                             }
                         });
-                    } else if (data.message) {
-                        alert(data.message);
                     }
+
+                    if (data.message && window.showAlert) {
+                        window.showAlert('error', data.message);
+                    }
+
                     if (submitButton) {
                         submitButton.disabled = false;
                         submitButton.classList.remove('btn-disabled');
@@ -389,7 +900,9 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred!');
+                if (window.showAlert) {
+                    window.showAlert('error', 'An error occurred. Please try again.');
+                }
                 if (submitButton) {
                     submitButton.disabled = false;
                     submitButton.classList.remove('btn-disabled');
@@ -397,6 +910,36 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // Smooth scroll for responsive table
+    const tableContainer = document.querySelector('.table-responsive');
+    if (tableContainer) {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        tableContainer.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - tableContainer.offsetLeft;
+            scrollLeft = tableContainer.scrollLeft;
+        });
+
+        tableContainer.addEventListener('mouseleave', () => {
+            isDown = false;
+        });
+
+        tableContainer.addEventListener('mouseup', () => {
+            isDown = false;
+        });
+
+        tableContainer.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - tableContainer.offsetLeft;
+            const walk = (x - startX) * 2;
+            tableContainer.scrollLeft = scrollLeft - walk;
+        });
+    }
 });
 </script>
 {% endblock %}
