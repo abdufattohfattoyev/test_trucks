@@ -315,7 +315,7 @@
     /* ACTIONS */
     .tc-actions {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         gap: 0.4rem;
     }
 
@@ -340,11 +340,15 @@
     .ab-edit   { border-color: var(--warn); color: var(--warn); }
     .ab-del    { border-color: var(--red);  color: var(--red); }
     .ab-docs   { border-color: #0ea5e9;     color: #0ea5e9; }
+    .ab-status-sold   { border-color: var(--red);  color: var(--red); }
+    .ab-status-active { border-color: var(--ok);   color: var(--ok); }
 
     .ab-view:hover  { background: var(--p);    color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
     .ab-edit:hover  { background: var(--warn); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(217,119,6,0.3); }
     .ab-del:hover   { background: var(--red);  color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
     .ab-docs:hover  { background: #0ea5e9;     color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(14,165,233,0.25); }
+    .ab-status-sold:hover   { background: var(--red); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
+    .ab-status-active:hover { background: var(--ok);  color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(5,150,105,0.3); }
 
     .act-btn span { display: none; }
     @media (min-width: 380px) { .act-btn span { display: inline; } }
@@ -444,7 +448,7 @@
     @media (max-width: 540px) {
         .trucks-grid { grid-template-columns: 1fr; }
         .tc-img      { height: 200px; }
-        .tc-actions  { grid-template-columns: repeat(4, 1fr); }
+        .tc-actions  { grid-template-columns: repeat(5, 1fr); }
     }
 
     @media (max-width: 400px) {
@@ -587,6 +591,12 @@
                         <button class="act-btn ab-docs"
                             onclick="openDocsModal({{ data.truck.id }}, '{{ data.truck.po_id|escapejs }}')">
                             <i class="bi bi-file-earmark-text"></i><span>Docs</span>
+                        </button>
+                        <button class="act-btn {% if data.truck.sotilgan %}ab-status-sold{% else %}ab-status-active{% endif %}"
+                            id="status-btn-{{ data.truck.id }}"
+                            onclick="toggleStatus({{ data.truck.id }}, this)">
+                            <i class="bi {% if data.truck.sotilgan %}bi-tag-fill{% else %}bi-check-circle-fill{% endif %}"></i>
+                            <span>{% if data.truck.sotilgan %}Sold{% else %}Active{% endif %}</span>
                         </button>
                     </div>
                 </div>
@@ -867,9 +877,37 @@ function deleteDoc(docId, truckId) {
     .catch(() => { window.showAlert?.('error', 'Error occurred.'); });
 }
 
+/* ── TOGGLE STATUS ── */
+function toggleStatus(id, btn) {
+    btn.disabled = true;
+    fetch(`/truck/toggle-status/${id}/`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(d => {
+        btn.disabled = false;
+        if (d.success) {
+            const sold = d.sotilgan;
+            // Badge
+            const card = btn.closest('.truck-card');
+            const badge = card.querySelector('.badge-status');
+            badge.className = 'badge-status ' + (sold ? 'bs-sold' : 'bs-active');
+            badge.textContent = sold ? 'Sold' : 'Active';
+            // Button
+            btn.className = 'act-btn ' + (sold ? 'ab-status-sold' : 'ab-status-active');
+            btn.querySelector('i').className = 'bi ' + (sold ? 'bi-tag-fill' : 'bi-check-circle-fill');
+            btn.querySelector('span').textContent = sold ? 'Sold' : 'Active';
+            window.showAlert?.('success', `Status: ${d.label}`);
+        }
+    })
+    .catch(() => { btn.disabled = false; window.showAlert?.('error', 'Error occurred.'); });
+}
+
 /* ── Pagination scroll ── */
 document.querySelectorAll('.pager a').forEach(link => {
     link.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 });
+
 </script>
 {% endblock %}

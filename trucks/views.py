@@ -334,10 +334,16 @@ def upload_hujjat(request):
                     'message': f"Error uploading file '{file.name}': {str(e)}"
                 }, status=500)
 
+    all_hujjatlar = [{
+        'id': h.id,
+        'original_file_name': h.original_file_name,
+        'hujjat_url': h.hujjat.url
+    } for h in truck.hujjatlar.all()]
+
     return JsonResponse({
         'success': True,
         'message': "Documents successfully uploaded!",
-        'hujjatlar': hujjatlar
+        'hujjatlar': all_hujjatlar
     })
 
 @login_required
@@ -535,6 +541,22 @@ def trucks_list(request):
     return render(request, 'trucks/trucks_list.html', context)
 
 
+@require_POST
+@login_required
+def toggle_truck_status(request, truck_id):
+    if request.user.is_superuser:
+        truck = get_object_or_404(Truck, id=truck_id)
+    else:
+        truck = get_object_or_404(Truck, id=truck_id, user=request.user)
+    truck.sotilgan = not truck.sotilgan
+    truck.save(update_fields=['sotilgan'])
+    return JsonResponse({
+        'success': True,
+        'sotilgan': truck.sotilgan,
+        'label': 'Sold' if truck.sotilgan else 'Active',
+    })
+
+
 @login_required
 def truck_detail(request, truck_id):
     if request.user.is_superuser:
@@ -561,7 +583,6 @@ def truck_detail(request, truck_id):
     }
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render_to_string('trucks/truck_detail.html', context, request=request)
-        return JsonResponse({'success': True, 'html': html, 'hujjatlar': hujjatlar})
+        return JsonResponse({'success': True, 'hujjatlar': hujjatlar})
 
     return render(request, 'trucks/truck_detail_page.html', context)

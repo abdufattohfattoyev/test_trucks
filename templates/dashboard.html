@@ -78,6 +78,10 @@
 .ab-del:hover { background:var(--red); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(220,38,38,.3); }
 .ab-docs { border-color:#0ea5e9; color:#0ea5e9; }
 .ab-docs:hover { background:#0ea5e9; color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(14,165,233,.25); }
+.ab-status-sold   { border-color:var(--red); color:var(--red); }
+.ab-status-active { border-color:var(--ok);  color:var(--ok); }
+.ab-status-sold:hover   { background:var(--red); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(220,38,38,.3); }
+.ab-status-active:hover { background:var(--ok);  color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(5,150,105,.3); }
 
 /* Empty */
 .empty-box { text-align:center; padding:4rem 2rem; background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.07); }
@@ -159,9 +163,9 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <h1 class="dash-title"><i class="bi bi-speedometer2"></i> Dashboard</h1>
-        <button class="btn-add" onclick="openAddModal()">
+        <a href="{% url 'add_truck' %}" class="btn-add">
             <i class="bi bi-plus-lg"></i> Add New Truck
-        </button>
+        </a>
     </div>
 
     <!-- Stats + Search -->
@@ -254,6 +258,13 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
                             onclick="openDocsModal({{ truck.id }}, '{{ truck.po_id|escapejs }}')">
                         <i class="bi bi-file-earmark-text"></i><span>Docs</span>
                     </button>
+                    {# ── STATUS TOGGLE ── #}
+                    <button class="act-btn {% if truck.sotilgan %}ab-status-sold{% else %}ab-status-active{% endif %}"
+                            id="status-btn-{{ truck.id }}"
+                            onclick="toggleStatus({{ truck.id }}, this)">
+                        <i class="bi {% if truck.sotilgan %}bi-tag-fill{% else %}bi-check-circle-fill{% endif %}"></i>
+                        <span>{% if truck.sotilgan %}Sold{% else %}Active{% endif %}</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -276,128 +287,11 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
         <i class="bi bi-truck"></i>
         <h3>No Trucks Yet</h3>
         <p>Start adding trucks to your inventory.</p>
-        <button class="btn-add" onclick="openAddModal()">
+        <a href="{% url 'add_truck' %}" class="btn-add">
             <i class="bi bi-plus-lg"></i> Add Your First Truck
-        </button>
+        </a>
     </div>
     {% endif %}
-</div>
-
-
-<!-- ══════════════════════════════════════
-     MODAL: ADD TRUCK
-══════════════════════════════════════ -->
-<div class="modal fade" id="addModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content" style="position:relative;">
-      <div class="modal-spinner" id="addSpinner">
-        <div class="spinner-border text-primary" role="status"></div>
-      </div>
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold">
-          <i class="bi bi-plus-circle me-2 text-success"></i>Add New Truck
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form id="addForm" enctype="multipart/form-data" novalidate>
-        {% csrf_token %}
-        <div class="modal-body">
-          <div id="addAlerts"></div>
-
-          <div class="mf-section"><i class="bi bi-info-circle"></i> Basic Information</div>
-          <div class="mf-grid2">
-            <div class="mf-group">
-              <label class="mf-label">PO-ID <span class="req">*</span></label>
-              <input type="text" name="po_id" class="mf-ctrl" placeholder="e.g. PO-1001" required>
-            </div>
-            <div class="mf-group">
-              <label class="mf-label">Serial Number</label>
-              <input type="text" name="seriya" class="mf-ctrl" placeholder="Optional">
-            </div>
-          </div>
-          <div class="mf-grid2">
-            <div class="mf-group">
-              <label class="mf-label">Make <span class="req">*</span></label>
-              <input type="text" name="make" class="mf-ctrl" placeholder="e.g. Freightliner" required>
-            </div>
-            <div class="mf-group">
-              <label class="mf-label">Model <span class="req">*</span></label>
-              <input type="text" name="model" class="mf-ctrl" placeholder="e.g. Cascadia" required>
-            </div>
-          </div>
-          <div class="mf-grid2">
-            <div class="mf-group">
-              <label class="mf-label">Year <span class="req">*</span></label>
-              <input type="number" name="year" class="mf-ctrl" placeholder="e.g. 2022" min="1900" max="2100" required>
-            </div>
-            <div class="mf-group">
-              <label class="mf-label">Price ($) <span class="req">*</span></label>
-              <input type="number" name="price" class="mf-ctrl" placeholder="e.g. 85000" min="0" step="0.01" required>
-            </div>
-          </div>
-          <div class="mf-group">
-            <label class="mf-label">Horsepower (HP)</label>
-            <input type="number" name="horsepower" class="mf-ctrl" placeholder="Minimum 0 HP" min="0">
-          </div>
-
-          <div class="mf-section"><i class="bi bi-geo-alt"></i> Location & Company</div>
-          <div class="mf-grid2">
-            <div class="mf-group">
-              <label class="mf-label">Location</label>
-              <input type="text" name="location" class="mf-ctrl" placeholder="Vehicle location">
-            </div>
-            <div class="mf-group">
-              <label class="mf-label">Company</label>
-              <input type="text" name="company" class="mf-ctrl" placeholder="Company name">
-            </div>
-          </div>
-
-          {% if request.user.is_superuser %}
-          <div class="mf-group">
-            <label class="mf-label">Assign to User</label>
-            <select name="user" class="mf-ctrl">
-              <option value="">— Select user —</option>
-              {% for u in users %}<option value="{{ u.id }}">{{ u.username }}</option>{% endfor %}
-            </select>
-          </div>
-          {% endif %}
-
-          <div class="mf-section"><i class="bi bi-toggle-on"></i> Status</div>
-          <div class="mf-group">
-            <label class="mf-check">
-              <input type="checkbox" name="sotilgan" value="on">
-              <span class="mf-check-lbl">Mark as Sold</span>
-            </label>
-          </div>
-
-          <div class="mf-section"><i class="bi bi-card-text"></i> Description</div>
-          <div class="mf-group">
-            <textarea name="description" class="mf-ctrl" placeholder="Additional notes…"></textarea>
-          </div>
-
-          <div class="mf-section"><i class="bi bi-image"></i> Truck Image</div>
-          <div class="mf-group">
-            <div class="mf-upload">
-              <input type="file" name="image" accept="image/*" id="addImgInput"
-                     onchange="previewImg(this,'addImgPreview','addUploadText')">
-              <i class="bi bi-cloud-arrow-up"></i>
-              <div class="ut" id="addUploadText">Click or drag to upload image</div>
-              <div class="uh">JPG, PNG, GIF — max 10 MB</div>
-            </div>
-            <img id="addImgPreview" src="#" alt="preview">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            <i class="bi bi-x-lg me-1"></i>Cancel
-          </button>
-          <button type="submit" class="btn-ok" id="addSubmitBtn">
-            <i class="bi bi-plus-circle"></i> Add Truck
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>
 
 
@@ -507,49 +401,6 @@ function previewImg(input, previewId, textId) {
     }
 }
 
-/* ── ADD TRUCK (modal) ───────────────────── */
-function openAddModal() {
-    clearAlertBox('addAlerts');
-    document.getElementById('addForm').reset();
-    document.getElementById('addImgPreview').style.display = 'none';
-    document.getElementById('addUploadText').textContent = 'Click or drag to upload image';
-    new bootstrap.Modal(document.getElementById('addModal')).show();
-}
-
-document.getElementById('addForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    clearAlertBox('addAlerts');
-    spin('addSpinner', true);
-    const btn = document.getElementById('addSubmitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving…';
-
-    fetch("{% url 'add_truck' %}", {
-        method: 'POST',
-        body: new FormData(this),
-        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
-    })
-    .then(r => r.json())
-    .then(d => {
-        spin('addSpinner', false);
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-plus-circle"></i> Add Truck';
-        if (d.success) {
-            bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
-            window.showAlert?.('success', d.message || 'Truck added!');
-            setTimeout(() => location.reload(), 700);
-        } else {
-            showAlertBox('addAlerts', 'danger', d.message || 'Please correct the errors.');
-        }
-    })
-    .catch(() => {
-        spin('addSpinner', false);
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-plus-circle"></i> Add Truck';
-        showAlertBox('addAlerts', 'danger', 'An error occurred. Try again.');
-    });
-});
-
 /* ── DELETE (modal) ──────────────────────── */
 function openDelModal(id, name, poId, year, price) {
     _currentDelId = id;
@@ -597,6 +448,31 @@ document.getElementById('delConfirmBtn').addEventListener('click', function() {
         window.showAlert?.('error', 'An error occurred.');
     });
 });
+
+/* ── TOGGLE STATUS ──────────────────────── */
+function toggleStatus(id, btn) {
+    btn.disabled = true;
+    fetch(`/truck/toggle-status/${id}/`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(d => {
+        btn.disabled = false;
+        if (d.success) {
+            const sold = d.sotilgan;
+            const card = btn.closest('.truck-card');
+            const badge = card.querySelector('.badge-status');
+            badge.className = 'badge-status ' + (sold ? 'bs-sold' : 'bs-active');
+            badge.textContent = sold ? 'Sold' : 'Active';
+            btn.className = 'act-btn ' + (sold ? 'ab-status-sold' : 'ab-status-active');
+            btn.querySelector('i').className = 'bi ' + (sold ? 'bi-tag-fill' : 'bi-check-circle-fill');
+            btn.querySelector('span').textContent = sold ? 'Sold' : 'Active';
+            window.showAlert?.('success', `Status: ${d.label}`);
+        }
+    })
+    .catch(() => { btn.disabled = false; window.showAlert?.('error', 'Error occurred.'); });
+}
 
 /* ── DOCS (modal) ────────────────────────── */
 function openDocsModal(id, poId) {

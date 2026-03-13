@@ -403,8 +403,8 @@
                     {{ truck.po_id }} — {{ truck.make }} {{ truck.model }} ({{ truck.year }})
                 </div>
             </div>
-            <a href="{% url 'trucks_list' %}" class="btn-back">
-                <i class="bi bi-arrow-left"></i> Back to List
+            <a href="#" onclick="history.back(); return false;" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Back
             </a>
         </div>
 
@@ -672,7 +672,7 @@
                 </a>
             </div>
             <div class="footer-right">
-                <a href="{% url 'trucks_list' %}" class="btn-cancel">
+                <a href="#" onclick="history.back(); return false;" class="btn-cancel">
                     <i class="bi bi-x-circle"></i> Cancel
                 </a>
                 <button type="submit" form="edit-truck-form" class="btn-submit" id="submit-btn">

@@ -14,6 +14,7 @@ urlpatterns = [
     path('truck/delete/<int:truck_id>/', views.delete_truck, name='delete_truck'),
     path('truck-list/', views.trucks_list, name='trucks_list'),
     path('truck/detail/<int:truck_id>/', views.truck_detail, name='truck_detail'),
+    path('truck/toggle-status/<int:truck_id>/', views.toggle_truck_status, name='toggle_truck_status'),
     path('truck/upload-hujjat/', views.upload_hujjat, name='upload_hujjat'),
     path('truck/hujjat/delete/<int:hujjat_id>/', views.delete_hujjat, name='delete_hujjat'),
     path('truck/hujjat/download/<int:hujjat_id>/', views.download_hujjat, name='download_hujjat'),  # Added

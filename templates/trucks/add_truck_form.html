@@ -326,8 +326,8 @@
             <h1 class="form-card-title">
                 <i class="bi bi-plus-circle-fill"></i> Add New Truck
             </h1>
-            <a href="{% url 'trucks_list' %}" class="btn-back">
-                <i class="bi bi-arrow-left"></i> Back to List
+            <a href="#" onclick="history.back(); return false;" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Back
             </a>
         </div>
 
@@ -580,7 +580,7 @@
 
         <!-- Footer -->
         <div class="form-card-footer">
-            <a href="{% url 'trucks_list' %}" class="btn-cancel">
+            <a href="#" onclick="history.back(); return false;" class="btn-cancel">
                 <i class="bi bi-x-circle"></i> Cancel
             </a>
             <button type="submit" form="add-truck-form" class="btn-submit" id="submit-btn">
