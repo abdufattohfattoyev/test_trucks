@@ -3,219 +3,580 @@
 
 {% block extra_css %}
 <style>
+/* ═══════════════════════════════════════
+   VARIABLES
+═══════════════════════════════════════ */
 :root {
-    --p: #2563eb; --s: #7c3aed; --ok: #059669;
-    --warn: #d97706; --red: #dc2626; --muted: #64748b; --bd: #e2e8f0;
+    --p:    #2563eb;
+    --s:    #7c3aed;
+    --ok:   #059669;
+    --warn: #d97706;
+    --red:  #dc2626;
+    --muted:#64748b;
+    --bd:   #e2e8f0;
+    --card-shadow: 0 2px 12px rgba(0,0,0,.07);
+    --card-radius: 12px;
+}
+
+/* ═══════════════════════════════════════
+   HEADER
+═══════════════════════════════════════ */
+.dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
 }
 .dash-title {
-    font-size:2rem; font-weight:800;
-    background:linear-gradient(135deg,var(--p),var(--s));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-    display:inline-flex; align-items:center; gap:.75rem; margin:0;
+    font-size: 1.875rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--p), var(--s));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-flex;
+    align-items: center;
+    gap: .625rem;
+    margin: 0;
+    line-height: 1.2;
 }
 .btn-add {
-    background:linear-gradient(135deg,var(--ok),#10b981); border:none; color:#fff;
-    padding:.7rem 1.4rem; border-radius:10px; font-weight:600; font-size:.9375rem;
-    box-shadow:0 4px 14px rgba(5,150,105,.3); transition:all .25s;
-    display:inline-flex; align-items:center; gap:.45rem; cursor:pointer;
+    background: linear-gradient(135deg, var(--ok), #10b981);
+    border: none;
+    color: #fff;
+    padding: .65rem 1.4rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: .9375rem;
+    box-shadow: 0 4px 14px rgba(5,150,105,.3);
+    transition: all .25s;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
 }
-.btn-add:hover { transform:translateY(-2px); box-shadow:0 6px 22px rgba(5,150,105,.4); color:#fff; text-decoration:none; }
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(5,150,105,.4);
+    color: #fff;
+}
 
-/* Stats */
+/* ═══════════════════════════════════════
+   STATS ROW
+═══════════════════════════════════════ */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
 .stat-card {
-    background:#fff; border-radius:12px; padding:1.4rem;
-    box-shadow:0 2px 12px rgba(0,0,0,.07); border:1px solid rgba(226,232,240,.8);
-    display:flex; align-items:center; gap:1rem; transition:all .25s; height:100%;
+    background: #fff;
+    border-radius: var(--card-radius);
+    padding: 1.25rem 1.4rem;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(226,232,240,.8);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all .25s;
+    min-width: 0;
 }
-.stat-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,.11); }
-.stat-icon { width:56px; height:56px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; }
-.si-blue  { background:linear-gradient(135deg,rgba(37,99,235,.1),rgba(139,92,246,.1)); color:var(--p); }
-.si-green { background:linear-gradient(135deg,rgba(5,150,105,.1),rgba(16,185,129,.1)); color:var(--ok); }
-.si-amber { background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(217,119,6,.1)); color:var(--warn); }
-.stat-label { font-size:.8rem; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.2rem; }
-.stat-val { font-size:1.65rem; font-weight:800; color:#1e293b; margin:0; line-height:1.2; }
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.11);
+}
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+.si-blue  { background: linear-gradient(135deg,rgba(37,99,235,.12),rgba(139,92,246,.12)); color: var(--p); }
+.si-green { background: linear-gradient(135deg,rgba(5,150,105,.12),rgba(16,185,129,.12)); color: var(--ok); }
+.si-amber { background: linear-gradient(135deg,rgba(245,158,11,.12),rgba(217,119,6,.12)); color: var(--warn); }
+.stat-info { min-width: 0; }
+.stat-label {
+    font-size: .75rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.stat-val {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-/* Search */
-.search-wrap { background:#fff; border-radius:12px; padding:1.4rem; box-shadow:0 2px 12px rgba(0,0,0,.07); border:1px solid rgba(226,232,240,.8); display:flex; align-items:center; height:100%; }
-.search-inp { flex:1; border:1.5px solid var(--bd); border-radius:10px 0 0 10px; padding:.7rem 1rem; font-size:.9375rem; border-right:none; outline:none; transition:all .2s; }
-.search-inp:focus { border-color:var(--p); box-shadow:0 0 0 3px rgba(37,99,235,.1); }
-.search-btn { background:linear-gradient(135deg,var(--p),var(--s)); border:none; color:#fff; padding:.7rem 1.4rem; border-radius:0 10px 10px 0; font-size:1.1rem; cursor:pointer; }
+/* ═══════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════ */
+.search-wrap {
+    background: #fff;
+    border-radius: var(--card-radius);
+    padding: 1.25rem 1.4rem;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(226,232,240,.8);
+    display: flex;
+    align-items: center;
+}
+.search-form {
+    display: flex;
+    width: 100%;
+}
+.search-inp {
+    flex: 1;
+    border: 1.5px solid var(--bd);
+    border-radius: 10px 0 0 10px;
+    padding: .65rem 1rem;
+    font-size: .9375rem;
+    border-right: none;
+    outline: none;
+    transition: all .2s;
+    min-width: 0;
+}
+.search-inp:focus {
+    border-color: var(--p);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+}
+.search-btn {
+    background: linear-gradient(135deg, var(--p), var(--s));
+    border: none;
+    color: #fff;
+    padding: .65rem 1.25rem;
+    border-radius: 0 10px 10px 0;
+    font-size: 1.05rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity .2s;
+}
+.search-btn:hover { opacity: .88; }
 
-/* Truck grid */
-.trucks-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:1.4rem; }
-.truck-card { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.07); border:1px solid rgba(226,232,240,.8); transition:all .3s; display:flex; flex-direction:column; }
-.truck-card:hover { transform:translateY(-7px); box-shadow:0 12px 32px rgba(0,0,0,.14); }
-.tc-img { position:relative; width:100%; height:210px; overflow:hidden; background:#f1f5f9; }
-.tc-img img { width:100%; height:100%; object-fit:cover; transition:transform .3s; }
-.truck-card:hover .tc-img img { transform:scale(1.05); }
-.tc-img-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
-.tc-img-ph i { font-size:3.5rem; color:#cbd5e1; }
-.badge-status { position:absolute; top:.9rem; right:.9rem; padding:.35rem .85rem; border-radius:20px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; backdrop-filter:blur(8px); box-shadow:0 3px 10px rgba(0,0,0,.1); }
-.bs-active { background:rgba(5,150,105,.9); color:#fff; }
-.bs-sold   { background:rgba(220,38,38,.9);  color:#fff; }
-.tc-body { padding:1.4rem; flex:1; display:flex; flex-direction:column; }
-.tc-title { font-size:1.2rem; font-weight:700; color:#1e293b; margin-bottom:.4rem; line-height:1.4; }
-.tc-price { font-size:1.4rem; font-weight:800; background:linear-gradient(135deg,var(--p),var(--s)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:.9rem; }
-.tc-meta { display:flex; flex-wrap:wrap; gap:.6rem; padding-bottom:1rem; border-bottom:1px solid var(--bd); flex:1; margin-bottom:1rem; }
-.tc-meta-item { display:flex; align-items:center; gap:.4rem; font-size:.84rem; color:var(--muted); font-weight:500; }
-.tc-meta-item i { color:var(--p); }
+/* ═══════════════════════════════════════
+   TRUCKS GRID
+═══════════════════════════════════════ */
+.trucks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+}
+.truck-card {
+    background: #fff;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(226,232,240,.8);
+    transition: all .3s;
+    display: flex;
+    flex-direction: column;
+}
+.truck-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0,0,0,.13);
+}
 
-/* Action buttons */
-.tc-actions { display:flex; gap:.45rem; }
+/* ── image ── */
+.tc-img {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #f1f5f9;
+    flex-shrink: 0;
+}
+.tc-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .3s;
+}
+.truck-card:hover .tc-img img { transform: scale(1.04); }
+.tc-img-ph {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tc-img-ph i { font-size: 3.5rem; color: #cbd5e1; }
+
+.badge-status {
+    position: absolute;
+    top: .8rem;
+    right: .8rem;
+    padding: .3rem .75rem;
+    border-radius: 20px;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.bs-active { background: rgba(5,150,105,.9);  color: #fff; }
+.bs-sold   { background: rgba(220,38,38,.9);   color: #fff; }
+
+/* ── body ── */
+.tc-body {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.tc-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: .35rem;
+    line-height: 1.4;
+}
+.tc-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--p), var(--s));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: .875rem;
+}
+.tc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    padding-bottom: .875rem;
+    border-bottom: 1px solid var(--bd);
+    flex: 1;
+    margin-bottom: .875rem;
+}
+.tc-meta-item {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .82rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+.tc-meta-item i { color: var(--p); font-size: .85rem; }
+
+/* ── actions ── */
+.tc-actions {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: .35rem;
+}
 .act-btn {
-    flex:1; padding:.55rem .4rem; border-radius:8px; font-weight:600;
-    font-size:.82rem; border:2px solid; text-decoration:none;
-    display:inline-flex; align-items:center; justify-content:center; gap:.3rem;
-    background:transparent; cursor:pointer; transition:all .25s; white-space:nowrap;
+    padding: .5rem .25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .78rem;
+    border: 1.5px solid;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .3rem;
+    background: transparent;
+    cursor: pointer;
+    transition: all .22s;
+    white-space: nowrap;
+    min-width: 0;
 }
-.act-btn span { display:none; }
-@media(min-width:400px){ .act-btn span { display:inline; } }
-.ab-view { border-color:var(--p); color:var(--p); }
-.ab-view:hover { background:var(--p); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(37,99,235,.3); }
-.ab-edit { border-color:var(--warn); color:var(--warn); }
-.ab-edit:hover { background:var(--warn); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(217,119,6,.3); }
-.ab-del { border-color:var(--red); color:var(--red); }
-.ab-del:hover { background:var(--red); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(220,38,38,.3); }
-.ab-docs { border-color:#0ea5e9; color:#0ea5e9; }
-.ab-docs:hover { background:#0ea5e9; color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(14,165,233,.25); }
-.ab-status-sold   { border-color:var(--red); color:var(--red); }
-.ab-status-active { border-color:var(--ok);  color:var(--ok); }
-.ab-status-sold:hover   { background:var(--red); color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(220,38,38,.3); }
-.ab-status-active:hover { background:var(--ok);  color:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(5,150,105,.3); }
+.act-btn i { font-size: .85rem; flex-shrink: 0; }
+.act-btn span { display: none; }
 
-/* Empty */
-.empty-box { text-align:center; padding:4rem 2rem; background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.07); }
-.empty-box i { font-size:5rem; color:#cbd5e1; display:block; margin-bottom:1.5rem; }
-.empty-box h3 { font-size:1.4rem; font-weight:700; color:#1e293b; margin-bottom:.75rem; }
-.empty-box p { color:var(--muted); margin-bottom:2rem; }
+.ab-view          { border-color: var(--p);    color: var(--p); }
+.ab-view:hover    { background: var(--p);    color: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(37,99,235,.3); }
+.ab-edit          { border-color: var(--warn); color: var(--warn); }
+.ab-edit:hover    { background: var(--warn); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(217,119,6,.3); }
+.ab-del           { border-color: var(--red);  color: var(--red); }
+.ab-del:hover     { background: var(--red);  color: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(220,38,38,.3); }
+.ab-docs          { border-color: #0ea5e9;     color: #0ea5e9; }
+.ab-docs:hover    { background: #0ea5e9;     color: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(14,165,233,.25); }
+.ab-status-sold   { border-color: var(--red);  color: var(--red); }
+.ab-status-active { border-color: var(--ok);   color: var(--ok); }
+.ab-status-sold:hover   { background: var(--red); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(220,38,38,.3); }
+.ab-status-active:hover { background: var(--ok);  color: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(5,150,105,.3); }
 
-/* Pagination */
-.pager { display:flex; justify-content:center; margin:2rem 0 1rem; gap:.45rem; flex-wrap:wrap; }
-.pager a,.pager span { padding:.48rem .82rem; border:1px solid var(--bd); border-radius:10px; text-decoration:none; color:#0f172a; background:#fff; font-weight:600; font-size:.9rem; }
-.pager .cur { background:linear-gradient(135deg,var(--p),var(--s)); color:#fff; border-color:transparent; }
+/* ═══════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════ */
+.empty-box {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #fff;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+}
+.empty-box i  { font-size: 5rem; color: #cbd5e1; display: block; margin-bottom: 1.25rem; }
+.empty-box h3 { font-size: 1.35rem; font-weight: 700; color: #1e293b; margin-bottom: .625rem; }
+.empty-box p  { color: var(--muted); margin-bottom: 1.75rem; }
 
-/* Modals */
-.modal-content { border:none !important; border-radius:16px !important; box-shadow:0 20px 60px rgba(0,0,0,.18) !important; }
-.modal-header  { border-bottom:1px solid var(--bd) !important; padding:1.25rem 1.5rem !important; }
-.modal-body    { padding:1.5rem !important; }
-.modal-footer  { border-top:1px solid var(--bd) !important; padding:1rem 1.5rem !important; background:#f8fafc; border-radius:0 0 16px 16px !important; }
-.modal-spinner { display:none; position:absolute; inset:0; background:rgba(255,255,255,.75); border-radius:16px; z-index:10; align-items:center; justify-content:center; }
+/* ═══════════════════════════════════════
+   PAGINATION
+═══════════════════════════════════════ */
+.pager {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0 1rem;
+    gap: .4rem;
+    flex-wrap: wrap;
+}
+.pager a, .pager span {
+    padding: .44rem .8rem;
+    border: 1px solid var(--bd);
+    border-radius: 10px;
+    text-decoration: none;
+    color: #0f172a;
+    background: #fff;
+    font-weight: 600;
+    font-size: .875rem;
+    transition: all .2s;
+}
+.pager a:hover { background: var(--p); color: #fff; border-color: var(--p); }
+.pager .cur    { background: linear-gradient(135deg, var(--p), var(--s)); color: #fff; border-color: transparent; }
+
+/* ═══════════════════════════════════════
+   MODALS
+═══════════════════════════════════════ */
+.modal-content  { border: none !important; border-radius: 16px !important; box-shadow: 0 20px 60px rgba(0,0,0,.18) !important; }
+.modal-header   { border-bottom: 1px solid var(--bd) !important; padding: 1.125rem 1.5rem !important; }
+.modal-body     { padding: 1.25rem 1.5rem !important; }
+.modal-footer   { border-top: 1px solid var(--bd) !important; padding: .875rem 1.5rem !important; background: #f8fafc; border-radius: 0 0 16px 16px !important; }
+.modal-spinner  { display:none; position:absolute; inset:0; background:rgba(255,255,255,.75); border-radius:16px; z-index:10; align-items:center; justify-content:center; }
 .modal-spinner.show { display:flex; }
 
-/* Form */
-.mf-section { font-size:.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin:1.4rem 0 .8rem; padding-bottom:.4rem; border-bottom:2px solid var(--bd); display:flex; align-items:center; gap:.4rem; }
-.mf-section:first-child { margin-top:0; }
-.mf-section i { color:var(--p); }
-.mf-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
-.mf-group { display:flex; flex-direction:column; gap:.3rem; margin-bottom:.9rem; }
-.mf-group:last-child { margin-bottom:0; }
-.mf-label { font-size:.84rem; font-weight:600; color:#374151; }
-.mf-label .req { color:#ef4444; margin-left:2px; }
-.mf-ctrl { width:100%; padding:.6rem .8rem; border:1.5px solid #d1d5db; border-radius:9px; font-size:.9rem; color:#111827; background:#fafafa; transition:all .2s; box-sizing:border-box; }
-.mf-ctrl:focus { outline:none; border-color:var(--p); box-shadow:0 0 0 3px rgba(37,99,235,.1); background:#fff; }
-textarea.mf-ctrl { resize:vertical; min-height:90px; }
-.mf-check { display:flex; align-items:center; gap:.6rem; padding:.65rem .9rem; border:1.5px solid #d1d5db; border-radius:9px; cursor:pointer; background:#fafafa; transition:all .2s; }
-.mf-check:hover { border-color:var(--p); }
-.mf-check input { width:17px; height:17px; accent-color:var(--p); cursor:pointer; }
-.mf-check-lbl { font-size:.9rem; color:#374151; font-weight:500; cursor:pointer; }
-.mf-upload { border:2px dashed #d1d5db; border-radius:10px; padding:1.5rem; text-align:center; cursor:pointer; transition:all .2s; position:relative; background:#fafafa; }
-.mf-upload:hover { border-color:var(--p); background:rgba(37,99,235,.02); }
-.mf-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-.mf-upload i { font-size:2rem; color:#94a3b8; display:block; margin-bottom:.4rem; }
-.mf-upload .ut { font-size:.875rem; color:#6b7280; font-weight:500; }
-.mf-upload .uh { font-size:.75rem; color:#9ca3af; }
-#addImgPreview { display:none; width:100%; max-height:180px; object-fit:cover; border-radius:9px; border:1.5px solid var(--bd); margin-top:.75rem; }
+/* delete modal */
+.del-icon { font-size: 3.5rem; color: #ef4444; display: block; margin-bottom: .875rem; }
+.del-info  { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: .875rem 1.125rem; }
+.del-row   { display: flex; justify-content: space-between; align-items: center; padding: .35rem 0; border-bottom: 1px solid #fecaca; }
+.del-row:last-child { border-bottom: none; padding-bottom: 0; }
+.del-lbl   { font-size: .82rem; color: #9b1c1c; font-weight: 500; }
+.del-val   { font-size: .82rem; color: #7f1d1d; font-weight: 700; }
+.del-warn  { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: .65rem .875rem; font-size: .82rem; color: #856404; margin-top: .875rem; display: flex; align-items: flex-start; gap: .5rem; }
 
-/* Delete modal */
-.del-icon { font-size:4rem; color:#ef4444; display:block; margin-bottom:1rem; }
-.del-info { background:#fef2f2; border:1px solid #fecaca; border-radius:10px; padding:1rem 1.25rem; }
-.del-row { display:flex; justify-content:space-between; align-items:center; padding:.4rem 0; border-bottom:1px solid #fecaca; }
-.del-row:last-child { border-bottom:none; padding-bottom:0; }
-.del-lbl { font-size:.84rem; color:#9b1c1c; font-weight:500; }
-.del-val { font-size:.84rem; color:#7f1d1d; font-weight:700; }
-.del-warn { background:#fff3cd; border:1px solid #ffc107; border-radius:8px; padding:.75rem 1rem; font-size:.84rem; color:#856404; margin-top:1rem; display:flex; align-items:flex-start; gap:.5rem; }
-
-/* Docs modal */
-.doc-item { display:flex; align-items:center; padding:.65rem; border-radius:8px; background:#f8fafc; border:1px solid var(--bd); margin-bottom:.5rem; transition:all .2s; }
+/* docs modal */
+.doc-item  { display:flex; align-items:center; padding:.6rem; border-radius:8px; background:#f8fafc; border:1px solid var(--bd); margin-bottom:.45rem; transition:all .2s; }
 .doc-item:hover { border-color:#93c5fd; background:#eff6ff; }
-.doc-link { display:flex; align-items:center; gap:.5rem; text-decoration:none; color:#1e293b; font-weight:500; font-size:.875rem; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.doc-link  { display:flex; align-items:center; gap:.5rem; text-decoration:none; color:#1e293b; font-weight:500; font-size:.875rem; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .doc-link:hover { color:var(--p); }
-.doc-upload { border:2px dashed var(--bd); border-radius:10px; padding:1.5rem; text-align:center; cursor:pointer; transition:all .3s; position:relative; background:#f8fafc; margin-top:1rem; }
+.doc-upload { border:2px dashed var(--bd); border-radius:10px; padding:1.25rem; text-align:center; cursor:pointer; transition:all .3s; position:relative; background:#f8fafc; margin-top:.875rem; }
 .doc-upload:hover { border-color:var(--p); background:rgba(37,99,235,.02); }
 .doc-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-.doc-upload i { font-size:2rem; color:#94a3b8; display:block; margin-bottom:.5rem; }
+.doc-upload i { font-size:1.75rem; color:#94a3b8; display:block; margin-bottom:.4rem; }
 
-/* Submit buttons */
-.btn-ok { padding:.7rem 1.6rem; border-radius:9px; font-weight:600; font-size:.9375rem; background:linear-gradient(135deg,var(--p),var(--s)); color:#fff; border:none; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.45rem; box-shadow:0 4px 12px rgba(37,99,235,.3); }
+/* buttons */
+.btn-ok     { padding:.65rem 1.5rem; border-radius:9px; font-weight:600; font-size:.9375rem; background:linear-gradient(135deg,var(--p),var(--s)); color:#fff; border:none; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.45rem; box-shadow:0 4px 12px rgba(37,99,235,.3); }
 .btn-ok:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(37,99,235,.4); }
-.btn-ok-red { padding:.7rem 1.6rem; border-radius:9px; font-weight:600; font-size:.9375rem; background:linear-gradient(135deg,var(--red),#b91c1c); color:#fff; border:none; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.45rem; box-shadow:0 4px 12px rgba(220,38,38,.3); }
+.btn-ok-red { padding:.65rem 1.5rem; border-radius:9px; font-weight:600; font-size:.9375rem; background:linear-gradient(135deg,var(--red),#b91c1c); color:#fff; border:none; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.45rem; box-shadow:0 4px 12px rgba(220,38,38,.3); }
 .btn-ok-red:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(220,38,38,.4); }
 
-@media(max-width:992px){ .dash-title { font-size:1.75rem; } .trucks-grid { grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); } }
-@media(max-width:768px){ .mf-grid2 { grid-template-columns:1fr; } }
-@media(max-width:576px){ .trucks-grid { grid-template-columns:1fr; } }
+/* ═══════════════════════════════════════
+   RESPONSIVE — 992px (tablet landscape)
+═══════════════════════════════════════ */
+@media (max-width: 992px) {
+    .dash-title   { font-size: 1.625rem; }
+    .stats-row    { grid-template-columns: repeat(2, 1fr); }
+    .trucks-grid  { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .tc-img       { height: 175px; }
+    .tc-body      { padding: 1.1rem; }
+    .tc-title     { font-size: 1.05rem; }
+    .tc-price     { font-size: 1.2rem; }
+    .tc-meta-item { font-size: .8rem; }
+    /* icon only on medium cards */
+    .act-btn span { display: none; }
+    .act-btn      { padding: .5rem .2rem; }
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — 768px (tablet portrait)
+═══════════════════════════════════════ */
+@media (max-width: 768px) {
+    .dash-title   { font-size: 1.5rem; }
+    .stat-icon    { width: 46px; height: 46px; font-size: 1.35rem; }
+    .stat-val     { font-size: 1.35rem; }
+    .stat-label   { font-size: .72rem; }
+    .stat-card    { padding: 1rem 1.1rem; gap: .75rem; }
+    .trucks-grid  { grid-template-columns: repeat(2, 1fr); gap: .875rem; }
+    .tc-img       { height: 155px; }
+    .tc-body      { padding: 1rem; }
+    .tc-title     { font-size: 1rem; }
+    .tc-price     { font-size: 1.1rem; margin-bottom: .7rem; }
+    .tc-meta      { gap: .4rem; padding-bottom: .7rem; margin-bottom: .7rem; }
+    .tc-meta-item { font-size: .78rem; }
+    .act-btn      { padding: .45rem .15rem; font-size: .7rem; border-width: 1.5px; }
+    .act-btn span { display: none; }
+    .badge-status { font-size: .65rem; padding: .25rem .6rem; }
+    .search-wrap  { padding: 1rem 1.1rem; }
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — 640px
+═══════════════════════════════════════ */
+@media (max-width: 640px) {
+    /* stats: 2-col still fine */
+    .stats-row   { gap: .75rem; }
+    .stat-card   { padding: .875rem 1rem; gap: .625rem; }
+    .stat-icon   { width: 42px; height: 42px; font-size: 1.2rem; }
+    .stat-val    { font-size: 1.2rem; }
+    /* trucks: 1 column */
+    .trucks-grid { grid-template-columns: 1fr; gap: .875rem; }
+    .tc-img      { height: 220px; }
+    .tc-body     { padding: 1.125rem; }
+    .tc-title    { font-size: 1.1rem; }
+    .tc-price    { font-size: 1.2rem; }
+    /* show labels again — cards are full width */
+    .act-btn span { display: inline; }
+    .act-btn      { padding: .55rem .35rem; font-size: .78rem; }
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — 480px (phones)
+═══════════════════════════════════════ */
+@media (max-width: 480px) {
+    .dash-header  { flex-direction: column; align-items: stretch; gap: .625rem; }
+    .dash-title   { font-size: 1.25rem; }
+    .btn-add      { width: 100%; justify-content: center; font-size: .9rem; }
+
+    .stats-row    { gap: .625rem; }
+    .stat-card    { padding: .75rem .875rem; gap: .5rem; }
+    .stat-icon    { width: 38px; height: 38px; font-size: 1.1rem; border-radius: 10px; }
+    .stat-val     { font-size: 1.1rem; }
+    .stat-label   { font-size: .68rem; }
+
+    .trucks-grid  { gap: .75rem; }
+    .tc-img       { height: 200px; }
+    .tc-body      { padding: 1rem; }
+    .tc-title     { font-size: 1.05rem; }
+    .tc-price     { font-size: 1.1rem; }
+    .tc-meta-item { font-size: .78rem; }
+
+    /* show labels (1-col full-width cards) */
+    .act-btn span { display: inline; }
+    .act-btn      { padding: .5rem .3rem; font-size: .74rem; }
+
+    .modal-dialog { margin: .5rem !important; max-width: calc(100vw - 1rem) !important; }
+    .modal-header { padding: 1rem 1.125rem !important; }
+    .modal-body   { padding: 1rem 1.125rem !important; }
+    .modal-footer { padding: .75rem 1.125rem !important; }
+
+    .empty-box    { padding: 2.5rem 1.25rem; }
+    .empty-box i  { font-size: 4rem; }
+    .empty-box h3 { font-size: 1.2rem; }
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — 380px (small phones)
+═══════════════════════════════════════ */
+@media (max-width: 380px) {
+    .dash-title   { font-size: 1.1rem; }
+    .btn-add      { font-size: .85rem; padding: .575rem .875rem; }
+
+    .stats-row    { gap: .5rem; }
+    .stat-card    { padding: .625rem .75rem; gap: .4rem; }
+    .stat-icon    { width: 34px; height: 34px; font-size: 1rem; border-radius: 8px; }
+    .stat-val     { font-size: 1rem; }
+    .stat-label   { font-size: .65rem; }
+
+    .trucks-grid  { gap: .625rem; }
+    .tc-img       { height: 180px; }
+    .tc-body      { padding: .875rem; }
+    .tc-title     { font-size: 1rem; }
+    .tc-price     { font-size: 1rem; margin-bottom: .625rem; }
+    .tc-meta      { gap: .35rem; padding-bottom: .625rem; margin-bottom: .625rem; }
+    .tc-meta-item { font-size: .74rem; }
+    .act-btn      { padding: .44rem .2rem; font-size: .68rem; border-width: 1px; }
+    .act-btn span { display: none; }
+
+    .search-wrap  { padding: .75rem .875rem; }
+    .search-inp   { font-size: .875rem; padding: .55rem .75rem; }
+
+    .badge-status { font-size: .6rem; top: .6rem; right: .6rem; padding: .2rem .55rem; }
+    .empty-box    { padding: 2rem 1rem; }
+    .empty-box i  { font-size: 3.5rem; }
+    .empty-box h3 { font-size: 1.1rem; }
+    .pager a, .pager span { padding: .38rem .65rem; font-size: .8rem; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div>
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <h1 class="dash-title"><i class="bi bi-speedometer2"></i> Dashboard</h1>
+    <!-- ═══ HEADER ═══ -->
+    <div class="dash-header">
+        <h1 class="dash-title">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </h1>
         <a href="{% url 'add_truck' %}" class="btn-add">
             <i class="bi bi-plus-lg"></i> Add New Truck
         </a>
     </div>
 
-    <!-- Stats + Search -->
-    <div class="row g-3 mb-4">
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-icon si-blue"><i class="bi bi-truck"></i></div>
-                <div>
-                    <div class="stat-label">Total Trucks</div>
-                    <div class="stat-val">{{ trucks.paginator.count }}</div>
-                </div>
+    <!-- ═══ STATS + SEARCH ═══ -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon si-blue"><i class="bi bi-truck"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Total Trucks</div>
+                <div class="stat-val">{{ trucks.paginator.count }}</div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-icon si-green"><i class="bi bi-cash-stack"></i></div>
-                <div>
-                    <div class="stat-label">Total Value</div>
-                    <div class="stat-val">${{ total_price|floatformat:0 }}</div>
-                </div>
+        <div class="stat-card">
+            <div class="stat-icon si-green"><i class="bi bi-cash-stack"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Total Value</div>
+                <div class="stat-val">${{ total_price|floatformat:0 }}</div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="stat-card">
-                <div class="stat-icon si-amber"><i class="bi bi-wallet2"></i></div>
-                <div>
-                    <div class="stat-label">Total Expenses</div>
-                    <div class="stat-val">${{ total_xarajat|floatformat:0 }}</div>
-                </div>
+        <div class="stat-card">
+            <div class="stat-icon si-amber"><i class="bi bi-wallet2"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Total Expenses</div>
+                <div class="stat-val">${{ total_xarajat|floatformat:0 }}</div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="search-wrap">
-                <form method="GET" action="{% url 'dashboard' %}" style="display:flex;width:100%;">
-                    <input type="text" name="q" class="search-inp"
-                           placeholder="Search trucks…" value="{{ request.GET.q|default:'' }}">
-                    <button type="submit" class="search-btn"><i class="bi bi-search"></i></button>
-                </form>
-            </div>
+        <div class="search-wrap">
+            <form method="GET" action="{% url 'dashboard' %}" class="search-form">
+                <input type="text" name="q" class="search-inp"
+                       placeholder="Search trucks…"
+                       value="{{ request.GET.q|default:'' }}">
+                <button type="submit" class="search-btn">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- Trucks Grid -->
+    <!-- ═══ TRUCKS GRID ═══ -->
     {% if trucks %}
     <div class="trucks-grid" id="trucksGrid">
         {% for truck in trucks %}
         <div class="truck-card" id="tc-{{ truck.id }}">
+
+            <!-- image -->
             <div class="tc-img">
                 {% if truck.image %}
-                    <img src="{{ truck.image.url }}" alt="{{ truck.make }} {{ truck.model }}" loading="lazy">
+                    <img src="{{ truck.image.url }}"
+                         alt="{{ truck.make }} {{ truck.model }}"
+                         loading="lazy">
                 {% else %}
                     <div class="tc-img-ph"><i class="bi bi-image"></i></div>
                 {% endif %}
@@ -223,42 +584,57 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
                     {% if truck.sotilgan %}Sold{% else %}Active{% endif %}
                 </span>
             </div>
+
+            <!-- body -->
             <div class="tc-body">
                 <div class="tc-title">{{ truck.make }} {{ truck.model }}</div>
                 <div class="tc-price">${{ truck.price|floatformat:0 }}</div>
+
                 <div class="tc-meta">
-                    <div class="tc-meta-item"><i class="bi bi-tag-fill"></i> {{ truck.po_id|default:"N/A" }}</div>
-                    <div class="tc-meta-item"><i class="bi bi-calendar3"></i> {{ truck.year }}</div>
-                    {% if truck.horsepower %}<div class="tc-meta-item"><i class="bi bi-speedometer"></i> {{ truck.horsepower }} HP</div>{% endif %}
-                    {% if truck.location %}<div class="tc-meta-item"><i class="bi bi-geo-alt-fill"></i> {{ truck.location }}</div>{% endif %}
-                    {% if truck.company %}<div class="tc-meta-item"><i class="bi bi-building"></i> {{ truck.company }}</div>{% endif %}
+                    <div class="tc-meta-item">
+                        <i class="bi bi-tag-fill"></i>
+                        {{ truck.po_id|default:"N/A" }}
+                    </div>
+                    <div class="tc-meta-item">
+                        <i class="bi bi-calendar3"></i>
+                        {{ truck.year }}
+                    </div>
+                    {% if truck.horsepower %}
+                    <div class="tc-meta-item">
+                        <i class="bi bi-speedometer"></i>
+                        {{ truck.horsepower }} HP
+                    </div>
+                    {% endif %}
+                    {% if truck.location %}
+                    <div class="tc-meta-item">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        {{ truck.location }}
+                    </div>
+                    {% endif %}
+                    {% if truck.company %}
+                    <div class="tc-meta-item">
+                        <i class="bi bi-building"></i>
+                        {{ truck.company }}
+                    </div>
+                    {% endif %}
                 </div>
+
+                <!-- action buttons -->
                 <div class="tc-actions">
-                    {# ── VIEW → alohida page ── #}
                     <a href="{% url 'truck_detail' truck.id %}" class="act-btn ab-view">
                         <i class="bi bi-eye-fill"></i><span>View</span>
                     </a>
-                    {# ── EDIT → alohida page ── #}
                     <a href="{% url 'edit_truck' truck.id %}" class="act-btn ab-edit">
                         <i class="bi bi-pencil-fill"></i><span>Edit</span>
                     </a>
-                    {# ── DELETE → modal ── #}
                     <button class="act-btn ab-del"
-                        onclick="openDelModal(
-                            {{ truck.id }},
-                            '{{ truck.make|escapejs }} {{ truck.model|escapejs }}',
-                            '{{ truck.po_id|escapejs }}',
-                            '{{ truck.year }}',
-                            '{{ truck.price|floatformat:0 }}'
-                        )">
+                        onclick="openDelModal({{ truck.id }},'{{ truck.make|escapejs }} {{ truck.model|escapejs }}','{{ truck.po_id|escapejs }}','{{ truck.year }}','{{ truck.price|floatformat:0 }}')">
                         <i class="bi bi-trash-fill"></i><span>Delete</span>
                     </button>
-                    {# ── DOCS → modal ── #}
                     <button class="act-btn ab-docs"
-                            onclick="openDocsModal({{ truck.id }}, '{{ truck.po_id|escapejs }}')">
+                            onclick="openDocsModal({{ truck.id }},'{{ truck.po_id|escapejs }}')">
                         <i class="bi bi-file-earmark-text"></i><span>Docs</span>
                     </button>
-                    {# ── STATUS TOGGLE ── #}
                     <button class="act-btn {% if truck.sotilgan %}ab-status-sold{% else %}ab-status-active{% endif %}"
                             id="status-btn-{{ truck.id }}"
                             onclick="toggleStatus({{ truck.id }}, this)">
@@ -273,12 +649,25 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
 
     {% if trucks.has_other_pages %}
     <div class="pager">
-        {% if trucks.has_previous %}<a href="?page={{ trucks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">‹ Prev</a>{% else %}<span>‹ Prev</span>{% endif %}
+        {% if trucks.has_previous %}
+            <a href="?page={{ trucks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">‹ Prev</a>
+        {% else %}
+            <span>‹ Prev</span>
+        {% endif %}
+
         {% for i in trucks.paginator.page_range %}
-            {% if trucks.number == i %}<span class="cur">{{ i }}</span>
-            {% elif i > trucks.number|add:"-3" and i < trucks.number|add:"3" %}<a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a>{% endif %}
+            {% if trucks.number == i %}
+                <span class="cur">{{ i }}</span>
+            {% elif i > trucks.number|add:"-3" and i < trucks.number|add:"3" %}
+                <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a>
+            {% endif %}
         {% endfor %}
-        {% if trucks.has_next %}<a href="?page={{ trucks.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next ›</a>{% else %}<span>Next ›</span>{% endif %}
+
+        {% if trucks.has_next %}
+            <a href="?page={{ trucks.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next ›</a>
+        {% else %}
+            <span>Next ›</span>
+        {% endif %}
     </div>
     {% endif %}
 
@@ -292,6 +681,7 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
         </a>
     </div>
     {% endif %}
+
 </div>
 
 
@@ -299,7 +689,7 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
      MODAL: DELETE CONFIRM
 ══════════════════════════════════════ -->
 <div class="modal fade" id="delModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
     <div class="modal-content" style="position:relative;">
       <div class="modal-spinner" id="delSpinner">
         <div class="spinner-border text-danger" role="status"></div>
@@ -312,18 +702,27 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
       </div>
       <div class="modal-body text-center">
         <i class="bi bi-trash-fill del-icon"></i>
-        <p class="fw-semibold mb-3 fs-6">
+        <p class="fw-semibold mb-3">
           Are you sure you want to delete this truck?<br>
           <span class="text-danger fw-bold" id="delTruckName"></span>
         </p>
         <div class="del-info text-start">
-          <div class="del-row"><span class="del-lbl">PO-ID</span><span class="del-val" id="delPoId"></span></div>
-          <div class="del-row"><span class="del-lbl">Year</span><span class="del-val" id="delYear"></span></div>
-          <div class="del-row"><span class="del-lbl">Price</span><span class="del-val" id="delPrice"></span></div>
+          <div class="del-row">
+            <span class="del-lbl">PO-ID</span>
+            <span class="del-val" id="delPoId"></span>
+          </div>
+          <div class="del-row">
+            <span class="del-lbl">Year</span>
+            <span class="del-val" id="delYear"></span>
+          </div>
+          <div class="del-row">
+            <span class="del-lbl">Price</span>
+            <span class="del-val" id="delPrice"></span>
+          </div>
         </div>
-        <div class="del-warn text-start mt-3">
+        <div class="del-warn text-start">
           <i class="bi bi-exclamation-circle-fill flex-shrink-0 mt-1"></i>
-          <span>This action is <strong>irreversible</strong>. All associated documents will also be deleted.</span>
+          <span>This action is <strong>irreversible</strong>. All documents will also be deleted.</span>
         </div>
       </div>
       <div class="modal-footer justify-content-center gap-3">
@@ -343,7 +742,7 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
      MODAL: DOCUMENTS
 ══════════════════════════════════════ -->
 <div class="modal fade" id="docsModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:560px;">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:540px;">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title fw-bold" id="docsModalTitle">
@@ -368,40 +767,7 @@ textarea.mf-ctrl { resize:vertical; min-height:90px; }
 const CSRF = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
 let _currentDelId = null;
 
-/* ── Helpers ─────────────────────────────── */
-function showAlertBox(container, type, msg) {
-    const el = document.getElementById(container);
-    if (!el) return;
-    el.innerHTML = `
-      <div class="alert alert-${type} alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
-        <i class="bi bi-${type === 'danger' ? 'exclamation-circle' : 'check-circle'}-fill"></i>
-        <span>${msg}</span>
-        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
-      </div>`;
-}
-function clearAlertBox(container) {
-    const el = document.getElementById(container);
-    if (el) el.innerHTML = '';
-}
-function spin(id, on) {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('show', on);
-}
-function previewImg(input, previewId, textId) {
-    const img  = document.getElementById(previewId);
-    const text = document.getElementById(textId);
-    if (input.files && input.files[0]) {
-        const r = new FileReader();
-        r.onload = e => {
-            img.src = e.target.result;
-            img.style.display = 'block';
-            if (text) text.textContent = 'Click to change image';
-        };
-        r.readAsDataURL(input.files[0]);
-    }
-}
-
-/* ── DELETE (modal) ──────────────────────── */
+/* ── DELETE ───────────────────────────── */
 function openDelModal(id, name, poId, year, price) {
     _currentDelId = id;
     document.getElementById('delTruckName').textContent = name;
@@ -411,9 +777,10 @@ function openDelModal(id, name, poId, year, price) {
     new bootstrap.Modal(document.getElementById('delModal')).show();
 }
 
-document.getElementById('delConfirmBtn').addEventListener('click', function() {
+document.getElementById('delConfirmBtn').addEventListener('click', function () {
     if (!_currentDelId) return;
-    spin('delSpinner', true);
+    const spinner = document.getElementById('delSpinner');
+    spinner.classList.add('show');
     this.disabled = true;
     this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Deleting…';
 
@@ -423,7 +790,7 @@ document.getElementById('delConfirmBtn').addEventListener('click', function() {
     })
     .then(r => r.json())
     .then(d => {
-        spin('delSpinner', false);
+        spinner.classList.remove('show');
         if (d.success) {
             bootstrap.Modal.getInstance(document.getElementById('delModal')).hide();
             window.showAlert?.('success', d.message || 'Truck deleted!');
@@ -437,19 +804,18 @@ document.getElementById('delConfirmBtn').addEventListener('click', function() {
         } else {
             this.disabled = false;
             this.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
-            spin('delSpinner', false);
             window.showAlert?.('error', d.message || 'Delete failed!');
         }
     })
     .catch(() => {
-        spin('delSpinner', false);
+        spinner.classList.remove('show');
         this.disabled = false;
         this.innerHTML = '<i class="bi bi-trash-fill"></i> Delete';
         window.showAlert?.('error', 'An error occurred.');
     });
 });
 
-/* ── TOGGLE STATUS ──────────────────────── */
+/* ── STATUS TOGGLE ───────────────────── */
 function toggleStatus(id, btn) {
     btn.disabled = true;
     fetch(`/truck/toggle-status/${id}/`, {
@@ -460,13 +826,13 @@ function toggleStatus(id, btn) {
     .then(d => {
         btn.disabled = false;
         if (d.success) {
-            const sold = d.sotilgan;
-            const card = btn.closest('.truck-card');
+            const sold  = d.sotilgan;
+            const card  = btn.closest('.truck-card');
             const badge = card.querySelector('.badge-status');
-            badge.className = 'badge-status ' + (sold ? 'bs-sold' : 'bs-active');
+            badge.className   = 'badge-status ' + (sold ? 'bs-sold' : 'bs-active');
             badge.textContent = sold ? 'Sold' : 'Active';
-            btn.className = 'act-btn ' + (sold ? 'ab-status-sold' : 'ab-status-active');
-            btn.querySelector('i').className = 'bi ' + (sold ? 'bi-tag-fill' : 'bi-check-circle-fill');
+            btn.className     = 'act-btn ' + (sold ? 'ab-status-sold' : 'ab-status-active');
+            btn.querySelector('i').className    = 'bi ' + (sold ? 'bi-tag-fill' : 'bi-check-circle-fill');
             btn.querySelector('span').textContent = sold ? 'Sold' : 'Active';
             window.showAlert?.('success', `Status: ${d.label}`);
         }
@@ -474,18 +840,18 @@ function toggleStatus(id, btn) {
     .catch(() => { btn.disabled = false; window.showAlert?.('error', 'Error occurred.'); });
 }
 
-/* ── DOCS (modal) ────────────────────────── */
+/* ── DOCS MODAL ──────────────────────── */
 function openDocsModal(id, poId) {
-    const m     = new bootstrap.Modal(document.getElementById('docsModal'));
+    const modal = new bootstrap.Modal(document.getElementById('docsModal'));
     const title = document.getElementById('docsModalTitle');
     const body  = document.getElementById('docsModalBody');
-    title.innerHTML = `<i class="bi bi-file-earmark-text me-2 text-primary"></i>Documents — ${poId}`;
+    title.innerHTML = `<i class="bi bi-file-earmark-text me-2 text-primary"></i>Docs — ${poId}`;
     body.innerHTML  = `<div class="d-flex justify-content-center py-5"><div class="spinner-border text-primary"></div></div>`;
-    m.show();
-    fetch(`/truck/detail/${id}/`, { headers: {'X-Requested-With':'XMLHttpRequest'} })
-    .then(r => r.json())
-    .then(d => renderDocs(body, d.hujjatlar || [], id))
-    .catch(() => { body.innerHTML = '<div class="alert alert-danger">Failed to load documents.</div>'; });
+    modal.show();
+    fetch(`/truck/detail/${id}/`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.json())
+        .then(d => renderDocs(body, d.hujjatlar || [], id))
+        .catch(() => { body.innerHTML = '<div class="alert alert-danger">Failed to load documents.</div>'; });
 }
 
 function renderDocs(container, list, truckId) {
@@ -493,9 +859,9 @@ function renderDocs(container, list, truckId) {
     if (list.length) {
         list.forEach(h => {
             const ext  = (h.original_file_name || '').split('.').pop().toLowerCase();
-            const icon = ext==='pdf' ? 'bi-file-earmark-pdf text-danger'
-                       : ['jpg','jpeg','png','gif','webp'].includes(ext) ? 'bi-file-earmark-image text-success'
-                       : ['doc','docx'].includes(ext) ? 'bi-file-earmark-word text-primary'
+            const icon = ext === 'pdf'                                        ? 'bi-file-earmark-pdf text-danger'
+                       : ['jpg','jpeg','png','gif','webp'].includes(ext)      ? 'bi-file-earmark-image text-success'
+                       : ['doc','docx'].includes(ext)                         ? 'bi-file-earmark-word text-primary'
                        : 'bi-file-earmark text-secondary';
             html += `
               <div class="doc-item" id="di-${h.id}">
@@ -511,7 +877,7 @@ function renderDocs(container, list, truckId) {
         });
     } else {
         html += `<div class="text-center py-4 text-muted">
-                    <i class="bi bi-inbox fs-1 d-block mb-2" style="color:#cbd5e1;"></i>
+                    <i class="bi bi-inbox fs-1 d-block mb-2" style="color:#cbd5e1"></i>
                     No documents yet.
                  </div>`;
     }
@@ -520,7 +886,7 @@ function renderDocs(container, list, truckId) {
         <input type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
                onchange="uploadDocs(this,${truckId})">
         <i class="bi bi-cloud-arrow-up"></i>
-        <p class="mb-1 fw-600">Click or drag files here</p>
+        <p class="mb-1 fw-semibold text-secondary">Click or drag files here</p>
         <small class="text-muted">JPG, PNG, PDF, DOC, DOCX — max 10 MB</small>
       </div>
       <div id="dus-${truckId}" class="mt-2"></div>`;
@@ -537,8 +903,9 @@ function uploadDocs(input, id) {
     fd.append('truck_id', id);
     Array.from(input.files).forEach(f => fd.append('hujjat', f));
     fetch('/truck/upload-hujjat/', {
-        method:'POST', body:fd,
-        headers:{'X-Requested-With':'XMLHttpRequest','X-CSRFToken':CSRF}
+        method: 'POST',
+        body: fd,
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
     })
     .then(r => r.json())
     .then(d => {
@@ -555,20 +922,20 @@ function uploadDocs(input, id) {
 function deleteDoc(docId, truckId) {
     if (!confirm('Delete this document?')) return;
     fetch(`/truck/hujjat/delete/${docId}/`, {
-        method:'POST',
-        headers:{'X-Requested-With':'XMLHttpRequest','X-CSRFToken':CSRF}
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
     })
     .then(r => r.json())
     .then(d => {
         if (d.success) {
             const item = document.getElementById(`di-${docId}`);
-            if (item) { item.style.opacity='0'; item.style.transition='.2s'; setTimeout(()=>item.remove(),200); }
+            if (item) { item.style.transition = '.2s'; item.style.opacity = '0'; setTimeout(() => item.remove(), 200); }
             window.showAlert?.('success', d.message || 'Deleted!');
         } else {
             window.showAlert?.('error', d.message || 'Failed!');
         }
     })
-    .catch(() => { window.showAlert?.('error','Error occurred.'); });
+    .catch(() => { window.showAlert?.('error', 'Error occurred.'); });
 }
 </script>
 {% endblock %}

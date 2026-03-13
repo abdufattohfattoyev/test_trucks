@@ -94,10 +94,10 @@ def xaridor_add(request):
         'hujjat_form': hujjat_form
     }
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        html = render_to_string('xaridorlar/add_xaridor.html', context, request=request)
+        html = render_to_string('xaridorlar/add_xaridor_page.html', context, request=request)
         return JsonResponse({'html': html})
 
-    return render(request, 'xaridorlar/add_xaridor.html', context)
+    return render(request, 'xaridorlar/add_xaridor_page.html', context)
 
 @login_required
 def upload_hujjat(request):

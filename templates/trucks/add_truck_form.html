@@ -308,11 +308,20 @@
 
     @media (max-width: 768px) {
         .form-page-wrapper { padding: 1rem; }
-        .form-card-body { padding: 1.25rem; }
+        .form-card-header  { padding: 1.25rem; }
+        .form-card-body    { padding: 1.25rem; }
         .form-grid { grid-template-columns: 1fr; }
         .form-field.full-width { grid-column: 1; }
-        .form-card-footer { justify-content: stretch; }
+        .form-card-footer { justify-content: stretch; padding: 1rem; }
         .btn-cancel, .btn-submit { flex: 1; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+        .form-page-wrapper { padding: 0.5rem; }
+        .form-card-header  { padding: 1rem; }
+        .form-card-body    { padding: 1rem; }
+        .form-card-footer  { padding: 0.75rem; flex-direction: column; }
+        .form-card-title   { font-size: 1.1rem; }
+        .section-title     { font-size: 0.9rem; }
     }
 </style>
 {% endblock %}

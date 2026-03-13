@@ -442,19 +442,29 @@
         .tc-title    { font-size: 1rem; }
         .tc-price    { font-size: 1.1rem; margin-bottom: 0.6rem; }
         .tc-body     { padding: 1rem; }
-        .tc-actions  { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
+        .tc-actions  { grid-template-columns: repeat(5, 1fr); gap: 0.3rem; }
+        .act-btn     { padding: 0.45rem 0.2rem; font-size: 0.7rem; }
+        .act-btn span { display: none; }
+        .search-inp  { min-width: 0; }
+        .page-title  { font-size: 1.4rem; }
     }
 
     @media (max-width: 540px) {
         .trucks-grid { grid-template-columns: 1fr; }
-        .tc-img      { height: 200px; }
-        .tc-actions  { grid-template-columns: repeat(5, 1fr); }
+        .tc-img      { height: 190px; }
+        .tc-actions  { grid-template-columns: repeat(5, 1fr); gap: 0.25rem; }
     }
 
     @media (max-width: 400px) {
-        .list-header { padding: 1rem; }
-        .page-title  { font-size: 1.4rem; }
-        .tc-actions  { grid-template-columns: 1fr 1fr; }
+        .list-header { padding: 0.875rem; }
+        .page-title  { font-size: 1.25rem; }
+        .stat-val    { font-size: 1rem; }
+        .stat-lbl    { font-size: 0.7rem; }
+        .stat-icon   { width: 36px; height: 36px; font-size: 1.1rem; }
+        .tc-actions  { grid-template-columns: repeat(5, 1fr); gap: 0.2rem; }
+        .act-btn     { padding: 0.4rem 0.1rem; font-size: 0.65rem; }
+        .header-row  { flex-direction: column; align-items: stretch; }
+        .btn-add     { width: 100%; justify-content: center; }
     }
 </style>
 {% endblock %}

@@ -1,0 +1,564 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Customer - Truck Trade{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #2563eb;
+        --accent: #7c3aed;
+        --ok: #059669;
+        --red: #dc2626;
+        --bd: #e2e8f0;
+        --card-radius: 12px;
+        --tr: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .form-page-wrapper {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: var(--card-radius);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .form-card-header {
+        padding: 1.5rem 2rem;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .form-card-title {
+        font-size: 1.375rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-back {
+        padding: 0.5rem 1rem;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.4);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: var(--tr);
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.3); color: white; }
+
+    .form-card-body { padding: 2rem; }
+
+    .form-section { margin-bottom: 1.75rem; }
+
+    .section-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #f3f4f6;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .section-title i { color: var(--primary); font-size: 1rem; }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+    .form-field.full { grid-column: 1 / -1; }
+
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .form-label i { color: var(--primary); }
+    .req { color: #ef4444; margin-left: 2px; }
+
+    .form-card-body .form-control {
+        padding: 0.6875rem 0.875rem;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        color: #111827;
+        background: white;
+        transition: var(--tr);
+        width: 100%;
+    }
+    .form-card-body .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .form-card-body .form-control:disabled {
+        background: #f9fafb;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+    .form-card-body textarea.form-control { resize: vertical; min-height: 90px; }
+
+    .error-text {
+        font-size: 0.75rem;
+        color: #ef4444;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .hint-text { font-size: 0.75rem; color: #9ca3af; }
+
+    /* Alert */
+    .form-alert {
+        padding: 0.875rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-size: 0.9375rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .form-alert.error   { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: #dc2626; }
+    .form-alert.success { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); color: #059669; }
+
+    /* Footer */
+    .form-card-footer {
+        padding: 1.25rem 2rem;
+        border-top: 1px solid #e5e7eb;
+        background: #f9fafb;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-cancel {
+        padding: 0.7rem 1.5rem;
+        background: white;
+        color: #374151;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: var(--tr);
+        cursor: pointer;
+    }
+    .btn-cancel:hover { background: #f3f4f6; color: #111827; }
+
+    .btn-submit {
+        padding: 0.7rem 1.75rem;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: var(--tr);
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.35); }
+    .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+    /* Documents section */
+    .docs-card {
+        background: white;
+        border-radius: var(--card-radius);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-top: 1.5rem;
+    }
+    .docs-card-header {
+        padding: 1.25rem 2rem;
+        background: linear-gradient(135deg, var(--ok), #10b981);
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .docs-card-header h2 { margin: 0; font-size: 1.125rem; font-weight: 700; }
+    .docs-card-body { padding: 1.5rem 2rem; }
+
+    .doc-upload-area {
+        border: 2px dashed #e5e7eb;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--tr);
+        background: #f9fafb;
+        position: relative;
+        margin-bottom: 1rem;
+    }
+    .doc-upload-area:hover { border-color: var(--primary); background: rgba(37,99,235,0.02); }
+    .doc-upload-area input[type="file"] {
+        position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .doc-upload-area i { font-size: 2rem; color: #94a3b8; display: block; margin-bottom: 0.5rem; }
+    .doc-upload-area p { margin: 0; font-weight: 600; color: #374151; font-size: 0.9375rem; }
+    .doc-upload-area small { color: #9ca3af; }
+
+    .doc-upload-status { margin-top: 0.5rem; min-height: 1.5rem; }
+
+    #uploaded-docs-list { margin-top: 1rem; }
+    .doc-item {
+        display: flex; align-items: center; padding: 0.65rem;
+        border-radius: 8px; background: #f8fafc; border: 1px solid var(--bd);
+        margin-bottom: 0.5rem; transition: all 0.2s;
+    }
+    .doc-item:hover { border-color: #93c5fd; background: #eff6ff; }
+    .doc-item-name {
+        flex: 1; font-size: 0.875rem; font-weight: 500; color: #1e293b;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .btn-del-doc {
+        padding: 0.35rem 0.65rem; border-radius: 6px; border: 1px solid #fecaca;
+        background: rgba(239,68,68,0.1); color: #dc2626; cursor: pointer;
+        font-size: 0.8rem; margin-left: 0.5rem; transition: var(--tr);
+    }
+    .btn-del-doc:hover { background: #dc2626; color: white; }
+
+    .docs-footer {
+        padding: 1rem 2rem;
+        border-top: 1px solid #e5e7eb;
+        background: #f9fafb;
+        display: flex;
+        justify-content: flex-end;
+    }
+    .btn-finish {
+        padding: 0.7rem 1.75rem;
+        background: linear-gradient(135deg, var(--ok), #10b981);
+        color: white; border: none; border-radius: 8px;
+        font-weight: 600; font-size: 0.9375rem; cursor: pointer;
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        transition: var(--tr); text-decoration: none;
+    }
+    .btn-finish:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(5,150,105,0.35); color: white; }
+
+    @media (max-width: 768px) {
+        .form-page-wrapper { padding: 1rem; }
+        .form-card-body { padding: 1.25rem; }
+        .form-card-footer { padding: 1rem; justify-content: stretch; }
+        .docs-card-body { padding: 1.25rem; }
+        .form-grid { grid-template-columns: 1fr; }
+        .form-field.full { grid-column: 1; }
+        .btn-cancel, .btn-submit { flex: 1; justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+        .form-page-wrapper { padding: 0.5rem; }
+        .form-card-header { padding: 1rem; }
+        .form-card-body { padding: 1rem; }
+        .form-card-footer { padding: 0.75rem; flex-direction: column; }
+        .docs-card-header { padding: 1rem; }
+        .docs-card-body { padding: 1rem; }
+        .docs-footer { padding: 0.75rem; }
+        .form-card-title { font-size: 1.1rem; }
+        .section-title { font-size: 0.8rem; }
+        .btn-finish { width: 100%; justify-content: center; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-page-wrapper">
+
+    <!-- ── ADD FORM ── -->
+    <div class="form-card" id="addFormCard">
+        <div class="form-card-header">
+            <h1 class="form-card-title">
+                <i class="bi bi-person-plus-fill"></i> Add New Customer
+            </h1>
+            <a href="#" onclick="history.back(); return false;" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <div class="form-card-body">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="form-alert {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                    <i class="bi {% if message.tags == 'error' %}bi-exclamation-circle{% else %}bi-check-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div id="formAlert"></div>
+
+            <form method="POST" enctype="multipart/form-data" id="addCustomerForm" novalidate>
+                {% csrf_token %}
+
+                <!-- Personal Info -->
+                <div class="form-section">
+                    <h3 class="section-title"><i class="bi bi-person"></i> Personal Information</h3>
+                    <div class="form-grid">
+
+                        <div class="form-field">
+                            <label class="form-label" for="{{ xaridor_form.ism_familiya.id_for_label }}">
+                                <i class="bi bi-person"></i> Name & Surname <span class="req">*</span>
+                            </label>
+                            {{ xaridor_form.ism_familiya }}
+                            {% for error in xaridor_form.ism_familiya.errors %}
+                                <span class="error-text"><i class="bi bi-exclamation-circle"></i> {{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label" for="{{ xaridor_form.telefon_raqam.id_for_label }}">
+                                <i class="bi bi-telephone"></i> Phone Number
+                            </label>
+                            {{ xaridor_form.telefon_raqam }}
+                            {% for error in xaridor_form.telefon_raqam.errors %}
+                                <span class="error-text"><i class="bi bi-exclamation-circle"></i> {{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label" for="{{ xaridor_form.email.id_for_label }}">
+                                <i class="bi bi-envelope"></i> Email
+                            </label>
+                            {{ xaridor_form.email }}
+                            {% for error in xaridor_form.email.errors %}
+                                <span class="error-text"><i class="bi bi-exclamation-circle"></i> {{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label" for="{{ xaridor_form.sana.id_for_label }}">
+                                <i class="bi bi-calendar3"></i> Date <span class="req">*</span>
+                            </label>
+                            {{ xaridor_form.sana }}
+                            {% for error in xaridor_form.sana.errors %}
+                                <span class="error-text"><i class="bi bi-exclamation-circle"></i> {{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-field full">
+                            <label class="form-label" for="{{ xaridor_form.hozirgi_balans.id_for_label }}">
+                                <i class="bi bi-cash-coin"></i> Current Balance
+                            </label>
+                            {{ xaridor_form.hozirgi_balans }}
+                            <span class="hint-text"><i class="bi bi-lock"></i> Automatically calculated, cannot be edited</span>
+                        </div>
+
+                        <div class="form-field full">
+                            <label class="form-label" for="{{ xaridor_form.izoh.id_for_label }}">
+                                <i class="bi bi-chat-text"></i> Description (optional)
+                            </label>
+                            {{ xaridor_form.izoh }}
+                            {% for error in xaridor_form.izoh.errors %}
+                                <span class="error-text"><i class="bi bi-exclamation-circle"></i> {{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="form-card-footer">
+            <a href="#" onclick="history.back(); return false;" class="btn-cancel">
+                <i class="bi bi-x-circle"></i> Cancel
+            </a>
+            <button type="button" class="btn-submit" id="saveBtn" onclick="submitCustomerForm()">
+                <i class="bi bi-person-check"></i> Save & Continue
+            </button>
+        </div>
+    </div>
+
+    <!-- ── DOCUMENTS SECTION (hidden until customer saved) ── -->
+    <div class="docs-card" id="docsCard" style="display:none;">
+        <div class="docs-card-header">
+            <i class="bi bi-file-earmark-text fs-5"></i>
+            <h2>Upload Documents (Optional)</h2>
+        </div>
+        <div class="docs-card-body">
+            <p class="text-muted mb-3" style="font-size:.9rem;">
+                Upload documents for this customer. You can skip this step and add documents later.
+            </p>
+
+            <div class="doc-upload-area" id="docDropArea">
+                <input type="file" id="docFileInput" multiple
+                       accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                       onchange="uploadDocs(this)">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <p>Click or drag files here to upload</p>
+                <small>JPG, PNG, PDF, DOC, DOCX — max 10 MB each</small>
+            </div>
+            <div class="doc-upload-status" id="docUploadStatus"></div>
+            <div id="uploaded-docs-list"></div>
+        </div>
+        <div class="docs-footer">
+            <a href="{% url 'xaridorlar_list' %}" class="btn-finish">
+                <i class="bi bi-check-circle"></i> Finish
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const CSRF = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+let _customerId = null;
+
+function submitCustomerForm() {
+    const form = document.getElementById('addCustomerForm');
+    const btn  = document.getElementById('saveBtn');
+    const alertBox = document.getElementById('formAlert');
+
+    alertBox.innerHTML = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving…';
+
+    const fd = new FormData(form);
+
+    fetch('{% url "xaridor_add" %}', {
+        method: 'POST',
+        body: fd,
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(d => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-person-check"></i> Save & Continue';
+
+        if (d.success) {
+            _customerId = d.xaridor_id;
+            // Hide form card, show docs card
+            document.getElementById('addFormCard').style.display = 'none';
+            document.getElementById('docsCard').style.display = 'block';
+            document.getElementById('docsCard').scrollIntoView({ behavior: 'smooth' });
+            window.showAlert?.('success', d.message || 'Customer added!');
+        } else {
+            alertBox.innerHTML = `
+                <div class="form-alert error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    ${d.message || 'Please correct the errors.'}
+                </div>`;
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-person-check"></i> Save & Continue';
+        alertBox.innerHTML = `
+            <div class="form-alert error">
+                <i class="bi bi-exclamation-circle"></i>
+                An error occurred. Please try again.
+            </div>`;
+    });
+}
+
+function uploadDocs(input) {
+    if (!input.files.length || !_customerId) return;
+    const status = document.getElementById('docUploadStatus');
+    status.innerHTML = `<div class="d-flex align-items-center gap-2 text-muted mt-2">
+        <div class="spinner-border spinner-border-sm text-primary"></div> Uploading…
+    </div>`;
+
+    const fd = new FormData();
+    fd.append('xaridor_id', _customerId);
+    Array.from(input.files).forEach(f => fd.append('hujjat', f));
+
+    fetch('{% url "upload_hujjat" %}', {
+        method: 'POST',
+        body: fd,
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(d => {
+        input.value = '';
+        if (d.success) {
+            status.innerHTML = '';
+            renderDocs(d.hujjatlar || []);
+            window.showAlert?.('success', d.message);
+        } else {
+            status.innerHTML = `<div class="alert alert-danger py-2 mt-2">${d.message}</div>`;
+        }
+    })
+    .catch(() => {
+        status.innerHTML = `<div class="alert alert-danger py-2 mt-2">Upload failed. Try again.</div>`;
+    });
+}
+
+function renderDocs(list) {
+    const container = document.getElementById('uploaded-docs-list');
+    if (!list.length) { container.innerHTML = ''; return; }
+    container.innerHTML = list.map(h => {
+        const ext  = (h.original_filename || '').split('.').pop().toLowerCase();
+        const icon = ext === 'pdf' ? 'bi-file-earmark-pdf text-danger'
+                   : ['jpg','jpeg','png','webp'].includes(ext) ? 'bi-file-earmark-image text-success'
+                   : ['doc','docx'].includes(ext) ? 'bi-file-earmark-word text-primary'
+                   : 'bi-file-earmark text-secondary';
+        return `
+        <div class="doc-item" id="doc-${h.id}">
+            <i class="bi ${icon} me-2 fs-5 flex-shrink-0"></i>
+            <span class="doc-item-name" title="${h.original_filename}">${h.original_filename}</span>
+            <a href="${h.hujjat_url}" target="_blank" class="btn btn-sm btn-outline-primary ms-2">
+                <i class="bi bi-eye"></i>
+            </a>
+            <button class="btn-del-doc" onclick="deleteDoc(${h.id})">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>`;
+    }).join('');
+}
+
+function deleteDoc(docId) {
+    if (!confirm('Delete this document?')) return;
+    fetch(`{% url 'delete_hujjat' 0 %}`.replace('0', docId), {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': CSRF }
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            renderDocs(d.hujjatlar || []);
+            window.showAlert?.('success', d.message || 'Deleted!');
+        } else {
+            window.showAlert?.('error', d.message || 'Failed!');
+        }
+    })
+    .catch(() => window.showAlert?.('error', 'Error occurred.'));
+}
+</script>
+{% endblock %}
